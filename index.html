@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Mr Sensei: a Japanese kana and N5/N4 vocabulary quiz game. Climb Mt Fuji by scoring points and unlock fun facts about Japan.">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Mr Sensei</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: one-screen arcade cabinet — setup → play → results, centered column max 760px.
+   Single deliberate night look (indigo ground, four traditional dye colors for answers). */
+:root{
+  --ink:#121329;        /* night indigo ground */
+  --panel:#1c1e3d;      /* raised surface */
+  --panel-2:#252852;
+  --line:#363a72;
+  --fg:#f4f1ff;
+  --muted:#a9abd8;
+  --sakura:#ff8fb3;     /* selection accent */
+  --shu:#e2483d;        /* answer 1 — vermilion */
+  --ai:#2f78dc;         /* answer 2 — indigo blue */
+  --yamabuki:#e3b021;   /* answer 3 — gold */
+  --matcha:#3b9f66;     /* answer 4 — green */
+  --good:#5fd38d;
+  --bad:#ff6b6b;
+  --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:var(--ink);
+  background-image:
+    radial-gradient(circle at 0 100%, transparent 14px, rgba(255,255,255,.035) 15px, transparent 16px, transparent 22px, rgba(255,255,255,.03) 23px, transparent 24px),
+    radial-gradient(circle at 24px 100%, transparent 14px, rgba(255,255,255,.035) 15px, transparent 16px, transparent 22px, rgba(255,255,255,.03) 23px, transparent 24px);
+  background-size:48px 24px;
+  color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
+
+/* Header */
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:clamp(1.6rem,5vw,2.2rem);margin:0;letter-spacing:.01em;text-wrap:balance}
+.brand h1 span{color:var(--sakura)}
+.brand .tag{color:var(--muted);font-size:.85rem}
+
+/* Setup */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.step{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.level{background:var(--panel-2);border:2px solid var(--line);border-radius:14px;padding:12px 10px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0;transition:border-color .15s, transform .1s}
+.level:active{transform:scale(.98)}
+.level b{font-family:var(--f-display);font-weight:400;font-size:1.35rem}
+.level small{color:var(--muted);font-size:.78rem}
+.level[aria-pressed="true"]{border-color:var(--sakura);background:color-mix(in srgb,var(--sakura) 14%,var(--panel-2))}
+.group{display:flex;flex-direction:column;gap:8px}
+.group-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.group-head h3{margin:0;font-size:.95rem;font-weight:800}
+.link{background:none;border:0;color:var(--sakura);font-size:.82rem;font-weight:700;padding:4px 2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--panel-2);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;display:inline-flex;align-items:baseline;gap:6px;font-size:.9rem;transition:border-color .15s}
+.chip .jp{font-weight:800}
+.chip .n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--sakura);background:color-mix(in srgb,var(--sakura) 18%,var(--panel-2))}
+.chip[aria-pressed="true"]::before{content:"✓";color:var(--sakura);font-weight:800}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.opt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.opt label{font-size:.82rem;color:var(--muted);font-weight:700}
+.seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:7px 4px;font-size:.82rem;font-weight:700;color:var(--muted);min-width:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--ink)}
+.start-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.big{background:var(--sakura);color:#2a0f1c;border:0;border-radius:14px;padding:14px 26px;font-family:var(--f-display);font-size:1.15rem;box-shadow:0 5px 0 #b45277;transition:transform .08s, box-shadow .08s}
+.big:active{transform:translateY(4px);box-shadow:0 1px 0 #b45277}
+.big:disabled{opacity:.4;cursor:not-allowed}
+.ghost{background:none;border:1.5px solid var(--line);border-radius:12px;padding:11px 16px;font-weight:700}
+.summary{color:var(--muted);font-size:.88rem}
+.summary b{color:var(--fg);font-family:var(--f-mono)}
+
+/* Play */
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hud .pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+.hud .streak{color:var(--yamabuki)}
+.quit{background:none;border:0;color:var(--muted);font-size:.85rem;text-decoration:underline}
+.timer{height:8px;background:var(--panel);border-radius:99px;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--sakura);transform-origin:left;border-radius:99px}
+.prompt{background:var(--fg);color:var(--ink);border-radius:22px;padding:26px 18px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;box-shadow:0 8px 0 rgba(0,0,0,.35)}
+.prompt .ask{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#5b5e8f}
+.prompt .q{font-family:var(--f-body);font-weight:800;font-size:clamp(3rem,15vw,6rem);line-height:1.1;word-break:break-word}
+.prompt .q.long{font-size:clamp(1.8rem,8vw,3.2rem)}
+.prompt .q.latin{font-family:var(--f-display);font-weight:400}
+.prompt .hint{font-family:var(--f-mono);color:#5b5e8f;font-size:.95rem;min-height:1.4em}
+.hear{position:absolute;top:12px;right:12px;background:#e6e3f7;border:0;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:800;color:#33356b}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ans{border:0;border-radius:16px;padding:16px 14px;min-height:84px;display:flex;align-items:center;gap:12px;text-align:left;color:#fff;font-weight:800;font-size:clamp(1.05rem,4vw,1.45rem);box-shadow:0 5px 0 rgba(0,0,0,.35);transition:transform .08s, opacity .2s, box-shadow .08s;min-width:0}
+.ans:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.ans .shape{flex:none;width:30px;height:30px;display:grid;place-items:center;font-size:1.2rem;opacity:.9}
+.ans .txt{min-width:0;overflow-wrap:anywhere}
+.ans .key{margin-left:auto;font-family:var(--f-mono);font-size:.7rem;opacity:.65;flex:none}
+.ans:nth-child(1){background:var(--shu)}
+.ans:nth-child(2){background:var(--ai)}
+.ans:nth-child(3){background:var(--yamabuki);color:#2b2000}
+.ans:nth-child(4){background:var(--matcha)}
+.ans.dim{opacity:.28}
+.ans.right{outline:4px solid var(--good);outline-offset:3px}
+.ans.wrong{outline:4px solid var(--bad);outline-offset:3px}
+.feedback{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:58px}
+.feedback .msg{font-weight:800;min-width:0}
+.feedback .msg.ok{color:var(--good)}
+.feedback .msg.no{color:var(--bad)}
+.feedback .msg small{display:block;color:var(--muted);font-weight:500}
+.next{background:var(--fg);color:var(--ink);border:0;border-radius:10px;padding:9px 16px;font-weight:800}
+
+/* Results */
+.score-hero{text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
+.score-hero .kanji{font-family:var(--f-display);font-size:3.2rem;line-height:1;color:var(--sakura)}
+.score-hero .pts{font-family:var(--f-mono);font-size:2.4rem;font-variant-numeric:tabular-nums}
+.score-hero .best{color:var(--muted);font-size:.88rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--panel-2);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-family:var(--f-mono);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.75rem;color:var(--muted)}
+.misses{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.misses li{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.3fr);gap:10px;align-items:baseline;padding:8px 10px;background:var(--panel-2);border-radius:10px}
+.misses .jp{font-weight:800;font-size:1.2rem}
+.misses .ro{font-family:var(--f-mono);color:var(--muted);font-size:.85rem}
+.misses .en{font-size:.88rem}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.note{color:var(--muted);font-size:.8rem;margin:0}
+
+/* Results scene + collapsible climb */
+.scene{width:100%;max-width:440px}
+.scene svg{display:block;width:100%;height:auto;border-radius:16px}
+.climbcard summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.climbcard summary::-webkit-details-marker{display:none}
+.climbcard summary b{font-size:1rem}
+.climbcard .chev{font-size:1.1rem;color:var(--sakura);transition:transform .2s}
+.climbcard[open] .chev{transform:rotate(180deg)}
+.climbcard[open] summary{margin-bottom:4px}
+
+/* Per-question progress strip: red = mistake */
+.qstrip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;height:10px;width:100%}
+.qstrip i{display:block;border-radius:3px;background:var(--panel-2);border:1px solid var(--line)}
+.qstrip i.ok{background:var(--good);border-color:transparent}
+.qstrip i.bad{background:var(--bad);border-color:transparent}
+.qstrip i.cur{background:var(--fg);border-color:transparent;opacity:.55}
+.qstrip.big-strip{height:14px;max-width:440px}
+.legend{display:flex;gap:14px;font-size:.75rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legend i.ok{background:var(--good)}.legend i.bad{background:var(--bad)}
+.where{display:flex;flex-direction:column;gap:2px;align-items:center;max-width:440px}
+.where b{font-size:1.05rem}
+.where span{color:var(--muted);font-size:.88rem}
+.where .left{color:var(--bad);font-weight:800}
+.tidbit{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--yamabuki);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.tidbit .st{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--yamabuki)}
+.tidbit .st b{font-size:.95rem;letter-spacing:0;text-transform:none;color:var(--fg)}
+.tidbit p{margin:0;line-height:1.55}
+
+/* Fuji climb ladder */
+.climb{display:flex;flex-direction:column;gap:6px}
+.climb-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.82rem}
+.climb-top b{font-family:var(--f-display);font-weight:400;font-size:1rem;color:var(--sakura)}
+.climb-top span{color:var(--muted);font-family:var(--f-mono);font-size:.75rem}
+.rungs{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;align-items:end;height:30px}
+.rungs i{display:block;border-radius:4px 4px 1px 1px;background:var(--panel-2);border:1px solid var(--line);transition:background .3s}
+.rungs i.on{background:linear-gradient(var(--fg),var(--sakura));border-color:transparent}
+.rungs i.top.on{background:linear-gradient(#fff,var(--yamabuki))}
+.rungs i.slip{background:color-mix(in srgb,var(--bad) 35%,var(--panel-2));border-color:var(--bad)}
+.rungs i.slip.on{background:linear-gradient(var(--fg),var(--bad));border-color:transparent}
+.climb-top .miss{color:var(--bad);font-style:normal;font-weight:700}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.rungs.shake{animation:shake .35s ease-out}
+.fact{background:linear-gradient(135deg,color-mix(in srgb,var(--sakura) 22%,var(--panel)),var(--panel));border:1.5px solid var(--sakura);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.fact .st{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--sakura)}
+.fact p{margin:0;font-weight:500;line-height:1.55}
+.ladder{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ladder li{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:12px;align-items:baseline;padding:10px 12px;border-radius:12px;background:var(--panel-2)}
+.ladder li .nm{font-family:var(--f-display);font-size:.95rem}
+.ladder li .nm small{display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
+.ladder li p{margin:0;font-size:.92rem;line-height:1.5}
+.ladder li.locked{opacity:.5}
+.ladder li.locked p{color:var(--muted);font-style:italic}
+.ladder li.new{outline:1.5px solid var(--sakura)}
+.collect{display:flex;flex-direction:column;gap:8px}
+.collect summary{cursor:pointer;font-weight:800}
+.collect summary span{font-family:var(--f-mono);color:var(--sakura)}
+.collect ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:6px;color:var(--fg);font-size:.9rem}
+
+@media (max-width:520px){
+  .ladder li{grid-template-columns:1fr;gap:2px}
+  .levels{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .level b{font-size:1.1rem}
+  .opts{grid-template-columns:1fr}
+  .answers{gap:10px}
+  .ans{min-height:74px;padding:12px}
+  .ans .key{display:none}
+  .misses li{grid-template-columns:1fr 1fr}
+  .misses .en{grid-column:1 / -1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes pop{0%{transform:scale(.92);opacity:.4}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .22s ease-out}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="brand">
+    <h1>Mr <span>Sensei</span> <span style="color:var(--muted);font-size:.55em">先生</span></h1>
+    <div class="tag">Minna no Nihongo · N5 class drills</div>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup" style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <p class="step">1 · Pick levels (tap one or more)</p>
+      <div class="levels" id="levels"></div>
+    </div>
+    <div class="card">
+      <p class="step">2 · Pick lessons</p>
+      <div id="lessons" style="display:flex;flex-direction:column;gap:16px"></div>
+    </div>
+    <div class="card">
+      <p class="step">3 · Game settings</p>
+      <div class="opts">
+        <div class="opt"><label id="l-dir">Direction</label><div class="seg" id="o-dir" role="group" aria-labelledby="l-dir"></div></div>
+        <div class="opt"><label id="l-count">Questions</label><div class="seg" id="o-count" role="group" aria-labelledby="l-count"></div></div>
+        <div class="opt"><label id="l-time">Timer per question</label><div class="seg" id="o-time" role="group" aria-labelledby="l-time"></div></div>
+        <div class="opt"><label id="l-hint">Romaji hints on words</label><div class="seg" id="o-hint" role="group" aria-labelledby="l-hint"></div></div>
+      </div>
+    </div>
+    <div class="start-row">
+      <button class="big" id="startBtn">Start game</button>
+      <div class="summary" id="summary"></div>
+    </div>
+    <div class="card collect">
+      <p class="step">Climb Mt Fuji 富士山</p>
+      <p style="margin:0;color:var(--muted);font-size:.9rem">Score points to climb from the 1st station to the summit. Every station you reach unlocks a fun fact about Japan. Each game draws new facts, so keep climbing to collect them all.</p>
+      <details id="collectBox"><summary>Facts collected <span id="collectN">0 / 0</span></summary><ul id="collectList"></ul></details>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="hud">
+      <span class="pill" id="h-q">1 / 10</span>
+      <span class="pill streak" id="h-streak">連続 0</span>
+      <span class="pill" id="h-score">0 pts</span>
+      <button class="quit" id="quitBtn">End game</button>
+    </div>
+    <div class="climb" aria-live="polite">
+      <div class="climb-top"><b id="c-st">Trailhead</b><span id="c-next"></span></div>
+      <div class="rungs" id="rungs"></div>
+    </div>
+    <div class="timer" id="timerBar"><i id="timerFill"></i></div>
+    <div class="prompt" id="promptBox">
+      <button class="hear" id="hearBtn" hidden>Hear it</button>
+      <div class="ask" id="p-ask">What is this?</div>
+      <div class="q" id="p-q">か</div>
+      <div class="hint" id="p-hint"></div>
+    </div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback">
+      <div class="msg" id="fb-msg"><small>Tap an answer or press 1–4.</small></div>
+      <button class="next" id="nextBtn" hidden>Next ↵</button>
+    </div>
+    <div class="tidbit pop" id="tidbit" hidden>
+      <span class="st">豆知識 · about <b id="tb-k"></b></span>
+      <p id="tb-txt"></p>
+    </div>
+    <div class="fact pop" id="factBox" hidden>
+      <span class="st" id="f-st"></span>
+      <p id="f-txt"></p>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="card score-hero">
+      <div class="scene" id="r-scene"></div>
+      <div class="where" id="r-where"></div>
+      <div class="qstrip big-strip" id="r-strip" aria-label="Your answers, question by question"></div>
+      <div class="legend"><span><i class="ok"></i>Correct</span><span><i class="bad"></i>Mistake</span></div>
+      <div class="kanji" id="r-kanji">合格</div>
+      <div class="pts" id="r-pts">0</div>
+      <div class="best" id="r-best"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="r-acc">0%</b><span>Accuracy</span></div>
+      <div class="stat"><b id="r-right">0/0</b><span>Correct</span></div>
+      <div class="stat"><b id="r-streak">0</b><span>Best streak</span></div>
+    </div>
+    <details class="card climbcard" id="climbCard">
+      <summary><span><span class="step" style="display:block">Your climb · fun facts</span><b id="r-climbN"></b></span><span class="chev" aria-hidden="true">▾</span></summary>
+      <ol class="ladder" id="r-ladder"></ol>
+    </details>
+    <div class="card" id="missCard">
+      <p class="step">Review what you missed</p>
+      <ul class="misses" id="r-misses"></ul>
+    </div>
+    <div class="btn-row">
+      <button class="big" id="retryMissBtn">Replay misses</button>
+      <button class="ghost" id="againBtn">Play again</button>
+      <button class="ghost" id="changeBtn">Change lessons</button>
+    </div>
+    <p class="note">Best scores are saved in this browser only.</p>
+  </section>
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const k=(jp,ro)=>({jp,ro,type:'kana'});
+const w=(jp,ro,en)=>({jp,ro,en,type:'word'});
+
+const LEVELS=[
+  {id:'kana',name:'かな',sub:'Hiragana & katakana'},
+  {id:'n5',name:'N5',sub:'Class vocab & basics'},
+  {id:'n4',name:'N4',sub:'Next step up'}
+];
+
+const DECKS=[
+  // KANA
+  {id:'h-a',level:'kana',name:'あ row',items:[k('あ','a'),k('い','i'),k('う','u'),k('え','e'),k('お','o')]},
+  {id:'h-k',level:'kana',name:'か row',items:[k('か','ka'),k('き','ki'),k('く','ku'),k('け','ke'),k('こ','ko')]},
+  {id:'h-s',level:'kana',name:'さ row',items:[k('さ','sa'),k('し','shi'),k('す','su'),k('せ','se'),k('そ','so')]},
+  {id:'h-t',level:'kana',name:'た row',items:[k('た','ta'),k('ち','chi'),k('つ','tsu'),k('て','te'),k('と','to')]},
+  {id:'h-n',level:'kana',name:'な row',items:[k('な','na'),k('に','ni'),k('ぬ','nu'),k('ね','ne'),k('の','no')]},
+  {id:'h-h',level:'kana',name:'は row',items:[k('は','ha'),k('ひ','hi'),k('ふ','fu'),k('へ','he'),k('ほ','ho')]},
+  {id:'h-m',level:'kana',name:'ま row',items:[k('ま','ma'),k('み','mi'),k('む','mu'),k('め','me'),k('も','mo')]},
+  {id:'h-y',level:'kana',name:'や row',items:[k('や','ya'),k('ゆ','yu'),k('よ','yo')]},
+  {id:'h-r',level:'kana',name:'ら row',items:[k('ら','ra'),k('り','ri'),k('る','ru'),k('れ','re'),k('ろ','ro')]},
+  {id:'h-w',level:'kana',name:'わ・を・ん',items:[k('わ','wa'),k('を','wo'),k('ん','n')]},
+  {id:'h-dk',level:'kana',name:'Dakuten ゛',items:[k('が','ga'),k('ぎ','gi'),k('ぐ','gu'),k('げ','ge'),k('ご','go'),k('ざ','za'),k('じ','ji'),k('ず','zu'),k('ぜ','ze'),k('ぞ','zo'),k('だ','da'),k('ぢ','ji'),k('づ','zu'),k('で','de'),k('ど','do'),k('ば','ba'),k('び','bi'),k('ぶ','bu'),k('べ','be'),k('ぼ','bo')]},
+  {id:'h-hk',level:'kana',name:'Handakuten ゜',items:[k('ぱ','pa'),k('ぴ','pi'),k('ぷ','pu'),k('ぺ','pe'),k('ぽ','po')]},
+  {id:'h-yo',level:'kana',name:'Combos (きゃ…)',items:[k('きゃ','kya'),k('きゅ','kyu'),k('きょ','kyo'),k('しゃ','sha'),k('しゅ','shu'),k('しょ','sho'),k('ちゃ','cha'),k('ちゅ','chu'),k('ちょ','cho'),k('にゃ','nya'),k('ひゃ','hya'),k('みゃ','mya'),k('りゃ','rya'),k('ぎゃ','gya'),k('じゃ','ja'),k('じゅ','ju'),k('じょ','jo'),k('びゃ','bya'),k('ぴゃ','pya'),k('ぴょ','pyo')]},
+  {id:'kata',level:'kana',name:'Katakana ア–ン',items:[k('ア','a'),k('イ','i'),k('ウ','u'),k('エ','e'),k('オ','o'),k('カ','ka'),k('キ','ki'),k('ク','ku'),k('ケ','ke'),k('コ','ko'),k('サ','sa'),k('シ','shi'),k('ス','su'),k('セ','se'),k('ソ','so'),k('タ','ta'),k('チ','chi'),k('ツ','tsu'),k('テ','te'),k('ト','to'),k('ナ','na'),k('ニ','ni'),k('ヌ','nu'),k('ネ','ne'),k('ノ','no'),k('ハ','ha'),k('ヒ','hi'),k('フ','fu'),k('ヘ','he'),k('ホ','ho'),k('マ','ma'),k('ミ','mi'),k('ム','mu'),k('メ','me'),k('モ','mo'),k('ヤ','ya'),k('ユ','yu'),k('ヨ','yo'),k('ラ','ra'),k('リ','ri'),k('ル','ru'),k('レ','re'),k('ロ','ro'),k('ワ','wa'),k('ヲ','wo'),k('ン','n')]},
+
+  // N5 — from class notes (Parts 1–4) + basics
+  {id:'n5-p1',level:'n5',name:'Notes Part 1 (あ・か)',items:[w('うみ','umi','sea'),w('おかね','okane','money'),w('きゅうけいしましょう','kyuukei shimashou',"let's take a break"),w('かさ','kasa','umbrella'),w('くるま','kuruma','car'),w('けむり','kemuri','smoke'),w('こえ','koe','voice'),w('かき','kaki','oyster'),w('れんしゅう','renshuu','practice'),w('あか','aka','red'),w('あお','ao','blue'),w('あき','aki','autumn'),w('えき','eki','station'),w('かお','kao','face')]},
+  {id:'n5-p2',level:'n5',name:'Notes Part 2 (さ・た)',items:[w('さかな','sakana','fish'),w('しお','shio','salt'),w('すな','suna','sand'),w('せかい','sekai','world'),w('そら','sora','sky'),w('さか','saka','slope / hill'),w('たけ','take','bamboo'),w('ちず','chizu','map'),w('わかりましたか','wakarimashita ka','did you understand?'),w('つき','tsuki','moon'),w('てんき','tenki','weather'),w('とけい','tokei','watch / clock'),w('ちかてつ','chikatetsu','subway'),w('あさ','asa','morning'),w('すし','sushi','sushi'),w('あした','ashita','tomorrow'),w('つくえ','tsukue','desk')]},
+  {id:'n5-p3',level:'n5',name:'Notes Part 3 (な〜よ)',items:[w('なまえ','namae','name'),w('にほん','nihon','Japan'),w('ぬま','numa','swamp'),w('ねこ','neko','cat'),w('のど','nodo','throat'),w('はた','hata','flag'),w('ひかり','hikari','light'),w('ふね','fune','ship / boat'),w('へや','heya','room'),w('ほし','hoshi','star'),w('まくら','makura','pillow'),w('みなと','minato','harbor'),w('むし','mushi','insect'),w('めがね','megane','glasses'),w('もり','mori','forest'),w('みそ','miso','miso'),w('やま','yama','mountain'),w('ゆき','yuki','snow'),w('よる','yoru','night'),w('なに','nani','what'),w('あめ','ame','rain'),w('やすみ','yasumi','day off'),w('はな','hana','flower')]},
+  {id:'n5-p4',level:'n5',name:'Notes Part 4 (ら・わ)',items:[w('らくだ','rakuda','camel'),w('りんご','ringo','apple'),w('れきし','rekishi','history'),w('るす','rusu','away from home'),w('ろうそく','rousoku','candle'),w('わに','wani','crocodile'),w('わかもの','wakamono','young people'),w('これ','kore','this'),w('それ','sore','that'),w('さようなら','sayounara','goodbye'),w('ほん','hon','book'),w('わたし','watashi','I / me')]},
+  {id:'n5-num',level:'n5',name:'Numbers 1–10',items:[w('いち','ichi','1'),w('に','ni','2'),w('さん','san','3'),w('よん','yon','4'),w('ご','go','5'),w('ろく','roku','6'),w('なな','nana','7'),w('はち','hachi','8'),w('きゅう','kyuu','9'),w('じゅう','juu','10')]},
+  {id:'n5-cnt',level:'n5',name:'Counters 〜つ',items:[w('ひとつ','hitotsu','1 thing'),w('ふたつ','futatsu','2 things'),w('みっつ','mittsu','3 things'),w('よっつ','yottsu','4 things'),w('いつつ','itsutsu','5 things'),w('むっつ','muttsu','6 things'),w('ななつ','nanatsu','7 things'),w('やっつ','yattsu','8 things'),w('ここのつ','kokonotsu','9 things'),w('とお','too','10 things'),w('いっぽん','ippon','1 long object'),w('いっぴき','ippiki','1 small animal')]},
+  {id:'n5-greet',level:'n5',name:'Greetings',items:[w('おはようございます','ohayou gozaimasu','good morning'),w('こんにちは','konnichiwa','hello'),w('こんばんは','konbanwa','good evening'),w('ありがとうございます','arigatou gozaimasu','thank you'),w('すみません','sumimasen','excuse me / sorry'),w('はじめまして','hajimemashite','nice to meet you'),w('どうぞよろしく','douzo yoroshiku','please treat me well'),w('おやすみなさい','oyasuminasai','good night'),w('いただきます','itadakimasu','(said before eating)'),w('しつれいします','shitsurei shimasu','excuse me (entering/leaving)')]},
+  {id:'n5-verb',level:'n5',name:'Basic verbs',items:[w('たべます','tabemasu','eat'),w('のみます','nomimasu','drink'),w('いきます','ikimasu','go'),w('きます','kimasu','come'),w('かえります','kaerimasu','go home'),w('みます','mimasu','see / watch'),w('ききます','kikimasu','listen / ask'),w('よみます','yomimasu','read'),w('かきます','kakimasu','write'),w('かいます','kaimasu','buy'),w('ねます','nemasu','sleep'),w('おきます','okimasu','wake up')]},
+  {id:'n5-adj',level:'n5',name:'Basic adjectives',items:[w('おおきい','ookii','big'),w('ちいさい','chiisai','small'),w('あたらしい','atarashii','new'),w('ふるい','furui','old (things)'),w('たかい','takai','expensive / tall'),w('やすい','yasui','cheap'),w('あつい','atsui','hot'),w('さむい','samui','cold (weather)'),w('おいしい','oishii','delicious'),w('むずかしい','muzukashii','difficult'),w('しずか','shizuka','quiet'),w('げんき','genki','healthy / energetic')]},
+
+  // N4
+  {id:'n4-verb',level:'n4',name:'N4 verbs',items:[w('あつめる','atsumeru','collect'),w('うごく','ugoku','move'),w('えらぶ','erabu','choose'),w('おくる','okuru','send'),w('きめる','kimeru','decide'),w('さがす','sagasu','look for'),w('しらべる','shiraberu','look up / investigate'),w('そだてる','sodateru','raise / bring up'),w('つたえる','tsutaeru','convey'),w('なおす','naosu','fix / repair'),w('はこぶ','hakobu','carry'),w('ひろう','hirou','pick up'),w('まにあう','maniau','be in time'),w('よろこぶ','yorokobu','be glad')]},
+  {id:'n4-adv',level:'n4',name:'N4 adverbs',items:[w('きっと','kitto','surely'),w('ぜひ','zehi','by all means'),w('だいたい','daitai','mostly / roughly'),w('とくに','tokuni','especially'),w('なかなか','nakanaka','quite / not easily'),w('もうすぐ','mousugu','soon'),w('ずいぶん','zuibun','considerably'),w('けっして','kesshite','never (+ neg.)'),w('たまに','tamani','occasionally'),w('やっと','yatto','finally')]},
+  {id:'n4-adj',level:'n4',name:'N4 adjectives',items:[w('あさい','asai','shallow'),w('ふかい','fukai','deep'),w('こわい','kowai','scary'),w('ねむい','nemui','sleepy'),w('うれしい','ureshii','happy'),w('かなしい','kanashii','sad'),w('はずかしい','hazukashii','embarrassed'),w('ひどい','hidoi','terrible'),w('ていねい','teinei','polite'),w('ふくざつ','fukuzatsu','complicated'),w('ねっしん','nesshin','enthusiastic'),w('とくべつ','tokubetsu','special')]}
+];
+DECKS.forEach(d=>d.items.forEach(it=>it.deck=d.id));
+
+/* Mt Fuji stations: share of a "perfect" score (1000 per question) needed to reach each */
+const STATIONS=[
+  ['1合目','1st station'],['2合目','2nd station'],['3合目','3rd station'],['4合目','4th station'],['5合目','5th station'],
+  ['6合目','6th station'],['7合目','7th station'],['8合目','8th station'],['9合目','9th station'],['山頂','Summit']
+];
+const THRESH=[.06,.14,.23,.33,.43,.53,.63,.74,.86,1.0];
+
+const FACTS=[
+  'Mt Fuji is 3,776 m tall, the highest mountain in Japan. It is an active volcano that last erupted in 1707.',
+  'Most people who climb Mt Fuji start at the 5th station (5合目), which buses can reach. The official climbing season runs from July to early September.',
+  'In 2023 Japan recounted its islands using digital maps and found 14,125, more than double the old official count of 6,852.',
+  'The first Shinkansen bullet train line opened in 1964, just before the Tokyo Olympics.',
+  'Shinkansen trains are famous for punctuality. The average delay on the Tokaido line is usually under one minute.',
+  'Hiragana grew out of cursive handwriting of Chinese characters. Katakana came from small pieces of kanji.',
+  'Written Japanese mixes three scripts in the same sentence: hiragana, katakana and kanji.',
+  'Daily life uses a list of 2,136 "jōyō" kanji, the characters taught for general use.',
+  'The number 4 (し) sounds like 死 (death), so people often say よん instead, and some buildings skip the 4th floor.',
+  'Saying いただきます before eating thanks the food and everyone who helped bring it to the table.',
+  'Kit Kat sounds like "kitto katsu" (きっと勝つ, "you will surely win"), so students get them as good-luck gifts before exams.',
+  'Japan has had hundreds of Kit Kat flavors over the years, from matcha to sake to wasabi.',
+  'Emoji were invented in Japan. The word comes from 絵 (e, picture) + 文字 (moji, character).',
+  'Karaoke combines から (kara, empty) and オケ (oke, short for orchestra), meaning "empty orchestra."',
+  'Instant ramen was invented by Momofuku Ando in 1958. You can visit a Cup Noodles Museum in Osaka.',
+  'Osaka was nicknamed 天下の台所, "the nation’s kitchen," because it was Japan’s great trading center for rice and food.',
+  'Kyoto has around 1,600 Buddhist temples and hundreds of Shinto shrines.',
+  'Lake Biwa in Shiga is Japan’s largest lake, and it is one of the oldest lakes in the world.',
+  'The deer of Nara Park are considered messengers of the gods. Many of them bow to visitors for shika senbei crackers.',
+  'Snow monkeys at Jigokudani in Nagano warm themselves in hot springs during winter.',
+  'Tipping is not customary in Japan. Good service is simply expected.',
+  'Japan drives on the left side of the road.',
+  'Japanese students clean their own classrooms during a daily cleaning time called おそうじ.',
+  'Japan has more than 55,000 convenience stores (コンビニ), many open 24 hours.',
+  'Japan has roughly 4 million vending machines, selling hot and cold drinks from the same machine.',
+  'The world’s first capsule hotel opened in Osaka in 1979.',
+  'Kongō Gumi, a temple-building company founded in 578, was one of the oldest companies in the world.',
+  'Ekiben (駅弁) are bento boxes sold at train stations, and many regions have their own specialty.',
+  'Many cities and prefectures have cute mascots called ゆるキャラ, like Kumamoto’s bear Kumamon.',
+  'Some farmers grow square watermelons inside boxes. They are mostly sold as decorations.'
+];
+
+/* Illustrated Mt Fuji with a torii gate; trail dots light up for stations reached */
+function fujiSVG(rung){
+  const N=STATIONS.length;let pts=[];
+  for(let i=0;i<N;i++){const t=(i+1)/N;pts.push([262+(178-262)*t+((i%2)?9:-9)*(1-t),182+(46-182)*t])}
+  const trail='M272 194 '+pts.map(p=>`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+  const dots=pts.map((p,i)=>i<rung
+    ?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4.2" fill="#e3b021" stroke="#121329" stroke-width="1.2"/>`
+    :`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.4" fill="#1c1e3d" stroke="#a9abd8" stroke-width="1.2" opacity=".85"/>`).join('');
+  let me='';
+  if(rung>0){const [x,y]=pts[rung-1];me=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><line x1="0" y1="0" x2="0" y2="-20" stroke="#f4f1ff" stroke-width="1.6"/><path d="M0 -20 L14 -15.5 L0 -11 Z" fill="#ff8fb3"/><circle r="6" fill="none" stroke="#ff8fb3" stroke-width="2"/></g>`}
+  const glow=rung>=N?`<circle cx="178" cy="44" r="26" fill="#ffd36b" opacity=".35"/><circle cx="178" cy="44" r="14" fill="#ffd36b" opacity=".45"/>`:'';
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Mt Fuji with a torii gate. You reached ${rung} of ${N} stations.">
+  <defs>
+    <linearGradient id="fjSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23255c"/><stop offset=".62" stop-color="#b8588a"/><stop offset="1" stop-color="#f2a27a"/></linearGradient>
+    <linearGradient id="fjMt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a5fae"/><stop offset="1" stop-color="#1f2149"/></linearGradient>
+    <linearGradient id="fjLake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3d80"/><stop offset="1" stop-color="#121329"/></linearGradient>
+  </defs>
+  <rect width="360" height="214" fill="url(#fjSky)"/>
+  <circle cx="300" cy="64" r="20" fill="#ffd9c6" opacity=".9"/>
+  <circle cx="40" cy="30" r="1.2" fill="#fff"/><circle cx="90" cy="18" r="1" fill="#fff"/><circle cx="250" cy="22" r="1.1" fill="#fff"/><circle cx="330" cy="30" r=".9" fill="#fff"/>
+  <path d="M0 150 Q60 136 120 148 L120 200 L0 200 Z" fill="#2c2e66" opacity=".7"/>
+  <path d="M8 200 L150 54 Q158 46 166 47 L176 43 L188 47 Q196 46 204 54 L352 200 Z" fill="url(#fjMt)"/>
+  <path d="M150 54 Q158 46 166 47 L176 43 L188 47 Q196 46 204 54 L224 76 L214 72 L206 83 L198 74 L188 87 L180 76 L170 88 L162 76 L152 85 L144 74 L132 78 Z" fill="#f4f1ff"/>
+  ${glow}
+  <path d="${trail}" fill="none" stroke="#f4f1ff" stroke-width="1.3" stroke-dasharray="3 3" opacity=".55"/>
+  ${dots}${me}
+  <path d="M0 196 Q180 186 360 196 L360 214 L0 214 Z" fill="url(#fjLake)"/>
+  <g>
+    <path d="M24 114 Q70 122 116 114 L118 108 Q70 116 22 108 Z" fill="#1a1012"/>
+    <path d="M28 120 Q70 127 112 120 L113 114 Q70 121 27 114 Z" fill="#e2483d"/>
+    <rect x="67" y="121" width="6" height="12" fill="#1a1012"/>
+    <rect x="36" y="132" width="68" height="6" fill="#e2483d"/>
+    <rect x="44" y="121" width="8" height="81" fill="#e2483d"/>
+    <rect x="88" y="121" width="8" height="81" fill="#e2483d"/>
+    <rect x="42" y="196" width="12" height="7" fill="#1a1012"/>
+    <rect x="86" y="196" width="12" height="7" fill="#1a1012"/>
+  </g>
+  <text x="344" y="206" text-anchor="end" font-family="DM Mono, monospace" font-size="9" fill="#f4f1ff" opacity=".75">${rung>=N?'山頂 3,776 m':rung?STATIONS[rung-1][0]:'登山口 trailhead'}</text>
+</svg>`;
+}
+
+/* ---------- CHARACTER FUN FACTS (豆知識) ---------- */
+const H_ORIGIN={'あ':'安','い':'以','う':'宇','え':'衣','お':'於','か':'加','き':'幾','く':'久','け':'計','こ':'己','さ':'左','し':'之','す':'寸','せ':'世','そ':'曽','た':'太','ち':'知','つ':'川','て':'天','と':'止','な':'奈','に':'仁','ぬ':'奴','ね':'祢','の':'乃','は':'波','ひ':'比','ふ':'不','へ':'部','ほ':'保','ま':'末','み':'美','む':'武','め':'女','も':'毛','や':'也','ゆ':'由','よ':'与','ら':'良','り':'利','る':'留','れ':'礼','ろ':'呂','わ':'和','を':'遠','ん':'无'};
+const K_ORIGIN={'ア':'阿','イ':'伊','ウ':'宇','エ':'江','オ':'於','カ':'加','キ':'幾','ク':'久','ケ':'介','コ':'己','サ':'散','シ':'之','ス':'須','セ':'世','ソ':'曽','タ':'多','チ':'千','ツ':'川','テ':'天','ト':'止','ナ':'奈','ニ':'二','ヌ':'奴','ネ':'祢','ノ':'乃','ハ':'八','ヒ':'比','フ':'不','ヘ':'部','ホ':'保','マ':'末','ミ':'三','ム':'牟','メ':'女','モ':'毛','ヤ':'也','ユ':'由','ヨ':'与','ラ':'良','リ':'利','ル':'流','レ':'礼','ロ':'呂','ワ':'和','ヲ':'乎'};
+const K_MEAN={'安':'peace','宇':'eaves / universe','衣':'clothing','加':'add','幾':'how many','久':'long time','計':'measure','己':'self','左':'left','寸':'small measure','世':'world','太':'thick','知':'know','川':'river','天':'heaven','止':'stop','仁':'kindness','波':'wave','比':'compare','不':'not','部':'part','保':'protect','末':'end','美':'beauty','武':'warrior','女':'woman','毛':'hair / fur','由':'reason','与':'give','良':'good','利':'profit','留':'stay','礼':'bow / thanks','和':'harmony / Japan','遠':'far','无':'nothing','阿':'corner','江':'inlet','介':'between','散':'scatter','須':'must','多':'many','千':'thousand','二':'two','八':'eight','三':'three','流':'flow'};
+const K_NOTE={
+  'は':'As the topic particle, は is read "wa": わたしは = watashi wa.',
+  'へ':'As the direction particle, へ is read "e": にほんへ = to Japan.',
+  'を':'を is used almost only as the object particle, and most people pronounce it "o".',
+  'ん':'ん is the only kana that is a consonant by itself. Almost no word starts with it, so in the word game しりとり you lose if your word ends in ん.',
+  'ふ':'ふ is softer than English "f". Blow air through your lips without touching your teeth.',
+  'し':'し is "shi", not "si". It is the odd one out in the さ row.',
+  'ち':'ち is "chi", not "ti". The た row has two irregular sounds: ち and つ.',
+  'つ':'Written small, っ doubles the next consonant: きって (kitte, stamp).',
+  'ら':'The ら row sits between English r and l. Tap your tongue once behind your top teeth.',
+  'ぬ':'ぬ and め look alike. ぬ has the little loop at the end; め does not.',
+  'め':'め and ぬ look alike. め has no loop at the end.',
+  'ね':'ね, れ and わ share the same left stroke. ね ends in a loop, れ kicks out, わ curves.',
+  'れ':'れ, ね and わ share the same left stroke. れ kicks out at the end.',
+  'わ':'わ, ね and れ share the same left stroke. わ ends in a smooth curve.',
+  'る':'る and ろ look alike. る has a loop at the bottom; ろ does not.',
+  'ろ':'ろ and る look alike. ろ has no loop.',
+  'き':'き looks like さ with one extra line across.',
+  'さ':'さ looks like き minus one line. Some fonts join its bottom strokes.',
+  'い':'い and り look alike. り has a longer right stroke.',
+  'り':'り and い look alike. In り the right stroke is much longer.',
+  'お':'お and あ look alike. お has a dot on the upper right.',
+  'あ':'あ is the first kana, which is why Japanese "ABC order" is called あいうえお order.',
+  'シ':'シ (shi) and ツ (tsu) are easy to mix up. シ’s dots are on the left and its line sweeps up.',
+  'ツ':'ツ (tsu) and シ (shi) are easy to mix up. ツ’s dots are on top and its line sweeps down.',
+  'ソ':'ソ (so) and ン (n) look alike. ソ’s strokes come down from the top.',
+  'ン':'ン (n) and ソ (so) look alike. ン’s long stroke sweeps up from the bottom.',
+  'ー':'',
+  'ぢ':'ぢ sounds exactly like じ. You mostly see it in words like はなぢ (nosebleed) and ちぢむ (to shrink).',
+  'づ':'づ sounds exactly like ず. You see it in つづく (to continue) and みかづき (crescent moon).'
+};
+const VOICED={'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ','ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ','だ':'た','ぢ':'ち','づ':'つ','で':'て','ど':'と','ば':'は','び':'ひ','ぶ':'ふ','べ':'へ','ぼ':'ほ'};
+const HALF={'ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'};
+const SMALL={'ゃ':['や','ya'],'ゅ':['ゆ','yu'],'ょ':['よ','yo']};
+const KR={};DECKS.forEach(d=>d.items.forEach(it=>{if(it.type==='kana'&&!KR[it.jp])KR[it.jp]=it.ro}));
+
+const WORD_FACT={
+  'うみ':'Kanji: 海. Japan has a national holiday for the sea, 海の日 (Marine Day), in July.',
+  'おかね':'The お in おかね is a polite prefix. かね (金) by itself means money or metal.',
+  'かさ':'Kanji: 傘. The character looks like an open umbrella with people sheltering under it.',
+  'くるま':'Kanji: 車, a picture of a cart seen from above. Remember, Japan drives on the left.',
+  'こえ':'Kanji: 声. 声優 (seiyū) means a voice actor, a famous job in anime.',
+  'かき':'かき means oyster (牡蠣) but also persimmon (柿). Same sound, different kanji.',
+  'れんしゅう':'Kanji: 練習. The ゅ is small, so しゅ is one sound: ren-shuu.',
+  'あか':'Kanji: 赤. A baby is 赤ちゃん, "little red one," because newborns look red.',
+  'あお':'あお used to cover both blue and green. That is why a green traffic light is called あおしんごう (blue light).',
+  'あき':'Kanji: 秋. Autumn is famous for 紅葉 (kōyō), the red maple leaves.',
+  'えき':'Kanji: 駅. Shinjuku Station in Tokyo is the busiest train station in the world.',
+  'かお':'Kanji: 顔. Japanese emoticons like (^_^) are called かおもじ, "face characters."',
+  'さかな':'さかな may come from 酒菜, "a side dish for sake." The everyday kanji is 魚.',
+  'しお':'Kanji: 塩. Sumo wrestlers throw salt into the ring to purify it before a bout.',
+  'すな':'Kanji: 砂. Tottori has huge sand dunes, 鳥取砂丘, unusual for Japan.',
+  'せかい':'Kanji: 世界. The せ comes from 世, which also means "world."',
+  'そら':'Kanji: 空. The same kanji is read から (empty), as in karaoke, "empty orchestra."',
+  'さか':'Kanji: 坂. Osaka is 大阪, and long ago it was written 大坂, "big slope."',
+  'たけ':'Kanji: 竹. Kyoto’s Arashiyama bamboo grove is one of Japan’s most photographed places.',
+  'ちず':'Kanji: 地図. On Japanese maps, the symbol 卍 marks a Buddhist temple.',
+  'わかりましたか':'The か at the end turns a sentence into a question, like a spoken question mark.',
+  'つき':'Kanji: 月. It also means "month," and Monday is 月曜日, "moon day."',
+  'てんき':'Kanji: 天気, "heaven" + "spirit/air." げんき (元気) shares the same 気.',
+  'とけい':'Kanji: 時計, "time" + "measure." Notice け comes from 計!',
+  'ちかてつ':'Kanji: 地下鉄, literally "ground-below-iron."',
+  'あさ':'Kanji: 朝. Breakfast is 朝ごはん, "morning rice."',
+  'すし':'寿司 is written with lucky kanji chosen for their sound: 寿 means long life.',
+  'あした':'Kanji: 明日, "bright day." It can also be read あす in formal speech.',
+  'つくえ':'Kanji: 机. The left side 木 means wood.',
+  'なまえ':'Kanji: 名前. Japanese names put the family name first.',
+  'にほん':'Kanji: 日本, "origin of the sun." It can also be read にっぽん.',
+  'ねこ':'The 招き猫 (beckoning cat) waves to bring in customers and luck.',
+  'のど':'Kanji: 喉. のどあめ are throat lozenges sold in every convenience store.',
+  'ひかり':'Kanji: 光. ひかり is also the name of a Shinkansen train type.',
+  'ふね':'Kanji: 船. Small boats use a different kanji, 舟.',
+  'へや':'Kanji: 部屋. へ comes from 部, the first kanji of this word!',
+  'ほし':'Kanji: 星. The star festival 七夕 (Tanabata) is on July 7.',
+  'みなと':'Kanji: 港. Tokyo’s Minato ward (港区) is named after its harbor.',
+  'めがね':'Kanji: 眼鏡, "eye mirror."',
+  'もり':'Kanji: 森, three trees. 木 = tree, 林 = woods (2 trees), 森 = forest (3 trees).',
+  'みそ':'Kanji: 味噌. Many families drink miso soup every day.',
+  'やま':'Kanji: 山. In 富士山 (Fuji-san), さん is a reading of 山, not the polite "-san."',
+  'ゆき':'Kanji: 雪. The Sapporo Snow Festival happens every February.',
+  'よる':'Kanji: 夜. 夜ごはん or 晩ごはん means dinner.',
+  'あめ':'あめ means rain (雨) but also candy (飴). Pitch accent tells them apart.',
+  'はな':'はな means flower (花) and also nose (鼻). Context and pitch tell them apart.',
+  'りんご':'Kanji: 林檎. Aomori grows more than half of Japan’s apples.',
+  'るす':'Kanji: 留守. るす電 is slang for a phone answering machine.',
+  'ろうそく':'The ろう is a long vowel: hold the o for two beats, ro-o-so-ku.',
+  'これ':'これ, それ, あれ, どれ: "this (near me)," "that (near you)," "that (over there)," "which."',
+  'それ':'それ points to something near the listener. あれ points to something far from both of you.',
+  'さようなら':'さようなら can sound final, like a long goodbye. Friends usually say じゃあね or またね.',
+  'ほん':'Kanji: 本. It is also the counter for long thin things: いっぽん, にほん, さんぼん.',
+  'わたし':'わたし works for everyone. Guys may say ぼく (casual) or おれ (very casual).',
+  'こんにちは':'The last は is read "wa" because it began as 今日は, "as for today…"',
+  'こんばんは':'Like こんにちは, the は is read "wa": 今晩は, "as for this evening…"',
+  'ありがとうございます':'ありがとう comes from 有り難い, "hard to exist," meaning something rare and precious.',
+  'おはようございます':'おはよう comes from はやい (early), so it literally praises you for being early.',
+  'すみません':'すみません is also used to say thanks when someone goes out of their way for you.',
+  'いただきます':'いただく is a humble verb meaning "to receive," so you are humbly receiving the meal.',
+  'し':'',
+  'よん':'4 is read よん instead of し because し sounds like 死 (death).',
+  'きゅう':'9 can be く, but く sounds like 苦 (suffering), so きゅう is preferred.',
+  'なな':'7 can also be read しち, but なな avoids mixing it up with いち (1).',
+  'とお':'The native Japanese counting words stop at とお (10). After that you use じゅういち.',
+  'いっぽん':'ほん becomes ぽん after a small っ. Compare: にほん, さんぼん.',
+  'いっぴき':'ひき becomes ぴき after a small っ. Compare: にひき, さんびき.'
+};
+
+function splitKana(s){const out=[];for(const ch of s){if(SMALL[ch]&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
+function unitRo(u){if(u==='っ')return 'pause';if(u.length===2&&KR[u])return KR[u];return KR[u]||u}
+function charFact(it){
+  const jp=it.jp;
+  if(it.type==='kana'){
+    if(VOICED[jp]){const b=VOICED[jp];return (K_NOTE[jp]?K_NOTE[jp]+' ':'')+`${jp} = ${b} + ゛ (てんてん). The two marks make "${KR[b]}" voiced: touch your throat and say "${it.ro}" and you can feel it buzz.`}
+    if(HALF[jp]){const b=HALF[jp];return `${jp} = ${b} + ゜ (まる). Only the は row takes the little circle, and it always makes a "p" sound.`}
+    if(jp.length===2&&SMALL[jp[1]]){const big=jp[0],[full,fro]=SMALL[jp[1]];return `${jp} = ${big} + small ${jp[1]}, read as one sound: "${it.ro}". Written full size, ${big}${full} would be two sounds: "${KR[big]}-${fro}".`}
+    const kanji=H_ORIGIN[jp]||K_ORIGIN[jp];const mean=kanji&&K_MEAN[kanji];
+    const how=H_ORIGIN[jp]?'a cursive, flowing version of the kanji':'a piece of the kanji';
+    const origin=kanji?`${jp} comes from ${how} ${kanji}${mean?` ("${mean}")`:''}.`:(jp==='ン'?'Nobody is sure where ン came from. It may have started as a simple mark used to show a nasal sound.':'');
+    return [K_NOTE[jp],origin].filter(Boolean).join(' ');
+  }
+  if(WORD_FACT[jp])return WORD_FACT[jp];
+  const units=splitKana(jp);
+  let t=`${jp} has ${units.length} sounds: ${units.map(u=>`${u} (${unitRo(u)})`).join(' · ')}.`;
+  if(jp.includes('っ'))t+=' The small っ makes a tiny pause that doubles the next consonant.';
+  else if(/[ゃゅょ]/.test(jp))t+=' The small ゃ/ゅ/ょ blends with the kana before it into one sound.';
+  else if(/おう|うう|えい|いい|ああ|おお/.test(jp))t+=' Watch the long vowel: hold it for two beats.';
+  return t;
+}
+
+function rungOf(score,base){let r=0;while(r<THRESH.length&&score>=THRESH[r]*base)r++;return r}
+function collected(){const v=store.get('facts');return Array.isArray(v)?v:[]}
+function pickFacts(){
+  const have=new Set(collected());
+  const fresh=shuffle(FACTS.map((_,i)=>i).filter(i=>!have.has(i)));
+  const old=shuffle(FACTS.map((_,i)=>i).filter(i=>have.has(i)));
+  return fresh.concat(old).slice(0,STATIONS.length);
+}
+function renderClimb(){
+  const g=game,box=$('rungs');
+  if(!box.children.length){for(let i=0;i<STATIONS.length;i++){const s=document.createElement('i');s.style.height=(25+i*7.5)+'%';if(i===STATIONS.length-1)s.className='top';box.appendChild(s)}}
+  [...box.children].forEach((s,i)=>{s.classList.toggle('on',i<g.rung);s.classList.toggle('slip',g.slips.has(i))});
+  const miss=g.marks.filter(m=>m==='bad').length;
+  $('c-st').textContent=g.rung?`${STATIONS[g.rung-1][0]} · ${STATIONS[g.rung-1][1]}`:'Trailhead';
+  $('c-next').innerHTML=(miss?`<em class="miss">✗ ${miss} mistake${miss>1?'s':''}</em> · `:'')+(g.rung<STATIONS.length?`next at ${Math.ceil(THRESH[g.rung]*g.base).toLocaleString()} pts`:'You made it!');
+}
+
+/* ---------- STATE ---------- */
+const state={
+  levels:new Set(['kana']),
+  lessons:new Set(['h-dk','h-hk']),
+  dir:'fwd', count:10, time:10, hints:true
+};
+let game=null;
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- SETUP UI ---------- */
+function segment(el,opts,key){
+  el.innerHTML='';
+  opts.forEach(([val,label])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=label;
+    b.setAttribute('aria-pressed',String(state[key]===val));
+    b.onclick=()=>{state[key]=val;renderSetup()};
+    el.appendChild(b);
+  });
+}
+function renderSetup(){
+  const lv=$('levels');lv.innerHTML='';
+  LEVELS.forEach(L=>{
+    const b=document.createElement('button');b.type='button';b.className='level';
+    b.setAttribute('aria-pressed',String(state.levels.has(L.id)));
+    b.innerHTML=`<b>${L.name}</b><small>${L.sub}</small>`;
+    b.onclick=()=>{
+      if(state.levels.has(L.id)){state.levels.delete(L.id);DECKS.filter(d=>d.level===L.id).forEach(d=>state.lessons.delete(d.id))}
+      else state.levels.add(L.id);
+      renderSetup();
+    };
+    lv.appendChild(b);
+  });
+  const ls=$('lessons');ls.innerHTML='';
+  if(!state.levels.size){ls.innerHTML='<p class="empty">Pick at least one level above to see its lessons.</p>'}
+  LEVELS.filter(L=>state.levels.has(L.id)).forEach(L=>{
+    const decks=DECKS.filter(d=>d.level===L.id);
+    const g=document.createElement('div');g.className='group';
+    const allOn=decks.every(d=>state.lessons.has(d.id));
+    g.innerHTML=`<div class="group-head"><h3>${L.name} <span style="color:var(--muted);font-weight:500">· ${L.sub}</span></h3></div><div class="chips"></div>`;
+    const t=document.createElement('button');t.type='button';t.className='link';t.textContent=allOn?'Clear all':'Select all';
+    t.onclick=()=>{decks.forEach(d=>allOn?state.lessons.delete(d.id):state.lessons.add(d.id));renderSetup()};
+    g.querySelector('.group-head').appendChild(t);
+    const c=g.querySelector('.chips');
+    decks.forEach(d=>{
+      const b=document.createElement('button');b.type='button';b.className='chip';
+      b.setAttribute('aria-pressed',String(state.lessons.has(d.id)));
+      b.innerHTML=`<span class="jp">${d.name}</span><span class="n">${d.items.length}</span>`;
+      b.onclick=()=>{state.lessons.has(d.id)?state.lessons.delete(d.id):state.lessons.add(d.id);renderSetup()};
+      c.appendChild(b);
+    });
+    ls.appendChild(g);
+  });
+  const have=collected().filter(i=>FACTS[i]);
+  $('collectN').textContent=`${have.length} / ${FACTS.length}`;
+  const cl=$('collectList');cl.innerHTML='';
+  if(!have.length){const li=document.createElement('li');li.textContent='None yet. Reach the 1st station to unlock your first fact.';li.style.color='var(--muted)';cl.appendChild(li)}
+  have.forEach(i=>{const li=document.createElement('li');li.textContent=FACTS[i];cl.appendChild(li)});
+  segment($('o-dir'),[['fwd','日本語 → ?'],['rev','? → 日本語'],['mix','Mixed']],'dir');
+  segment($('o-count'),[[10,'10'],[20,'20'],[0,'All']],'count');
+  segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
+  segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
+  const pool=poolItems();
+  const n=state.count?Math.min(state.count,pool.length):pool.length;
+  $('startBtn').disabled=!pool.length;
+  $('summary').innerHTML=pool.length?`<b>${state.lessons.size}</b> lessons · <b>${pool.length}</b> items · <b>${n}</b> questions`:'Pick at least one lesson to start.';
+}
+function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.items)}
+
+/* ---------- GAME ---------- */
+function makeQuestion(it,pool){
+  const dir=state.dir==='mix'?(Math.random()<.5?'fwd':'rev'):state.dir;
+  const isKana=it.type==='kana';
+  const ansOf=x=>dir==='fwd'?(isKana?x.ro:x.en):x.jp;
+  const clash=x=>x.jp===it.jp||(isKana?x.ro===it.ro:(x.en===it.en||x.ro===it.ro));
+  const seen=new Set([ansOf(it)]);const distract=[];
+  const sources=[shuffle(pool.filter(x=>x.type===it.type)),shuffle(DECKS.flatMap(d=>d.items).filter(x=>x.type===it.type))];
+  for(const src of sources){for(const x of src){if(distract.length>=3)break;if(clash(x))continue;const a=ansOf(x);if(seen.has(a))continue;seen.add(a);distract.push(x)}}
+  const options=shuffle([it,...distract]).map(x=>({text:ansOf(x),correct:x===it}));
+  let ask,q,hint='',qClass='';
+  if(dir==='fwd'){ask=isKana?'How do you read this?':'What does this mean?';q=it.jp;if(!isKana&&state.hints)hint=it.ro;if(it.jp.length>4)qClass='long'}
+  else{ask=isKana?'Which kana is this?':'How do you say this?';q=isKana?it.ro:it.en;qClass='latin'+((q.length>6)?' long':'')}
+  return {it,dir,ask,q,hint,qClass,options};
+}
+function startGame(items){
+  const pool=poolItems();
+  let list=items?shuffle(items):shuffle(pool);
+  if(!items&&state.count)list=list.slice(0,state.count);
+  game={qs:list.map(it=>makeQuestion(it,pool.length?pool:list)),i:0,score:0,streak:0,best:0,right:0,misses:[],locked:false,raf:0,timer:0,adv:0,lessonKey:[...state.lessons].sort().join('|'),rung:0,facts:pickFacts(),newFacts:[],marks:[],slips:new Set()};
+  game.base=game.qs.length*1000;
+  $('factBox').hidden=true;
+  show('play');renderQ();
+}
+function show(id){['setup','play','results'].forEach(s=>$(s).hidden=s!==id);window.scrollTo({top:0})}
+function renderQ(){
+  const g=game,Q=g.qs[g.i];g.locked=false;
+  $('h-q').textContent=`${g.i+1} / ${g.qs.length}`;
+  $('h-score').textContent=`${g.score.toLocaleString()} pts`;
+  $('h-streak').textContent=`連続 ${g.streak}`;
+  $('factBox').hidden=true;$('tidbit').hidden=true;renderClimb();
+  $('p-ask').textContent=Q.ask;
+  const qe=$('p-q');qe.textContent=Q.q;qe.className='q '+Q.qClass;
+  $('p-hint').textContent=Q.hint;
+  $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
+  $('hearBtn').hidden=!canSpeak()||Q.dir!=='fwd';
+  const box=$('answers');box.innerHTML='';
+  const shapes=['▲','◆','●','■'];
+  Q.options.forEach((o,idx)=>{
+    const b=document.createElement('button');b.type='button';b.className='ans';
+    b.innerHTML=`<span class="shape" aria-hidden="true">${shapes[idx]}</span><span class="txt"></span><span class="key">${idx+1}</span>`;
+    b.querySelector('.txt').textContent=o.text;
+    b.onclick=()=>answer(idx);
+    box.appendChild(b);
+  });
+  $('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap an answer or press 1–4.</small>';
+  $('nextBtn').hidden=true;
+  startTimer();
+}
+function startTimer(){
+  cancelAnimationFrame(game.raf);
+  const bar=$('timerBar'),fill=$('timerFill');
+  if(!state.time){bar.hidden=true;return}
+  bar.hidden=false;const t0=performance.now(),dur=state.time*1000;
+  const tick=now=>{
+    const left=Math.max(0,1-(now-t0)/dur);game.left=left;
+    fill.style.transform=`scaleX(${left})`;
+    fill.style.background=left<.3?'var(--bad)':'var(--sakura)';
+    if(left<=0){answer(-1);return}
+    game.raf=requestAnimationFrame(tick);
+  };
+  game.left=1;game.raf=requestAnimationFrame(tick);
+}
+function answer(idx){
+  const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
+  const Q=g.qs[g.i];const ci=Q.options.findIndex(o=>o.correct);
+  const btns=[...$('answers').children];
+  btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});
+  const it=Q.it;const detail=it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
+  const msg=$('fb-msg');
+  if(idx===ci){
+    g.streak++;g.best=Math.max(g.best,g.streak);g.right++;
+    const pts=Math.round(1000*(state.time?(.5+.5*(g.left||0)):1))+Math.min(500,(g.streak-1)*100);
+    g.score+=pts;
+    msg.className='msg ok';msg.innerHTML=`正解！ +${pts}<small></small>`;msg.querySelector('small').textContent=detail;
+    $('h-score').textContent=`${g.score.toLocaleString()} pts`;$('h-streak').textContent=`連続 ${g.streak}`;
+    const r=rungOf(g.score,g.base);
+    if(r>g.rung){
+      const prev=g.rung;g.rung=r;renderClimb();
+      for(let i=prev;i<r;i++)g.newFacts.push(i);
+      const have=new Set(collected());for(let i=prev;i<r;i++)have.add(g.facts[i]);store.set('facts',[...have]);
+      $('f-st').textContent=`Reached ${STATIONS[r-1][0]} · ${STATIONS[r-1][1]}${r-prev>1?` (+${r-prev} stations)`:''}`;
+      $('f-txt').textContent=FACTS[g.facts[r-1]];
+      const fb=$('factBox');fb.hidden=false;fb.classList.remove('pop');void fb.offsetWidth;fb.classList.add('pop');
+    }
+    g.marks[g.i]='ok';
+  }else{
+    g.streak=0;g.misses.push(it);g.marks[g.i]='bad';g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
+    msg.className='msg no';msg.innerHTML=(idx<0?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=detail;
+    $('h-streak').textContent='連続 0';
+  }
+  renderClimb();
+  const tf=charFact(it);
+  if(tf){$('tb-k').textContent=it.jp;$('tb-txt').textContent=tf;const tb=$('tidbit');tb.hidden=false;tb.classList.remove('pop');void tb.offsetWidth;tb.classList.add('pop')}
+  $('nextBtn').hidden=false;$('nextBtn').focus({preventScroll:true});
+  $('hearBtn').hidden=!canSpeak();
+}
+function renderStrip(el,showCur){
+  const g=game;el.innerHTML='';
+  g.qs.forEach((_,i)=>{const s=document.createElement('i');if(g.marks[i])s.className=g.marks[i];else if(showCur&&i===g.i)s.className='cur';el.appendChild(s)});
+}
+function next(){
+  const g=game;if(!g||!g.locked)return;clearTimeout(g.adv);
+  g.i++;if(g.i>=g.qs.length)return finish();renderQ();
+}
+function finish(){
+  const g=game;cancelAnimationFrame(g.raf);clearTimeout(g.adv);
+  const total=g.qs.length,acc=total?Math.round(g.right/total*100):0;
+  $('r-pts').textContent=g.score.toLocaleString()+' pts';
+  $('r-acc').textContent=acc+'%';$('r-right').textContent=`${g.right}/${total}`;$('r-streak').textContent=g.best;
+  $('r-kanji').textContent=acc===100?'満点':acc>=80?'合格':acc>=50?'もう少し':'がんばって';
+  const key='best:'+g.lessonKey;const prev=store.get(key);
+  if(!g.replay&&(!prev||g.score>prev)){store.set(key,g.score);$('r-best').textContent=prev?`New best for these lessons (was ${prev.toLocaleString()})`:'First score saved for these lessons'}
+  else $('r-best').textContent=prev?`Best for these lessons: ${prev.toLocaleString()}`:'';
+  const lad=$('r-ladder');lad.innerHTML='';
+  const nNew=g.newFacts.length;
+  $('r-climbN').textContent=(g.rung>=STATIONS.length?'Summit reached!':g.rung?`Reached the ${STATIONS[g.rung-1][1]}`:'Still at the trailhead')+` · ${nNew} fact${nNew===1?'':'s'} unlocked`;
+  $('climbCard').open=false;
+  $('r-scene').innerHTML=fujiSVG(g.rung);
+  renderStrip($('r-strip'),false);
+  const N=STATIONS.length,left=N-g.rung,miss=total-g.right;
+  const here=g.rung?`${STATIONS[g.rung-1][0]} · ${STATIONS[g.rung-1][1]}`:'the trailhead';
+  const toSummit=Math.max(0,Math.ceil(g.base-g.score));
+  $('r-where').innerHTML=left
+    ?`<b>You stopped at ${here}</b><span><span class="left">${left} station${left>1?'s':''} left</span> to the summit · ${toSummit.toLocaleString()} more pts needed</span><span>${miss} mistake${miss===1?'':'s'} held you back. Replay your misses to climb higher.</span>`
+    :`<b>You reached the summit, 山頂!</b><span>${miss?`${miss} mistake${miss===1?'':'s'} along the way, but you still made it.`:'A perfect climb with no mistakes.'}</span>`;
+  for(let i=STATIONS.length-1;i>=0;i--){
+    const li=document.createElement('li');const got=i<g.rung;
+    li.className=got?(g.newFacts.includes(i)?'new':''):'locked';
+    li.innerHTML=`<span class="nm">${STATIONS[i][0]}<small>${Math.ceil(THRESH[i]*g.base).toLocaleString()} pts</small></span><p></p>`;
+    li.querySelector('p').textContent=got?FACTS[g.facts[i]]:'Locked. Score higher to reach this station.';
+    lad.appendChild(li);
+  }
+  if(g.rung>=STATIONS.length)$('r-kanji').textContent='登頂！';
+  const ul=$('r-misses');ul.innerHTML='';
+  $('missCard').hidden=!g.misses.length;$('retryMissBtn').hidden=!g.misses.length;
+  [...new Set(g.misses)].forEach(it=>{
+    const li=document.createElement('li');
+    li.innerHTML='<span class="jp"></span><span class="ro"></span><span class="en"></span>';
+    li.children[0].textContent=it.jp;li.children[1].textContent=it.ro;li.children[2].textContent=it.en||'';
+    ul.appendChild(li);
+  });
+  show('results');
+}
+
+/* ---------- SPEECH (optional) ---------- */
+function canSpeak(){try{return 'speechSynthesis' in window}catch(e){return false}}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- WIRING ---------- */
+$('startBtn').onclick=()=>startGame();
+$('nextBtn').onclick=next;
+$('quitBtn').onclick=()=>{if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
+$('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
+$('againBtn').onclick=()=>startGame();
+$('changeBtn').onclick=()=>{show('setup');renderSetup()};
+$('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)];startGame(m);game.replay=true};
+document.addEventListener('keydown',e=>{
+  if($('play').hidden||!game)return;
+  if(['1','2','3','4'].includes(e.key)&&!game.locked){answer(+e.key-1)}
+  else if((e.key==='Enter'||e.key===' ')&&game.locked){e.preventDefault();next()}
+});
+
+function start(data){
+  if(data&&data.lessons){state.levels=new Set(data.levels);state.lessons=new Set(data.lessons);Object.assign(state,{dir:data.dir,count:data.count,time:data.time,hints:data.hints})}
+  renderSetup();
+}
+window.claude?.hot?.snapshot?.(()=>({levels:[...state.levels],lessons:[...state.lessons],dir:state.dir,count:state.count,time:state.time,hints:state.hints}));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>
