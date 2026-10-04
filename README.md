@@ -25,6 +25,10 @@ The game is also where I try out a learning workflow: **class materials → stru
 | **Fact collection** | Facts you've seen are saved, and each game shows ones you haven't seen yet first |
 | **Results and review** | Where you stopped on the mountain, how many stations were left, a correct/mistake strip, accuracy, best streak, and a list of what you missed |
 | **Replay misses** | Drill only the items you got wrong |
+| **Word library 単語帳** | Every word and kana you've practiced, with your accuracy (e.g. 75%, 3 of 4 correct) and a status: Need work, Learning or Mastered. Filter, search, sort weakest first, and practice your 20 weakest items |
+| **Player profile** | Optional nickname, an uploaded photo (cropped and shrunk to 96×96 in the browser, shown only after the player agrees) or one of 12 kanji avatars (山 桜 猫 狐 鯉 月 雪 竹 龍 侍 茶 星). No sign-up: each browser gets a random anonymous player ID |
+| **Leaderboard 番付** | Best 10-question game per player over the last 30 days. Shows your own best games until tracking is connected |
+| **Stats export** | Copy your per-word stats as CSV to analyze in Excel or Power BI |
 | **Pronunciation** | A "Hear it" button uses the browser's built-in Japanese voice (if the device has one) |
 | **Settings** | Question direction (Japanese → answer, answer → Japanese, or mixed), number of questions, timer (20s, 10s, 5s or off), romaji hints on or off |
 
@@ -33,10 +37,14 @@ Keyboard: press **1–4** to answer and **Enter** for the next question.
 ## How it's built
 
 - **One file, no build step.** Plain HTML, CSS and JavaScript in `index.html`.
-- **No server and no accounts.** Best scores and collected facts are saved in the browser with `localStorage`.
+- **No server and no accounts.** Best scores, collected facts and per-word stats are saved in the browser with `localStorage`.
 - **Lesson content lives in a `DECKS` array**, so adding a lesson means adding one entry (see below).
 - **The Mt Fuji scene is drawn in SVG**, not a photo, so it can show your progress on the trail.
 - **Fonts:** Dela Gothic One, M PLUS Rounded 1c and DM Mono from Google Fonts.
+
+## Anonymous tracking (optional)
+
+Connect the game to a Google Sheet with a small Apps Script to get a global leaderboard and a per-answer log for Power BI. No email, real name or IP address is collected, only a random player ID, the optional nickname and photo, and answer results. Photos can be hidden by the admin from the sheet or removed by the player at any time. Setup takes about 10 minutes: see [SETUP-TRACKING.md](SETUP-TRACKING.md).
 
 ## Run it locally
 
@@ -67,7 +75,9 @@ Find the `DECKS` array in `index.html` and add an entry:
 ## Roadmap
 
 - [ ] **Daily Climb**: the same 7 questions for everyone each day, picked by the date
-- [ ] **Score log export** (CSV) for a Power BI dashboard of accuracy over time and most-missed kana
+- [x] **Per-word stats export** (CSV)
+- [x] **Anonymous tracking** to Google Sheets (Apps Script) with a global leaderboard
+- [ ] **Power BI dashboard** of accuracy over time and most-missed kana, built from the exported stats
 - [ ] **Lesson pipeline**: class screenshots → AI transcription → new lesson entries automatically
 - [ ] More *Minna no Nihongo* lessons as my class covers them
 

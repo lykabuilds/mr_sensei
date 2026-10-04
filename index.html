@@ -196,7 +196,78 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
 .collect summary span{font-family:var(--f-mono);color:var(--sakura)}
 .collect ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:6px;color:var(--fg);font-size:.9rem}
 
+/* Library */
+.lib-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lib-head h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.5rem}
+.lib-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.lib-tiles .stat b{font-size:1.25rem}
+.lib-tools{display:flex;flex-direction:column;gap:10px}
+.lib-tools .row{display:flex;gap:10px;flex-wrap:wrap}
+.lib-tools .seg{flex:1;min-width:220px}
+.search{flex:1 1 220px;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--fg);font:inherit}
+.search:focus-visible{outline:3px solid var(--sakura);outline-offset:1px}
+.check{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
+.words{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.words li{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) 8.5rem;gap:12px;align-items:center;padding:10px 12px;background:var(--panel-2);border-radius:12px}
+.words .jp{font-weight:800;font-size:1.3rem;line-height:1.2;overflow-wrap:anywhere}
+.words .jp small{display:block;font-family:var(--f-mono);font-weight:500;font-size:.75rem;color:var(--muted)}
+.words .en{font-size:.9rem;min-width:0}
+.words .en small{display:block;color:var(--muted);font-size:.72rem}
+.acc{display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.acc .top{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.acc .pct{font-family:var(--f-mono);font-size:1rem;font-variant-numeric:tabular-nums}
+.acc .cnt{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.acc .bar{height:6px;border-radius:99px;background:var(--ink);overflow:hidden}
+.acc .bar i{display:block;height:100%;border-radius:99px}
+.stag{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;align-self:flex-start}
+.t-weak{background:color-mix(in srgb,var(--bad) 25%,transparent);color:var(--bad)}
+.t-learn{background:color-mix(in srgb,var(--yamabuki) 25%,transparent);color:var(--yamabuki)}
+.t-master{background:color-mix(in srgb,var(--good) 25%,transparent);color:var(--good)}
+.t-new{background:var(--panel);color:var(--muted)}
+.words li.unseen{opacity:.55}
+.lib-empty{color:var(--muted);text-align:center;padding:20px 8px;margin:0}
+.toast{color:var(--good);font-size:.85rem;font-weight:700}
+
+/* Profile + avatars + leaderboard */
+img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px solid var(--line)}
+.photo-box{display:flex;flex-direction:column;gap:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.photo-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.photo-row .btns{display:flex;gap:8px;flex-wrap:wrap}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.filebtn:focus-within{outline:3px solid var(--sakura);outline-offset:2px}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;line-height:1.45}
+.consent input{margin-top:3px;flex:none;width:18px;height:18px;accent-color:var(--sakura)}
+.av{display:inline-grid;place-items:center;border-radius:50%;background:var(--av);color:#fff;font-family:var(--f-body);font-weight:800;line-height:1;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.me{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;font-weight:800;font-size:.88rem;max-width:100%}
+.me span.nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+.av-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.av-pick{background:var(--panel-2);border:2px solid var(--line);border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.7rem;color:var(--muted);min-width:0}
+.av-pick[aria-pressed="true"]{border-color:var(--sakura);color:var(--fg)}
+.prof-preview{display:flex;align-items:center;gap:14px}
+.prof-preview b{font-size:1.2rem;display:block}
+.prof-preview small{color:var(--muted);font-family:var(--f-mono);font-size:.72rem}
+.field{display:flex;flex-direction:column;gap:6px}
+.field .search{flex:none}
+.field label{font-size:.82rem;color:var(--muted);font-weight:700}
+.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.board li{display:grid;grid-template-columns:2rem 36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;background:var(--panel-2);border-radius:12px}
+.board li.mine{outline:1.5px solid var(--sakura)}
+.board .rk{font-family:var(--f-mono);font-size:1rem;color:var(--muted);text-align:center}
+.board li:nth-child(1) .rk{color:var(--yamabuki)}
+.board .who{min-width:0}
+.board .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .who small{color:var(--muted);font-size:.75rem}
+.board .sc{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.board .sc small{display:block;font-size:.7rem;color:var(--muted)}
+.privacy{color:var(--muted);font-size:.78rem;margin:0;line-height:1.5}
+
 @media (max-width:520px){
+  .av-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .lib-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .words li{grid-template-columns:minmax(0,1fr) 7rem}
+  .words .en{grid-column:1 / -1;grid-row:2}
   .ladder li{grid-template-columns:1fr;gap:2px}
   .levels{grid-template-columns:1fr 1fr 1fr;gap:8px}
   .level b{font-size:1.1rem}
@@ -216,7 +287,10 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
 <div class="wrap" id="app">
   <header class="brand">
     <h1>Mr <span>Sensei</span> <span style="color:var(--muted);font-size:.55em">先生</span></h1>
-    <div class="tag">Minna no Nihongo · N5 class drills</div>
+    <div class="brand-right">
+      <div class="tag">Minna no Nihongo · N5 class drills</div>
+      <button class="me" id="meBtn" aria-label="Edit your profile"></button>
+    </div>
   </header>
 
   <!-- SETUP -->
@@ -240,6 +314,8 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
     </div>
     <div class="start-row">
       <button class="big" id="startBtn">Start game</button>
+      <button class="ghost" id="libBtn">Word library</button>
+      <button class="ghost" id="boardBtn">Leaderboard</button>
       <div class="summary" id="summary"></div>
     </div>
     <div class="card collect">
@@ -283,6 +359,81 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
     </div>
   </section>
 
+  <!-- PROFILE -->
+  <section id="profile" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="lib-head"><h2>Your profile</h2><button class="ghost" id="profBack">← Back</button></div>
+    <div class="card">
+      <div class="prof-preview" id="profPreview"></div>
+      <div class="field">
+        <label for="nickIn">Nickname (optional)</label>
+        <input class="search" id="nickIn" type="text" maxlength="16" placeholder="Leave empty to play as a guest" autocomplete="off">
+        <span class="privacy">2–16 letters, numbers, spaces, _ or -. Japanese characters work too. Shown on the leaderboard.</span>
+      </div>
+      <p class="step" style="margin-top:6px">Your photo (optional)</p>
+      <div class="photo-box">
+        <div class="photo-row">
+          <span id="photoPrev"></span>
+          <div class="btns">
+            <label class="ghost filebtn" id="photoLbl">Upload photo<input type="file" id="photoIn" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+            <button class="ghost" id="photoRemove" hidden>Remove photo</button>
+          </div>
+        </div>
+        <label class="consent" id="consentRow" hidden><input type="checkbox" id="photoConsent"><span>I own this picture or have permission to use it. It is appropriate for everyone, and I agree it will be <b>shown publicly on the leaderboard</b>. I can remove it any time.</span></label>
+        <span class="privacy" id="photoNote">JPG, PNG, WebP or GIF. It is cropped to a circle and shrunk to 96×96 pixels. Your photo replaces the kanji picture below.</span>
+      </div>
+      <p class="step" style="margin-top:6px">Or pick a kanji picture</p>
+      <div class="av-grid" id="avGrid"></div>
+      <div class="btn-row">
+        <button class="big" id="profSave">Save profile</button>
+        <button class="ghost" id="profGuest">Play as guest</button>
+        <span class="toast" id="profToast" aria-live="polite"></span>
+      </div>
+    </div>
+    <p class="privacy" id="privacyNote"></p>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section id="board" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="lib-head"><h2>Leaderboard 番付</h2><button class="ghost" id="boardBack">← Back</button></div>
+    <div class="card">
+      <p class="step" id="boardTitle">Top climbers</p>
+      <ol class="board" id="boardList"></ol>
+      <p class="privacy" id="boardNote"></p>
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section id="library" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="lib-head"><h2>Word library 単語帳</h2><button class="ghost" id="libBack">← Back</button></div>
+    <div class="lib-tiles">
+      <div class="stat"><b id="lt-seen">0</b><span>Practiced</span></div>
+      <div class="stat"><b id="lt-master">0</b><span>Mastered</span></div>
+      <div class="stat"><b id="lt-weak">0</b><span>Need work</span></div>
+      <div class="stat"><b id="lt-acc">–</b><span>Overall accuracy</span></div>
+    </div>
+    <div class="card lib-tools">
+      <div class="row">
+        <div class="seg" id="lf-type" role="group" aria-label="Type"></div>
+        <div class="seg" id="lf-status" role="group" aria-label="Status"></div>
+      </div>
+      <div class="row" style="align-items:center">
+        <input class="search" id="lf-q" type="search" placeholder="Search kana, romaji or English" aria-label="Search">
+        <div class="seg" id="lf-sort" role="group" aria-label="Sort" style="flex:0 1 260px;min-width:200px"></div>
+      </div>
+      <div class="row" style="align-items:center;justify-content:space-between">
+        <label class="check"><input type="checkbox" id="lf-unseen"> Show items not practiced yet</label>
+        <span class="summary" id="lf-count"></span>
+      </div>
+    </div>
+    <ul class="words" id="lib-list"></ul>
+    <div class="btn-row">
+      <button class="big" id="practiceWeak">Practice weakest 20</button>
+      <button class="ghost" id="copyCsv">Copy stats as CSV</button>
+      <span class="toast" id="csvToast" aria-live="polite"></span>
+    </div>
+    <p class="note">Mastered = 80%+ correct after at least 3 tries. Need work = under 60%. Stats are saved in this browser only.</p>
+  </section>
+
   <!-- RESULTS -->
   <section id="results" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="card score-hero">
@@ -311,6 +462,8 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
       <button class="big" id="retryMissBtn">Replay misses</button>
       <button class="ghost" id="againBtn">Play again</button>
       <button class="ghost" id="changeBtn">Change lessons</button>
+      <button class="ghost" id="libBtn2">Word library</button>
+      <button class="ghost" id="boardBtn2">Leaderboard</button>
     </div>
     <p class="note">Best scores are saved in this browser only.</p>
   </section>
@@ -686,9 +839,9 @@ function startGame(items){
   $('factBox').hidden=true;
   show('play');renderQ();
 }
-function show(id){['setup','play','results'].forEach(s=>$(s).hidden=s!==id);window.scrollTo({top:0})}
+function show(id){['setup','play','results','library','profile','board'].forEach(s=>$(s).hidden=s!==id);window.scrollTo({top:0})}
 function renderQ(){
-  const g=game,Q=g.qs[g.i];g.locked=false;
+  const g=game,Q=g.qs[g.i];g.locked=false;g.t0=performance.now();
   $('h-q').textContent=`${g.i+1} / ${g.qs.length}`;
   $('h-score').textContent=`${g.score.toLocaleString()} pts`;
   $('h-streak').textContent=`連続 ${g.streak}`;
@@ -747,9 +900,9 @@ function answer(idx){
       $('f-txt').textContent=FACTS[g.facts[r-1]];
       const fb=$('factBox');fb.hidden=false;fb.classList.remove('pop');void fb.offsetWidth;fb.classList.add('pop');
     }
-    g.marks[g.i]='ok';
+    g.marks[g.i]='ok';record(it,true);logAnswer(it,true);
   }else{
-    g.streak=0;g.misses.push(it);g.marks[g.i]='bad';g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
+    g.streak=0;g.misses.push(it);g.marks[g.i]='bad';record(it,false);logAnswer(it,false);g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
     msg.className='msg no';msg.innerHTML=(idx<0?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=detail;
     $('h-streak').textContent='連続 0';
   }
@@ -769,6 +922,7 @@ function next(){
 }
 function finish(){
   const g=game;cancelAnimationFrame(g.raf);clearTimeout(g.adv);
+  saveGame(g);
   const total=g.qs.length,acc=total?Math.round(g.right/total*100):0;
   $('r-pts').textContent=g.score.toLocaleString()+' pts';
   $('r-acc').textContent=acc+'%';$('r-right').textContent=`${g.right}/${total}`;$('r-streak').textContent=g.best;
@@ -818,6 +972,201 @@ $('quitBtn').onclick=()=>{if(game){const answered=game.locked?game.i+1:game.i;ga
 $('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
 $('againBtn').onclick=()=>startGame();
 $('changeBtn').onclick=()=>{show('setup');renderSetup()};
+/* ---------- WORD LIBRARY ---------- */
+const DECK_BY_ID=Object.fromEntries(DECKS.map(d=>[d.id,d]));
+const keyOf=it=>it.deck+'|'+it.jp;
+let STATS=store.get('stats')||{};
+function record(it,ok){const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
+function statusOf(r){if(!r||!r[0])return 'new';const a=r[1]/r[0];if(r[0]>=3&&a>=.8)return 'master';if(a<.6)return 'weak';return 'learn'}
+const TAG={new:['New','t-new'],weak:['Need work','t-weak'],learn:['Learning','t-learn'],master:['Mastered','t-master']};
+const lib={type:'all',status:'all',sort:'weak',q:'',unseen:false};
+function libSeg(el,opts,key){el.innerHTML='';opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(lib[key]===v));b.onclick=()=>{lib[key]=v;renderLibrary()};el.appendChild(b)})}
+function libRows(){
+  const all=DECKS.flatMap(d=>d.items);
+  return all.map(it=>{const r=STATS[keyOf(it)];return {it,r,seen:r?r[0]:0,acc:r&&r[0]?r[1]/r[0]:null,st:statusOf(r)}});
+}
+function renderLibrary(){
+  const rows=libRows();const seen=rows.filter(x=>x.seen);
+  const tot=seen.reduce((a,x)=>a+x.r[0],0),ok=seen.reduce((a,x)=>a+x.r[1],0);
+  $('lt-seen').textContent=seen.length;$('lt-master').textContent=seen.filter(x=>x.st==='master').length;
+  $('lt-weak').textContent=seen.filter(x=>x.st==='weak').length;$('lt-acc').textContent=tot?Math.round(ok/tot*100)+'%':'–';
+  libSeg($('lf-type'),[['all','All'],['kana','Kana'],['word','Words']],'type');
+  libSeg($('lf-status'),[['all','All'],['weak','Need work'],['learn','Learning'],['master','Mastered']],'status');
+  libSeg($('lf-sort'),[['weak','Weakest first'],['az','A–Z'],['recent','Recent']],'sort');
+  const q=lib.q.trim().toLowerCase();
+  let list=rows.filter(x=>(lib.unseen||x.seen)&&(lib.type==='all'||x.it.type===lib.type)&&(lib.status==='all'||x.st===lib.status)
+    &&(!q||x.it.jp.includes(q)||x.it.ro.toLowerCase().includes(q)||(x.it.en||'').toLowerCase().includes(q)));
+  if(lib.sort==='weak')list.sort((a,b)=>(a.acc??2)-(b.acc??2)||b.seen-a.seen);
+  else if(lib.sort==='az')list.sort((a,b)=>a.it.jp.localeCompare(b.it.jp,'ja'));
+  else list.sort((a,b)=>(b.r?b.r[2]:0)-(a.r?a.r[2]:0));
+  $('lf-count').textContent=`${list.length} item${list.length===1?'':'s'}`;
+  const ul=$('lib-list');ul.innerHTML='';
+  if(!list.length){const p=document.createElement('li');p.className='lib-empty';p.style.display='block';p.textContent=seen.length?'Nothing matches these filters.':'No words yet. Play a game and every word you answer shows up here with your accuracy.';ul.appendChild(p)}
+  list.forEach(x=>{
+    const li=document.createElement('li');if(!x.seen)li.className='unseen';
+    const pct=x.acc==null?null:Math.round(x.acc*100);
+    const col=x.st==='master'?'var(--good)':x.st==='weak'?'var(--bad)':'var(--yamabuki)';
+    li.innerHTML=`<div class="jp"></div><div class="en"></div><div class="acc"><div class="top"><span class="pct">${pct==null?'–':pct+'%'}</span><span class="stag ${TAG[x.st][1]}">${TAG[x.st][0]}</span></div><div class="bar"><i style="width:${pct||0}%;background:${col}"></i></div><span class="cnt">${x.seen?`${x.r[1]} of ${x.r[0]} correct`:'not practiced'}</span></div>`;
+    li.querySelector('.jp').innerHTML='<span></span><small></small>';li.querySelector('.jp span').textContent=x.it.jp;li.querySelector('.jp small').textContent=x.it.ro;
+    const en=li.querySelector('.en');en.textContent=x.it.en||'';const sm=document.createElement('small');sm.textContent=DECK_BY_ID[x.it.deck].name;en.appendChild(sm);
+    ul.appendChild(li);
+  });
+  const weak=rows.filter(x=>x.seen&&x.st!=='master').sort((a,b)=>a.acc-b.acc).slice(0,20);
+  $('practiceWeak').disabled=!weak.length;$('practiceWeak').textContent=weak.length?`Practice weakest ${weak.length}`:'Practice weakest';
+}
+function openLibrary(from){lib.from=from;show('library');renderLibrary()}
+$('libBtn').onclick=()=>openLibrary('setup');
+$('libBtn2').onclick=()=>openLibrary('results');
+$('libBack').onclick=()=>{if(lib.from==='results'&&game)show('results');else{show('setup');renderSetup()}};
+
+/* ---------- PLAYER PROFILE, TRACKING & LEADERBOARD ----------
+   TRACKING_URL: paste your Google Apps Script web app URL here to turn on
+   anonymous tracking and the global leaderboard. Leave '' to keep everything
+   on this device only. See SETUP-TRACKING.md. */
+const TRACKING_URL='';
+const LEADERBOARD_QUESTIONS=10; // only full 10-question games are ranked, so scores are comparable
+
+const AVATARS=[['山','Mountain','#c2483d'],['桜','Sakura','#d4567f'],['猫','Cat','#c98a12'],['狐','Fox','#c8621f'],['鯉','Koi','#2f6fd0'],['月','Moon','#5e56b8'],['雪','Snow','#4f8fb8'],['竹','Bamboo','#2f8a57'],['龍','Dragon','#1d7f73'],['侍','Samurai','#4b4f9c'],['茶','Tea','#6b8a2f'],['星','Star','#a8841a']];
+const PHOTO_RE=/^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+\/=]+$/;
+const avatarHTML=(i,size,photo)=>{if(photo&&PHOTO_RE.test(photo)&&photo.length<=24000)return `<img class="av" src="${photo}" width="${size}" height="${size}" style="width:${size}px;height:${size}px" alt="">`;const a=AVATARS[i]||AVATARS[0];return `<span class="av" style="--av:${a[2]};width:${size}px;height:${size}px;font-size:${Math.round(size*.5)}px" aria-hidden="true">${a[0]}</span>`};
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function newId(){try{return 'p_'+crypto.randomUUID().replace(/-/g,'').slice(0,12)}catch(e){return 'p_'+Math.random().toString(36).slice(2,14)}}
+function cleanNick(s){return String(s||'').normalize('NFKC').replace(/[^\p{L}\p{N} _-]/gu,'').replace(/\s+/g,' ').trim().slice(0,16)}
+let PROFILE=store.get('profile');
+if(!PROFILE||!PROFILE.pid){PROFILE={pid:newId(),nick:'',av:Math.floor(Math.random()*AVATARS.length)};store.set('profile',PROFILE)}
+const displayName=()=>PROFILE.nick||'Guest';
+
+function renderMe(){$('meBtn').innerHTML=`${avatarHTML(PROFILE.av,28,PROFILE.photo)}<span class="nm">${esc(displayName())}</span>`}
+let draft=null;
+function openProfile(from){draft={nick:PROFILE.nick,av:PROFILE.av,photo:PROFILE.photo||null,from};$('photoConsent').checked=!!PROFILE.photo;$('nickIn').value=PROFILE.nick;$('profToast').textContent='';renderProfile();show('profile')}
+function renderProfile(){
+  const nm=cleanNick($('nickIn').value);
+  $('photoPrev').innerHTML=draft.photo?avatarHTML(0,56,draft.photo):'';$('photoRemove').hidden=!draft.photo;$('consentRow').hidden=!draft.photo;$('photoLbl').firstChild.textContent=draft.photo?'Change photo':'Upload photo';
+  $('profPreview').innerHTML=`${avatarHTML(draft.av,64,draft.photo)}<div><b>${esc(nm||'Guest')}</b><small>Player ID ${esc(PROFILE.pid)}</small></div>`;
+  const g=$('avGrid');g.innerHTML='';
+  AVATARS.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='av-pick';b.setAttribute('aria-pressed',String(draft.av===i));b.setAttribute('aria-label',a[1]);b.innerHTML=`${avatarHTML(i,40)}<span>${a[1]}</span>`;b.onclick=()=>{draft.av=i;renderProfile()};g.appendChild(b)});
+  $('privacyNote').textContent=TRACKING_URL
+    ?'Privacy: Mr Sensei saves a random player ID, your optional nickname, picture and photo, and your answers (which item, right or wrong, how long you took) to improve the game and run the leaderboard. No email, name, location or IP address is collected.'
+    :'Privacy: everything stays in this browser, including your photo. Nothing is sent anywhere.';
+  $('photoNote').textContent='JPG, PNG, WebP or GIF. It is cropped to a circle and shrunk to 96×96 pixels.'+(TRACKING_URL?' Other players see it on the leaderboard. Removing it deletes it from the leaderboard too.':' Your photo replaces the kanji picture below.');
+}
+$('nickIn').oninput=()=>renderProfile();
+$('profSave').onclick=()=>{
+  const raw=$('nickIn').value,nm=cleanNick(raw);
+  if(nm&&nm.length<2){$('profToast').style.color='var(--bad)';$('profToast').textContent='Use at least 2 characters, or leave it empty.';return}
+  if(draft.photo&&!$('photoConsent').checked){$('profToast').style.color='var(--bad)';$('profToast').textContent='Tick the box to agree before saving your photo, or remove it.';return}
+  PROFILE.nick=nm;PROFILE.av=draft.av;PROFILE.photo=draft.photo||null;store.set('profile',PROFILE);renderMe();postProfile();
+  $('nickIn').value=nm;$('profToast').style.color='var(--good)';$('profToast').textContent=nm!==raw.trim()&&raw.trim()?'Saved. Some characters were removed.':'Saved.';renderProfile();
+};
+$('profGuest').onclick=()=>{$('nickIn').value='';PROFILE.nick='';PROFILE.av=draft.av;PROFILE.photo=null;draft.photo=null;store.set('profile',PROFILE);postProfile();renderMe();renderProfile();$('profToast').style.color='var(--good)';$('profToast').textContent='Saved. You are playing as a guest.'};
+
+/* photo upload: center-crop to a square, shrink to 96px, compress */
+function processPhoto(file){
+  return new Promise((resolve,reject)=>{
+    if(!file)return reject('none');
+    if(file.size>15*1024*1024)return reject('That file is over 15 MB. Pick a smaller photo.');
+    const url=URL.createObjectURL(file);const img=new Image();
+    img.onload=()=>{
+      try{
+        const S=96,side=Math.min(img.naturalWidth,img.naturalHeight);
+        const c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
+        x.imageSmoothingQuality='high';
+        x.drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,S,S);
+        let out='';for(const [type,q] of [['image/webp',.82],['image/jpeg',.82],['image/webp',.6],['image/jpeg',.6]]){out=c.toDataURL(type,q);if(PHOTO_RE.test(out)&&out.length<=20000)break}
+        URL.revokeObjectURL(url);
+        if(!PHOTO_RE.test(out)||out.length>20000)return reject('Could not shrink that photo enough. Try another one.');
+        resolve(out);
+      }catch(e){URL.revokeObjectURL(url);reject('Could not read that image. Try a JPG or PNG.')}
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject('Could not read that image. Try a JPG or PNG. (iPhone HEIC photos may need converting first.)')};
+    img.src=url;
+  });
+}
+$('photoIn').onchange=e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value='';
+  processPhoto(f).then(d=>{draft.photo=d;$('photoConsent').checked=false;$('profToast').style.color='var(--muted)';$('profToast').textContent='Photo ready. Tick the box, then Save profile.';renderProfile()})
+    .catch(m=>{if(m==='none')return;$('profToast').style.color='var(--bad)';$('profToast').textContent=m});
+};
+$('photoRemove').onclick=()=>{draft.photo=null;$('photoConsent').checked=false;renderProfile();$('profToast').style.color='var(--muted)';$('profToast').textContent='Photo removed. Save profile to confirm.'};
+function postProfile(){
+  if(!TRACKING_URL)return;
+  const body={v:1,type:'profile',pid:PROFILE.pid,nick:PROFILE.nick,av:PROFILE.av,photo:PROFILE.photo||'',consent:!!PROFILE.photo};
+  fetch(TRACKING_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).catch(()=>{});
+}
+$('profBack').onclick=()=>backTo(draft&&draft.from);
+$('meBtn').onclick=()=>openProfile(currentScreen());
+function currentScreen(){return ['setup','results','library','board','profile'].find(id=>!$(id).hidden)||'setup'}
+function backTo(from){if(from==='results'&&game)show('results');else if(from==='library'){show('library');renderLibrary()}else{show('setup');renderSetup()}}
+
+/* answer log for the current game */
+function logAnswer(it,ok){const g=game;if(!g.log)g.log=[];g.log.push({deck:it.deck,jp:it.jp,ro:it.ro,ok:ok?1:0,ms:Math.round(performance.now()-(g.t0||performance.now()))})}
+
+function saveGame(g){
+  if(g.saved||!g.log||!g.log.length)return;g.saved=true;
+  const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
+    score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
+    lessons:[...state.lessons],dir:state.dir,timer:state.time,replay:!!g.replay};
+  const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
+  if(!TRACKING_URL)return;
+  const out=store.get('outbox')||[];
+  out.push(Object.assign({v:1,pid:PROFILE.pid,nick:PROFILE.nick,av:PROFILE.av,answers:g.log},rec));
+  store.set('outbox',out.slice(-20));flushOutbox();
+}
+function flushOutbox(){
+  if(!TRACKING_URL)return;const out=store.get('outbox')||[];if(!out.length)return;
+  const p=out[0];
+  fetch(TRACKING_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)})
+    .then(()=>{const o=(store.get('outbox')||[]).filter(x=>x.gid!==p.gid);store.set('outbox',o);if(o.length)setTimeout(flushOutbox,400)})
+    .catch(()=>{/* offline: try again next time */});
+}
+
+/* leaderboard */
+let boardFrom='setup';
+function openBoard(from){boardFrom=from;show('board');renderBoard()}
+function boardRow(i,r,mine){
+  const li=document.createElement('li');if(mine)li.className='mine';
+  const st=r.rung>=STATIONS.length?'山頂 Summit':r.rung?STATIONS[r.rung-1][0]:'Trailhead';
+  const d=r.ts?new Date(r.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
+  li.innerHTML=`<span class="rk">${i+1}</span>${avatarHTML(r.av,36,r.photo)}<span class="who"><b>${esc(r.nick||'Guest')}</b><small>${esc(st)}${d?' · '+esc(d):''}</small></span><span class="sc">${Number(r.score).toLocaleString()}<small>${r.correct}/${r.total} correct</small></span>`;
+  return li;
+}
+function renderLocalBoard(note){
+  const ul=$('boardList');ul.innerHTML='';
+  const hist=(store.get('history')||[]).filter(h=>!h.replay).sort((a,b)=>b.score-a.score).slice(0,10);
+  $('boardTitle').textContent='Your best games on this device';
+  if(!hist.length){const li=document.createElement('li');li.style.display='block';li.className='lib-empty';li.textContent='No games yet. Finish a game to see it here.';ul.appendChild(li)}
+  hist.forEach((h,i)=>ul.appendChild(boardRow(i,Object.assign({nick:displayName(),av:PROFILE.av,photo:PROFILE.photo},h),true)));
+  $('boardNote').textContent=note;
+}
+function renderBoard(){
+  if(!TRACKING_URL){renderLocalBoard('The global leaderboard turns on when the game is connected to its Google Sheet. Until then, these are your own best games.');return}
+  $('boardTitle').textContent='Loading top climbers…';$('boardList').innerHTML='';$('boardNote').textContent='';
+  fetch(TRACKING_URL+'?action=leaderboard&q='+LEADERBOARD_QUESTIONS+'&pid='+encodeURIComponent(PROFILE.pid)).then(r=>r.json()).then(d=>{
+    const rows=(d&&d.rows)||[];const ul=$('boardList');ul.innerHTML='';
+    $('boardTitle').textContent=`Top climbers · ${LEADERBOARD_QUESTIONS}-question games · last ${d.days||30} days`;
+    if(!rows.length){const li=document.createElement('li');li.style.display='block';li.className='lib-empty';li.textContent='No ranked games yet. Finish a 10-question game to be the first.';ul.appendChild(li)}
+    rows.forEach((r,i)=>ul.appendChild(boardRow(i,r,!!r.mine)));
+    $('boardNote').textContent='Each player appears once, with their best score. Only full 10-question games count, so everyone is compared fairly.';
+  }).catch(()=>renderLocalBoard('Could not reach the leaderboard right now, so these are your own best games.'));
+}
+$('boardBtn').onclick=()=>openBoard('setup');
+$('boardBtn2').onclick=()=>openBoard('results');
+$('boardBack').onclick=()=>backTo(boardFrom);
+renderMe();flushOutbox();
+
+$('lf-q').oninput=e=>{lib.q=e.target.value;renderLibrary()};
+$('lf-unseen').onchange=e=>{lib.unseen=e.target.checked;renderLibrary()};
+$('practiceWeak').onclick=()=>{const w=libRows().filter(x=>x.seen&&x.st!=='master').sort((a,b)=>a.acc-b.acc).slice(0,20).map(x=>x.it);if(w.length){startGame(w);game.replay=true}};
+$('copyCsv').onclick=()=>{
+  const esc=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  const lines=[['level','lesson','japanese','romaji','english','type','attempts','correct','accuracy_pct','status','last_practiced'].join(',')];
+  libRows().filter(x=>x.seen).forEach(x=>{const d=DECK_BY_ID[x.it.deck];lines.push([d.level,d.name,x.it.jp,x.it.ro,x.it.en||'',x.it.type,x.r[0],x.r[1],Math.round(x.acc*100),TAG[x.st][0],new Date(x.r[2]).toISOString()].map(esc).join(','))});
+  const csv=lines.join('\n');const t=$('csvToast');
+  const done=()=>{t.textContent=`Copied ${lines.length-1} rows. Paste into Excel or Power BI.`;setTimeout(()=>t.textContent='',4000)};
+  try{navigator.clipboard.writeText(csv).then(done,()=>fallbackCopy(csv,done))}catch(e){fallbackCopy(csv,done)}
+};
+function fallbackCopy(text,done){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){$('csvToast').textContent='Copy failed. Try again in another browser.'}ta.remove()}
+
 $('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)];startGame(m);game.replay=true};
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
