@@ -1,6 +1,6 @@
 /* Mr Sensei service worker: makes the game work offline.
    Bump VERSION whenever you change index.html so players get the update. */
-const VERSION = 'mr-sensei-v1';
+const VERSION = 'mr-sensei-v2';
 const CORE = [
   './',
   'index.html',
@@ -13,7 +13,10 @@ const CORE = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  // Cache each file on its own so one missing file can't stop the app from installing
+  e.waitUntil(caches.open(VERSION)
+    .then(c => Promise.all(CORE.map(u => c.add(u).catch(() => null))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
