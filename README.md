@@ -24,6 +24,7 @@ The game is also where I try out a learning workflow: **class materials → stru
 | **Fun facts** | 豆知識 after every question (kanji origins, look-alike kana, pitch-accent pairs like あめ rain/candy) and 30 Japan facts unlocked by climbing |
 | **Fact collection** | Facts you've seen are saved, and each game shows ones you haven't seen yet first |
 | **Results and review** | Where you stopped on the mountain, how many stations were left, a correct/mistake strip, accuracy, best streak, and a list of what you missed |
+| **Write kana mode** | Instead of tapping choices, see the romaji and write the kana on a drawing pad with guide lines. Tap Check to overlay the correct character on your writing, then mark yourself right or wrong. Writing games are not ranked |
 | **Replay misses** | Drill only the items you got wrong |
 | **Word library 単語帳** | Every word and kana you've practiced, with your accuracy (e.g. 75%, 3 of 4 correct) and a status: Need work, Learning or Mastered. Filter, search, sort weakest first, and practice your 20 weakest items |
 | **Player profile** | Optional nickname, an uploaded photo (cropped and shrunk to 96×96 in the browser, shown only after the player agrees) or one of 12 kanji avatars (山 桜 猫 狐 鯉 月 雪 竹 龍 侍 茶 星). No sign-up: each browser gets a random anonymous player ID |
@@ -37,6 +38,7 @@ Keyboard: press **1–4** to answer and **Enter** for the next question.
 ## How it's built
 
 - **One file, no build step.** Plain HTML, CSS and JavaScript in `index.html`.
+- **Installable and offline:** `manifest.json` (app name, colors, icons) and `sw.js` (service worker that caches the game and fonts).
 - **No server and no accounts.** Best scores, collected facts and per-word stats are saved in the browser with `localStorage`.
 - **Lesson content lives in a `DECKS` array**, so adding a lesson means adding one entry (see below).
 - **The Mt Fuji scene is drawn in SVG**, not a photo, so it can show your progress on the trail.
@@ -45,6 +47,18 @@ Keyboard: press **1–4** to answer and **Enter** for the next question.
 ## Anonymous tracking (optional)
 
 Connect the game to a Google Sheet with a small Apps Script to get a global leaderboard and a per-answer log for Power BI. No email, real name or IP address is collected, only a random player ID, the optional nickname and photo, and answer results. Photos can be hidden by the admin from the sheet or removed by the player at any time. Setup takes about 10 minutes: see [SETUP-TRACKING.md](SETUP-TRACKING.md).
+
+## Install it like an app
+
+Mr Sensei is an installable web app (PWA). It gets its own home-screen icon, opens full screen, and **works offline**.
+
+- **Android (Chrome):** tap **Install** in the game's top bar, or ⋮ menu → **Install app**.
+- **iPhone (Safari):** tap Share → **Add to Home Screen**. The game shows this tip on iPhones.
+- **Desktop (Chrome/Edge):** click the install icon in the address bar, or **Install** in the top bar.
+
+Offline games are saved and sent to the leaderboard the next time you're online.
+
+**Updating:** after you change `index.html`, also change `VERSION` in `sw.js` (e.g. `mr-sensei-v2`) so installed copies pick up the new version.
 
 ## Run it locally
 

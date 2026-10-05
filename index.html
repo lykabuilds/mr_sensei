@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Mr Sensei: a Japanese kana and N5/N4 vocabulary quiz game. Climb Mt Fuji by scoring points and unlock fun facts about Japan.">
+<meta name="theme-color" content="#121329">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mr Sensei">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>Mr Sensei</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -275,10 +283,109 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
   .answers{gap:10px}
   .ans{min-height:74px;padding:12px}
   .ans .key{display:none}
-  .misses li{grid-template-columns:1fr 1fr}
-  .misses .en{grid-column:1 / -1}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== Cleanup layer (overrides earlier rules) ===== */
+.brand{align-items:center;justify-content:space-between;flex-wrap:nowrap}
+.brand h1{font-size:clamp(1.4rem,4.6vw,1.9rem);white-space:nowrap}
+.brand .jp-sub{color:var(--muted);font-size:.5em;font-family:var(--f-body);font-weight:700}
+.topnav{display:flex;align-items:center;gap:6px;min-width:0}
+.navbtn{background:none;border:1px solid transparent;border-radius:12px;padding:5px 9px;display:flex;flex-direction:column;align-items:center;line-height:1.15;color:var(--muted)}
+.navbtn b{font-size:.95rem;color:var(--fg)}
+.navbtn span{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.navbtn:hover{border-color:var(--line)}
+.me{padding:3px 10px 3px 3px}
+
+.pick-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.levels{display:flex;gap:6px;flex-wrap:wrap}
+.level{flex-direction:row;align-items:baseline;gap:6px;padding:6px 12px;border-radius:999px;border-width:1.5px}
+.level b{font-family:var(--f-body);font-weight:800;font-size:.95rem}
+.level small{font-size:.72rem}
+.group-head h3{font-size:.8rem;color:var(--muted);letter-spacing:.06em}
+.chip{padding:6px 11px;font-size:.88rem}
+
+.settings{gap:0}
+.settings summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.settings summary::-webkit-details-marker{display:none}
+.sum-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sum-txt > span:last-child{color:var(--muted);font-size:.86rem}
+.sum-txt b{color:var(--sakura);font-family:var(--f-mono);font-weight:500}
+.settings .chev{color:var(--sakura);transition:transform .2s}
+.settings[open] .chev{transform:rotate(180deg)}
+.settings .opts{margin-top:16px}
+.collect-list{margin:14px 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:8px;font-size:.9rem}
+
+.startbar{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:color-mix(in srgb,var(--panel) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:18px;padding:10px 10px 10px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.startbar .summary{display:flex;flex-direction:column;line-height:1.3;color:var(--fg);font-size:.95rem}
+.startbar .summary b{font-family:var(--f-mono)}
+.startbar .summary span{color:var(--muted);font-size:.78rem}
+.startbar .big{padding:12px 30px}
+
+.hud{flex-wrap:nowrap;gap:10px}
+.quit{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font-size:.9rem;display:grid;place-items:center;flex:none}
+.hq{font-family:var(--f-mono);color:var(--muted);font-size:.9rem}
+.streak{font-family:var(--f-mono);font-size:.8rem;color:var(--yamabuki);background:color-mix(in srgb,var(--yamabuki) 15%,transparent);padding:3px 9px;border-radius:999px}
+.hscore{margin-left:auto;font-family:var(--f-mono);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.prompt{overflow:hidden;padding-bottom:28px}
+.prompt .timer{position:absolute;left:0;right:0;bottom:0;height:6px;border-radius:0;background:rgba(18,19,41,.12)}
+.prompt .timer i{border-radius:0}
+
+.feedback{flex-direction:column;align-items:stretch;gap:10px}
+.fb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px}
+.tidbit{background:none;border:0;border-top:1px dashed var(--line);border-radius:0;padding:10px 0 0}
+.tidbit .st b{color:var(--fg)}
+.tidbit p{color:var(--fg);font-size:.92rem}
+
+.score-hero{gap:10px}
+.res-score{display:flex;align-items:baseline;justify-content:center;gap:14px;flex-wrap:wrap}
+.res-score .kanji{font-size:2rem}
+.res-score .pts{font-size:2rem}
+.where b{font-size:1rem}
+.legend .best{color:var(--muted)}
+.legend .best:empty{display:none}
+.legend{flex-wrap:wrap;justify-content:center}
+.legend .best{flex-basis:100%;text-align:center;font-size:.8rem}
+.misses{flex-direction:row;flex-wrap:wrap;gap:6px}
+.misses li{display:inline-flex;align-items:baseline;gap:7px;padding:6px 12px;border-radius:999px;grid-template-columns:none}
+.misses .jp{font-size:1.05rem}
+.misses .en{font-size:.78rem;color:var(--muted)}
+.misses .en:empty{display:none}
+.res-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.res-actions .link{margin-left:auto;font-size:.9rem}
+
+@media (max-width:520px){
+  .me .nm{display:none}
+  .me{padding:3px}
+  .navbtn{padding:4px 6px}
+  .startbar{padding:8px 8px 8px 14px}
+  .res-actions .link{margin-left:0;width:100%;text-align:center}
+}
+/* Writing pad */
+.answers.write{display:block}
+.wpad{display:flex;flex-direction:column;align-items:center;gap:12px}
+.wbox{position:relative;width:min(100%,320px);aspect-ratio:1;border-radius:18px;border:2px solid #c9c6e6;background-color:#f4f1ff;
+  background-image:linear-gradient(to right,transparent calc(50% - 1px),rgba(91,94,143,.22) calc(50% - 1px),rgba(91,94,143,.22) calc(50% + 1px),transparent calc(50% + 1px)),
+  linear-gradient(to bottom,transparent calc(50% - 1px),rgba(91,94,143,.22) calc(50% - 1px),rgba(91,94,143,.22) calc(50% + 1px),transparent calc(50% + 1px));
+  box-shadow:0 6px 0 rgba(0,0,0,.3);overflow:hidden;max-width:100%;container-type:size}
+.wbox canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:2}
+.wghost{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-body);font-weight:500;line-height:1;color:rgba(226,72,61,.38);z-index:1;pointer-events:none}
+.wtools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.wtools .big{padding:12px 28px}
+.wgrade{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.wgrade p{margin:0;color:var(--muted);font-size:.88rem;text-align:center}
+.wgrade-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(100%,420px)}
+.gbtn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:1.05rem;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.gbtn.ok{background:var(--matcha)}
+.gbtn.no{background:var(--shu)}
+.gbtn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.jp-big{font-size:1.15rem}
+.opt-note{color:var(--muted);font-size:.78rem;line-height:1.45}
+.opt-note:empty{display:none}
+
+.ios-tip{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;font-size:.88rem;border-color:var(--sakura)}
 @keyframes pop{0%{transform:scale(.92);opacity:.4}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .22s ease-out}
 </style>
@@ -286,72 +393,74 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 <body>
 <div class="wrap" id="app">
   <header class="brand">
-    <h1>Mr <span>Sensei</span> <span style="color:var(--muted);font-size:.55em">先生</span></h1>
-    <div class="brand-right">
-      <div class="tag">Minna no Nihongo · N5 class drills</div>
+    <h1>Mr <span>Sensei</span> <small class="jp-sub">先生</small></h1>
+    <nav class="topnav" id="topnav" aria-label="Main">
+      <button class="navbtn" id="installBtn" hidden><b>⤓</b><span>Install</span></button>
+      <button class="navbtn" id="libBtn"><b>単語帳</b><span>Library</span></button>
+      <button class="navbtn" id="boardBtn"><b>番付</b><span>Ranks</span></button>
       <button class="me" id="meBtn" aria-label="Edit your profile"></button>
-    </div>
+    </nav>
   </header>
 
   <!-- SETUP -->
-  <section id="setup" style="display:flex;flex-direction:column;gap:16px">
+  <section id="setup" style="display:flex;flex-direction:column;gap:14px">
     <div class="card">
-      <p class="step">1 · Pick levels (tap one or more)</p>
-      <div class="levels" id="levels"></div>
-    </div>
-    <div class="card">
-      <p class="step">2 · Pick lessons</p>
+      <div class="pick-head"><p class="step">What to practice</p><div class="levels" id="levels" role="group" aria-label="Levels"></div></div>
       <div id="lessons" style="display:flex;flex-direction:column;gap:16px"></div>
     </div>
-    <div class="card">
-      <p class="step">3 · Game settings</p>
+    <details class="card settings" id="settingsBox">
+      <summary><span class="sum-txt"><span class="step">Settings</span><span id="setSummary"></span></span><span class="chev" aria-hidden="true">▾</span></summary>
       <div class="opts">
+        <div class="opt"><label id="l-ans">Answer by</label><div class="seg" id="o-ans" role="group" aria-labelledby="l-ans"></div><span class="opt-note" id="ansNote"></span></div>
         <div class="opt"><label id="l-dir">Direction</label><div class="seg" id="o-dir" role="group" aria-labelledby="l-dir"></div></div>
         <div class="opt"><label id="l-count">Questions</label><div class="seg" id="o-count" role="group" aria-labelledby="l-count"></div></div>
         <div class="opt"><label id="l-time">Timer per question</label><div class="seg" id="o-time" role="group" aria-labelledby="l-time"></div></div>
         <div class="opt"><label id="l-hint">Romaji hints on words</label><div class="seg" id="o-hint" role="group" aria-labelledby="l-hint"></div></div>
       </div>
+    </details>
+    <details class="card settings" id="collectBox">
+      <summary><span class="sum-txt"><span class="step">富士山 Fun facts</span><span>Reach Mt Fuji stations to unlock them · <b id="collectN">0 / 0</b></span></span><span class="chev" aria-hidden="true">▾</span></summary>
+      <ul class="collect-list" id="collectList"></ul>
+    </details>
+    <div class="card ios-tip" id="iosTip" hidden>
+      <span><b>Install Mr Sensei on your iPhone:</b> tap the Share button <span aria-hidden="true">⎙</span> in Safari, then <b>Add to Home Screen</b>.</span>
+      <button class="link" id="iosTipClose">Got it</button>
     </div>
-    <div class="start-row">
-      <button class="big" id="startBtn">Start game</button>
-      <button class="ghost" id="libBtn">Word library</button>
-      <button class="ghost" id="boardBtn">Leaderboard</button>
+    <div class="startbar">
       <div class="summary" id="summary"></div>
-    </div>
-    <div class="card collect">
-      <p class="step">Climb Mt Fuji 富士山</p>
-      <p style="margin:0;color:var(--muted);font-size:.9rem">Score points to climb from the 1st station to the summit. Every station you reach unlocks a fun fact about Japan. Each game draws new facts, so keep climbing to collect them all.</p>
-      <details id="collectBox"><summary>Facts collected <span id="collectN">0 / 0</span></summary><ul id="collectList"></ul></details>
+      <button class="big" id="startBtn">Start</button>
     </div>
   </section>
 
   <!-- PLAY -->
   <section id="play" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="hud">
-      <span class="pill" id="h-q">1 / 10</span>
-      <span class="pill streak" id="h-streak">連続 0</span>
-      <span class="pill" id="h-score">0 pts</span>
-      <button class="quit" id="quitBtn">End game</button>
+      <button class="quit" id="quitBtn" aria-label="End game" title="End game">✕</button>
+      <span class="hq" id="h-q">1 / 10</span>
+      <span class="streak" id="h-streak" hidden>連続 0</span>
+      <span class="hscore" id="h-score">0 pts</span>
     </div>
     <div class="climb" aria-live="polite">
       <div class="climb-top"><b id="c-st">Trailhead</b><span id="c-next"></span></div>
       <div class="rungs" id="rungs"></div>
     </div>
-    <div class="timer" id="timerBar"><i id="timerFill"></i></div>
     <div class="prompt" id="promptBox">
       <button class="hear" id="hearBtn" hidden>Hear it</button>
       <div class="ask" id="p-ask">What is this?</div>
       <div class="q" id="p-q">か</div>
       <div class="hint" id="p-hint"></div>
+      <div class="timer" id="timerBar"><i id="timerFill"></i></div>
     </div>
     <div class="answers" id="answers"></div>
     <div class="feedback" id="feedback">
-      <div class="msg" id="fb-msg"><small>Tap an answer or press 1–4.</small></div>
-      <button class="next" id="nextBtn" hidden>Next ↵</button>
-    </div>
-    <div class="tidbit pop" id="tidbit" hidden>
-      <span class="st">豆知識 · about <b id="tb-k"></b></span>
-      <p id="tb-txt"></p>
+      <div class="fb-row">
+        <div class="msg" id="fb-msg"><small>Tap an answer or press 1–4.</small></div>
+        <button class="next" id="nextBtn" hidden>Next ↵</button>
+      </div>
+      <div class="tidbit pop" id="tidbit" hidden>
+        <span class="st">豆知識 · <b id="tb-k"></b></span>
+        <p id="tb-txt"></p>
+      </div>
     </div>
     <div class="fact pop" id="factBox" hidden>
       <span class="st" id="f-st"></span>
@@ -438,12 +547,13 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
   <section id="results" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="card score-hero">
       <div class="scene" id="r-scene"></div>
+      <div class="res-score">
+        <div class="kanji" id="r-kanji">合格</div>
+        <div class="pts" id="r-pts">0</div>
+      </div>
       <div class="where" id="r-where"></div>
       <div class="qstrip big-strip" id="r-strip" aria-label="Your answers, question by question"></div>
-      <div class="legend"><span><i class="ok"></i>Correct</span><span><i class="bad"></i>Mistake</span></div>
-      <div class="kanji" id="r-kanji">合格</div>
-      <div class="pts" id="r-pts">0</div>
-      <div class="best" id="r-best"></div>
+      <div class="legend"><span><i class="ok"></i>Correct</span><span><i class="bad"></i>Mistake</span><span class="best" id="r-best"></span></div>
     </div>
     <div class="stats">
       <div class="stat"><b id="r-acc">0%</b><span>Accuracy</span></div>
@@ -455,17 +565,14 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
       <ol class="ladder" id="r-ladder"></ol>
     </details>
     <div class="card" id="missCard">
-      <p class="step">Review what you missed</p>
+      <p class="step">Missed this round</p>
       <ul class="misses" id="r-misses"></ul>
     </div>
-    <div class="btn-row">
+    <div class="res-actions">
       <button class="big" id="retryMissBtn">Replay misses</button>
       <button class="ghost" id="againBtn">Play again</button>
-      <button class="ghost" id="changeBtn">Change lessons</button>
-      <button class="ghost" id="libBtn2">Word library</button>
-      <button class="ghost" id="boardBtn2">Leaderboard</button>
+      <button class="link" id="changeBtn">Change lessons</button>
     </div>
-    <p class="note">Best scores are saved in this browser only.</p>
   </section>
 </div>
 
@@ -475,9 +582,9 @@ const k=(jp,ro)=>({jp,ro,type:'kana'});
 const w=(jp,ro,en)=>({jp,ro,en,type:'word'});
 
 const LEVELS=[
-  {id:'kana',name:'かな',sub:'Hiragana & katakana'},
-  {id:'n5',name:'N5',sub:'Class vocab & basics'},
-  {id:'n4',name:'N4',sub:'Next step up'}
+  {id:'kana',name:'かな',sub:'Kana'},
+  {id:'n5',name:'N5',sub:'Beginner'},
+  {id:'n4',name:'N4',sub:'Elementary'}
 ];
 
 const DECKS=[
@@ -749,7 +856,7 @@ function renderClimb(){
 const state={
   levels:new Set(['kana']),
   lessons:new Set(['h-dk','h-hk']),
-  dir:'fwd', count:10, time:10, hints:true
+  dir:'fwd', count:10, time:10, hints:true, answer:'tap'
 };
 let game=null;
 const $=id=>document.getElementById(id);
@@ -785,7 +892,7 @@ function renderSetup(){
     const decks=DECKS.filter(d=>d.level===L.id);
     const g=document.createElement('div');g.className='group';
     const allOn=decks.every(d=>state.lessons.has(d.id));
-    g.innerHTML=`<div class="group-head"><h3>${L.name} <span style="color:var(--muted);font-weight:500">· ${L.sub}</span></h3></div><div class="chips"></div>`;
+    g.innerHTML=`<div class="group-head"><h3>${L.name}</h3></div><div class="chips"></div>`;
     const t=document.createElement('button');t.type='button';t.className='link';t.textContent=allOn?'Clear all':'Select all';
     t.onclick=()=>{decks.forEach(d=>allOn?state.lessons.delete(d.id):state.lessons.add(d.id));renderSetup()};
     g.querySelector('.group-head').appendChild(t);
@@ -808,17 +915,26 @@ function renderSetup(){
   segment($('o-count'),[[10,'10'],[20,'20'],[0,'All']],'count');
   segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
   segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
+  segment($('o-ans'),[['tap','Tap choices'],['write','Write kana ✍']],'answer');
+  $('ansNote').textContent=state.answer==='write'?'Kana questions show the romaji and you write the character. You check your own writing. Word questions stay multiple choice. Writing games are not ranked on the leaderboard.':'';
   const pool=poolItems();
   const n=state.count?Math.min(state.count,pool.length):pool.length;
   $('startBtn').disabled=!pool.length;
-  $('summary').innerHTML=pool.length?`<b>${state.lessons.size}</b> lessons · <b>${pool.length}</b> items · <b>${n}</b> questions`:'Pick at least one lesson to start.';
+  $('summary').innerHTML=pool.length?`<div><b>${n}</b> questions</div><span>${state.lessons.size} lesson${state.lessons.size>1?'s':''} · ${pool.length} items</span>`:'<span>Pick a lesson to start</span>';
+  const dirL={fwd:'日本語 → ?',rev:'? → 日本語',mix:'Mixed'}[state.dir];
+  $('setSummary').textContent=`${state.answer==='write'?'Write kana · ':''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
 }
 function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.items)}
 
 /* ---------- GAME ---------- */
 function makeQuestion(it,pool){
-  const dir=state.dir==='mix'?(Math.random()<.5?'fwd':'rev'):state.dir;
   const isKana=it.type==='kana';
+  if(isKana&&state.answer==='write'){
+    const kata=/[\u30A0-\u30FF]/.test(it.jp);
+    const twin=['じ','ぢ','ず','づ'].includes(it.jp)?`(${VOICED[it.jp]} + ゛)`:'';
+    return {it,write:true,dir:'rev',ask:`Write this in ${kata?'katakana':'hiragana'}`,q:it.ro,hint:twin,qClass:'latin',options:[]};
+  }
+  const dir=state.dir==='mix'?(Math.random()<.5?'fwd':'rev'):state.dir;
   const ansOf=x=>dir==='fwd'?(isKana?x.ro:x.en):x.jp;
   const clash=x=>x.jp===it.jp||(isKana?x.ro===it.ro:(x.en===it.en||x.ro===it.ro));
   const seen=new Set([ansOf(it)]);const distract=[];
@@ -839,19 +955,20 @@ function startGame(items){
   $('factBox').hidden=true;
   show('play');renderQ();
 }
-function show(id){['setup','play','results','library','profile','board'].forEach(s=>$(s).hidden=s!==id);window.scrollTo({top:0})}
+function show(id){['setup','play','results','library','profile','board'].forEach(s=>$(s).hidden=s!==id);$('topnav').hidden=id==='play';window.scrollTo({top:0})}
 function renderQ(){
   const g=game,Q=g.qs[g.i];g.locked=false;g.t0=performance.now();
   $('h-q').textContent=`${g.i+1} / ${g.qs.length}`;
   $('h-score').textContent=`${g.score.toLocaleString()} pts`;
-  $('h-streak').textContent=`連続 ${g.streak}`;
+  setStreak(g.streak);
   $('factBox').hidden=true;$('tidbit').hidden=true;renderClimb();
   $('p-ask').textContent=Q.ask;
   const qe=$('p-q');qe.textContent=Q.q;qe.className='q '+Q.qClass;
   $('p-hint').textContent=Q.hint;
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
-  $('hearBtn').hidden=!canSpeak()||Q.dir!=='fwd';
-  const box=$('answers');box.innerHTML='';
+  $('hearBtn').hidden=!canSpeak()||(Q.dir!=='fwd'&&!Q.write);
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':'');
+  if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   const shapes=['▲','◆','●','■'];
   Q.options.forEach((o,idx)=>{
     const b=document.createElement('button');b.type='button';b.className='ans';
@@ -868,21 +985,23 @@ function startTimer(){
   cancelAnimationFrame(game.raf);
   const bar=$('timerBar'),fill=$('timerFill');
   if(!state.time){bar.hidden=true;return}
-  bar.hidden=false;const t0=performance.now(),dur=state.time*1000;
+  const Qw=game.qs[game.i].write;
+  bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):state.time)*1000;
   const tick=now=>{
     const left=Math.max(0,1-(now-t0)/dur);game.left=left;
     fill.style.transform=`scaleX(${left})`;
     fill.style.background=left<.3?'var(--bad)':'var(--sakura)';
-    if(left<=0){answer(-1);return}
+    if(left<=0){if(Qw)padCheck(true);else answer(-1);return}
     game.raf=requestAnimationFrame(tick);
   };
   game.left=1;game.raf=requestAnimationFrame(tick);
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
-  const Q=g.qs[g.i];const ci=Q.options.findIndex(o=>o.correct);
-  const btns=[...$('answers').children];
-  btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});
+  const Q=g.qs[g.i];const ci=Q.write?1:Q.options.findIndex(o=>o.correct);
+  if(!Q.write){const btns=[...$('answers').children];
+  btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});}
+  else{$('wGrade').hidden=true}
   const it=Q.it;const detail=it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
   const msg=$('fb-msg');
   if(idx===ci){
@@ -890,7 +1009,7 @@ function answer(idx){
     const pts=Math.round(1000*(state.time?(.5+.5*(g.left||0)):1))+Math.min(500,(g.streak-1)*100);
     g.score+=pts;
     msg.className='msg ok';msg.innerHTML=`正解！ +${pts}<small></small>`;msg.querySelector('small').textContent=detail;
-    $('h-score').textContent=`${g.score.toLocaleString()} pts`;$('h-streak').textContent=`連続 ${g.streak}`;
+    $('h-score').textContent=`${g.score.toLocaleString()} pts`;setStreak(g.streak);
     const r=rungOf(g.score,g.base);
     if(r>g.rung){
       const prev=g.rung;g.rung=r;renderClimb();
@@ -903,13 +1022,53 @@ function answer(idx){
     g.marks[g.i]='ok';record(it,true);logAnswer(it,true);
   }else{
     g.streak=0;g.misses.push(it);g.marks[g.i]='bad';record(it,false);logAnswer(it,false);g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
-    msg.className='msg no';msg.innerHTML=(idx<0?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=detail;
-    $('h-streak').textContent='連続 0';
+    msg.className='msg no';msg.innerHTML=(idx<0||(Q.write&&g.timedOut)?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=detail;
+    setStreak(0);
   }
   renderClimb();
   const tf=charFact(it);
   if(tf){$('tb-k').textContent=it.jp;$('tb-txt').textContent=tf;const tb=$('tidbit');tb.hidden=false;tb.classList.remove('pop');void tb.offsetWidth;tb.classList.add('pop')}
   $('nextBtn').hidden=false;$('nextBtn').focus({preventScroll:true});
+  $('hearBtn').hidden=!canSpeak();
+}
+
+/* ---------- WRITING PAD ---------- */
+let pad=null;
+function buildPad(box,Q){
+  game.checked=false;game.timedOut=false;
+  box.innerHTML=`<div class="wpad">
+    <div class="wbox" id="wbox"><canvas id="wcv" aria-label="Writing area. Draw the kana here."></canvas><div class="wghost" id="wghost" hidden></div></div>
+    <div class="wtools" id="wTools"><button class="ghost" id="wUndo" type="button">Undo</button><button class="ghost" id="wClear" type="button">Clear</button><button class="big" id="wCheck" type="button">Check</button></div>
+    <div class="wgrade" id="wGrade" hidden><p>Does yours match? The pink shape is the correct one.</p><div class="wgrade-btns"><button class="gbtn ok" id="wYes" type="button">✓ I got it</button><button class="gbtn no" id="wNo" type="button">✗ Not quite</button></div></div>
+  </div>`;
+  const cv=$('wcv'),wb=$('wbox');
+  pad={cv,ctx:cv.getContext('2d'),strokes:[],cur:null,size:0};
+  const fit=()=>{const r=wb.getBoundingClientRect(),d=window.devicePixelRatio||1;pad.size=r.width;cv.width=Math.round(r.width*d);cv.height=Math.round(r.width*d);pad.ctx.setTransform(d,0,0,d,0,0);redrawPad()};
+  fit();
+  const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]};
+  cv.onpointerdown=e=>{if(game.checked||game.locked)return;e.preventDefault();cv.setPointerCapture(e.pointerId);pad.cur=[pt(e)];pad.strokes.push(pad.cur);redrawPad()};
+  cv.onpointermove=e=>{if(!pad.cur)return;e.preventDefault();pad.cur.push(pt(e));redrawPad()};
+  cv.onpointerup=cv.onpointercancel=()=>{pad.cur=null};
+  $('wUndo').onclick=()=>{pad.strokes.pop();redrawPad()};
+  $('wClear').onclick=()=>{pad.strokes=[];redrawPad()};
+  $('wCheck').onclick=()=>padCheck(false);
+  $('wYes').onclick=()=>answer(1);
+  $('wNo').onclick=()=>answer(0);
+  const g=$('wghost');g.textContent=Q.it.jp;g.style.fontSize=(Q.it.jp.length>1?36:72)+'cqh';
+}
+function redrawPad(){
+  if(!pad)return;const c=pad.ctx,S=pad.size;c.clearRect(0,0,S,S);
+  c.lineCap='round';c.lineJoin='round';c.strokeStyle='#1c1e3d';c.lineWidth=Math.max(5,S*.035);
+  pad.strokes.forEach(st=>{c.beginPath();st.forEach(([x,y],i)=>i?c.lineTo(x*S,y*S):c.moveTo(x*S,y*S));if(st.length===1)c.lineTo(st[0][0]*S+.1,st[0][1]*S);c.stroke()});
+}
+function padCheck(timedOut){
+  const g=game;if(!g||g.locked||g.checked)return;
+  if(!timedOut&&!pad.strokes.length){$('fb-msg').innerHTML='<small>Draw the character first, then tap Check.</small>';return}
+  g.checked=true;g.timedOut=timedOut;cancelAnimationFrame(g.raf);if(timedOut)g.left=0;
+  if(timedOut&&!pad.strokes.length)return answer(0);
+  $('wghost').hidden=false;$('wTools').hidden=true;$('wGrade').hidden=false;
+  const it=g.qs[g.i].it;
+  $('fb-msg').className='msg';$('fb-msg').innerHTML=`${timedOut?'Time’s up. ':''}Correct answer: <span class="jp-big"></span><small>Press Y if yours matches, N if not.</small>`;$('fb-msg').querySelector('.jp-big').textContent=`${it.jp} (${it.ro})`;
   $('hearBtn').hidden=!canSpeak();
 }
 function renderStrip(el,showCur){
@@ -940,8 +1099,8 @@ function finish(){
   const here=g.rung?`${STATIONS[g.rung-1][0]} · ${STATIONS[g.rung-1][1]}`:'the trailhead';
   const toSummit=Math.max(0,Math.ceil(g.base-g.score));
   $('r-where').innerHTML=left
-    ?`<b>You stopped at ${here}</b><span><span class="left">${left} station${left>1?'s':''} left</span> to the summit · ${toSummit.toLocaleString()} more pts needed</span><span>${miss} mistake${miss===1?'':'s'} held you back. Replay your misses to climb higher.</span>`
-    :`<b>You reached the summit, 山頂!</b><span>${miss?`${miss} mistake${miss===1?'':'s'} along the way, but you still made it.`:'A perfect climb with no mistakes.'}</span>`;
+    ?`<b>Stopped at ${here}</b><span><span class="left">${left} station${left>1?'s':''} to the summit</span> · ${toSummit.toLocaleString()} pts to go</span>`
+    :`<b>Summit reached, 山頂!</b><span>${miss?`${miss} mistake${miss===1?'':'s'} along the way.`:'A perfect climb.'}</span>`;
   for(let i=STATIONS.length-1;i>=0;i--){
     const li=document.createElement('li');const got=i<g.rung;
     li.className=got?(g.newFacts.includes(i)?'new':''):'locked';
@@ -1015,15 +1174,15 @@ function renderLibrary(){
   $('practiceWeak').disabled=!weak.length;$('practiceWeak').textContent=weak.length?`Practice weakest ${weak.length}`:'Practice weakest';
 }
 function openLibrary(from){lib.from=from;show('library');renderLibrary()}
-$('libBtn').onclick=()=>openLibrary('setup');
-$('libBtn2').onclick=()=>openLibrary('results');
-$('libBack').onclick=()=>{if(lib.from==='results'&&game)show('results');else{show('setup');renderSetup()}};
+$('libBtn').onclick=()=>openLibrary(currentScreen());
+function setStreak(n){const e=$('h-streak');e.textContent=`連続 ${n}`;e.hidden=n<2}
+$('libBack').onclick=()=>backTo(lib.from);
 
 /* ---------- PLAYER PROFILE, TRACKING & LEADERBOARD ----------
    TRACKING_URL: paste your Google Apps Script web app URL here to turn on
    anonymous tracking and the global leaderboard. Leave '' to keep everything
    on this device only. See SETUP-TRACKING.md. */
-const TRACKING_URL='';
+const TRACKING_URL='https://script.google.com/macros/s/AKfycbySkU_pxGFoGivdxrM29RJHaZ2SH5CyNDHQjIxCVfrsxeJt_etYqUY4HTEW_NPaTupa/exec';
 const LEADERBOARD_QUESTIONS=10; // only full 10-question games are ranked, so scores are comparable
 
 const AVATARS=[['山','Mountain','#c2483d'],['桜','Sakura','#d4567f'],['猫','Cat','#c98a12'],['狐','Fox','#c8621f'],['鯉','Koi','#2f6fd0'],['月','Moon','#5e56b8'],['雪','Snow','#4f8fb8'],['竹','Bamboo','#2f8a57'],['龍','Dragon','#1d7f73'],['侍','Samurai','#4b4f9c'],['茶','Tea','#6b8a2f'],['星','Star','#a8841a']];
@@ -1105,7 +1264,7 @@ function saveGame(g){
   if(g.saved||!g.log||!g.log.length)return;g.saved=true;
   const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
     score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
-    lessons:[...state.lessons],dir:state.dir,timer:state.time,replay:!!g.replay};
+    lessons:[...state.lessons],dir:state.answer==='write'?'write':state.dir,timer:state.time,replay:!!g.replay};
   const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
   if(!TRACKING_URL)return;
   const out=store.get('outbox')||[];
@@ -1149,10 +1308,24 @@ function renderBoard(){
     $('boardNote').textContent='Each player appears once, with their best score. Only full 10-question games count, so everyone is compared fairly.';
   }).catch(()=>renderLocalBoard('Could not reach the leaderboard right now, so these are your own best games.'));
 }
-$('boardBtn').onclick=()=>openBoard('setup');
-$('boardBtn2').onclick=()=>openBoard('results');
+$('boardBtn').onclick=()=>openBoard(currentScreen());
 $('boardBack').onclick=()=>backTo(boardFrom);
 renderMe();flushOutbox();
+/* ---------- INSTALLABLE APP (PWA) ---------- */
+(function(){
+  const topLevel=(()=>{try{return window.self===window.top}catch(e){return false}})();
+  if(!topLevel)return;                                   // inside a preview frame: skip
+  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  let deferred=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('installBtn').hidden=false});
+  $('installBtn').onclick=()=>{if(!deferred)return;deferred.prompt();deferred.userChoice.finally(()=>{deferred=null;$('installBtn').hidden=true})};
+  window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true});
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(ios&&!standalone&&location.protocol==='https:'&&!store.get('iosTipDone')){$('iosTip').hidden=false}
+  $('iosTipClose').onclick=()=>{$('iosTip').hidden=true;store.set('iosTipDone',1)};
+})();
+
 
 $('lf-q').oninput=e=>{lib.q=e.target.value;renderLibrary()};
 $('lf-unseen').onchange=e=>{lib.unseen=e.target.checked;renderLibrary()};
@@ -1170,15 +1343,22 @@ function fallbackCopy(text,done){const ta=document.createElement('textarea');ta.
 $('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)];startGame(m);game.replay=true};
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
+  const Qk=game.qs[game.i];
+  if(Qk&&Qk.write&&!game.locked){
+    if(e.key==='Enter'&&!game.checked){e.preventDefault();padCheck(false)}
+    else if(game.checked&&(e.key==='y'||e.key==='1')){answer(1)}
+    else if(game.checked&&(e.key==='n'||e.key==='2')){answer(0)}
+    return;
+  }
   if(['1','2','3','4'].includes(e.key)&&!game.locked){answer(+e.key-1)}
   else if((e.key==='Enter'||e.key===' ')&&game.locked){e.preventDefault();next()}
 });
 
 function start(data){
-  if(data&&data.lessons){state.levels=new Set(data.levels);state.lessons=new Set(data.lessons);Object.assign(state,{dir:data.dir,count:data.count,time:data.time,hints:data.hints})}
+  if(data&&data.lessons){state.levels=new Set(data.levels);state.lessons=new Set(data.lessons);Object.assign(state,{dir:data.dir,count:data.count,time:data.time,hints:data.hints,answer:data.answer||'tap'})}
   renderSetup();
 }
-window.claude?.hot?.snapshot?.(()=>({levels:[...state.levels],lessons:[...state.lessons],dir:state.dir,count:state.count,time:state.time,hints:state.hints}));
+window.claude?.hot?.snapshot?.(()=>({levels:[...state.levels],lessons:[...state.lessons],dir:state.dir,count:state.count,time:state.time,hints:state.hints,answer:state.answer}));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 </script>
 </body>
