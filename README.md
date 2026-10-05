@@ -24,6 +24,7 @@ The game is also where I try out a learning workflow: **class materials → stru
 | **Fun facts** | 豆知識 after every question (kanji origins, look-alike kana, pitch-accent pairs like あめ rain/candy) and 30 Japan facts unlocked by climbing |
 | **Fact collection** | Facts you've seen are saved, and each game shows ones you haven't seen yet first |
 | **Results and review** | Where you stopped on the mountain, how many stations were left, a correct/mistake strip, accuracy, best streak, and a list of what you missed |
+| **Type mode** | Type answers instead of tapping: see a kana and type its romaji, or see the English and type the Japanese in romaji or kana. Spelling variants count (shi/si, tsu/tu, ou/o, ん as n or nn) |
 | **Write kana mode** | Instead of tapping choices, see the romaji and write the kana on a drawing pad with guide lines. Tap Check to overlay the correct character on your writing, then mark yourself right or wrong. Writing games are not ranked |
 | **Replay misses** | Drill only the items you got wrong |
 | **Word library 単語帳** | Every word and kana you've practiced, with your accuracy (e.g. 75%, 3 of 4 correct) and a status: Need work, Learning or Mastered. Filter, search, sort weakest first, and practice your 20 weakest items |

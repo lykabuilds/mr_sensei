@@ -369,6 +369,16 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
   .startbar{padding:8px 8px 8px 14px}
   .res-actions .link{margin-left:0;width:100%;text-align:center}
 }
+/* Typed answers */
+.answers.type{display:block}
+.tbox{display:flex;gap:10px;align-items:stretch;width:100%}
+.tin{flex:1;min-width:0;font:inherit;font-size:1.4rem;font-weight:800;text-align:center;color:var(--ink);background:var(--fg);border:3px solid transparent;border-radius:16px;padding:14px;box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.tin:focus{outline:none;border-color:var(--sakura)}
+.tin::placeholder{color:#9a9cc4;font-weight:500}
+.tin.t-ok{border-color:var(--good);background:#e6f7ec}
+.tin.t-bad{border-color:var(--bad);background:#fbe6e6;text-decoration:line-through}
+.tbox .big{padding:12px 22px}
+
 /* Writing pad */
 .answers.write{display:block}
 .wpad{display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -921,20 +931,25 @@ function renderSetup(){
   segment($('o-count'),[[10,'10'],[20,'20'],[0,'All']],'count');
   segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
   segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
-  segment($('o-ans'),[['tap','Tap choices'],['write','Write kana ✍']],'answer');
-  $('ansNote').textContent=state.answer==='write'?'Kana questions show the romaji and you write the character. You check your own writing. Word questions stay multiple choice. Writing games are not ranked on the leaderboard.':'';
+  segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍']],'answer');
+  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana questions show the romaji and you write the character. You check your own writing. Word questions stay multiple choice. Writing games are not ranked on the leaderboard.':'';
   const pool=poolItems();
   const n=state.count?Math.min(state.count,pool.length):pool.length;
   $('startBtn').disabled=!pool.length;
   $('summary').innerHTML=pool.length?`<div><b>${n}</b> questions</div><span>${state.lessons.size} lesson${state.lessons.size>1?'s':''} · ${pool.length} items</span>`:'<span>Pick a lesson to start</span>';
   const dirL={fwd:'日本語 → ?',rev:'? → 日本語',mix:'Mixed'}[state.dir];
-  $('setSummary').textContent=`${state.answer==='write'?'Write kana · ':''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
+  $('setSummary').textContent=`${state.answer==='write'?'Write kana · ':state.answer==='type'?'Type answers · ':''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
 }
 function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.items)}
 
 /* ---------- GAME ---------- */
 function makeQuestion(it,pool){
   const isKana=it.type==='kana';
+  if(state.answer==='type'){
+    if(isKana)return {it,type:true,expect:'romaji',dir:'fwd',ask:'Type the romaji',q:it.jp,hint:'',qClass:it.jp.length>4?'long':'',options:[]};
+    const n=splitKana(it.jp).length;
+    return {it,type:true,expect:'jp',dir:'rev',ask:'Say it in Japanese',q:it.en,hint:state.hints?`${n} sound${n>1?'s':''} · type romaji or kana`:'type romaji or kana',qClass:'latin'+(it.en.length>6?' long':''),options:[]};
+  }
   if(isKana&&state.answer==='write'){
     const kata=/[\u30A0-\u30FF]/.test(it.jp);
     const twin=['じ','ぢ','ず','づ'].includes(it.jp)?`(${VOICED[it.jp]} + ゛)`:'';
@@ -972,8 +987,9 @@ function renderQ(){
   const qe=$('p-q');qe.textContent=Q.q;qe.className='q '+Q.qClass;
   $('p-hint').textContent=Q.hint;
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
-  $('hearBtn').hidden=!canSpeak()||(Q.dir!=='fwd'&&!Q.write);
-  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':'');
+  $('hearBtn').hidden=!canSpeak()||(!Q.write&&(Q.dir!=='fwd'||Q.it.type==='kana'));  // don't give away kana readings before answering
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':'');
+  if(Q.type){buildTypeBox(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Type your answer, then press Enter or Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   const shapes=['▲','◆','●','■'];
   Q.options.forEach((o,idx)=>{
@@ -991,8 +1007,8 @@ function startTimer(){
   cancelAnimationFrame(game.raf);
   const bar=$('timerBar'),fill=$('timerFill');
   if(!state.time){bar.hidden=true;return}
-  const Qw=game.qs[game.i].write;
-  bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):state.time)*1000;
+  const Qw=game.qs[game.i].write,Qt=game.qs[game.i].type;
+  bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):Qt?Math.max(state.time*1.5,10):state.time)*1000;
   const tick=now=>{
     const left=Math.max(0,1-(now-t0)/dur);game.left=left;
     fill.style.transform=`scaleX(${left})`;
@@ -1004,8 +1020,9 @@ function startTimer(){
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
-  const Q=g.qs[g.i];const ci=Q.write?1:Q.options.findIndex(o=>o.correct);
-  if(!Q.write){const btns=[...$('answers').children];
+  const Q=g.qs[g.i];const ci=(Q.write||Q.type)?1:Q.options.findIndex(o=>o.correct);
+  if(Q.type){typeLock(idx)}
+  else if(!Q.write){const btns=[...$('answers').children];
   btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});}
   else{$('wGrade').hidden=true}
   const it=Q.it;const detail=it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
@@ -1028,7 +1045,7 @@ function answer(idx){
     g.marks[g.i]='ok';record(it,true);logAnswer(it,true);
   }else{
     g.streak=0;g.misses.push(it);g.marks[g.i]='bad';record(it,false);logAnswer(it,false);g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
-    msg.className='msg no';msg.innerHTML=(idx<0||(Q.write&&g.timedOut)?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=detail;
+    msg.className='msg no';msg.innerHTML=(idx<0||(Q.write&&g.timedOut)?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=(Q.type&&g.typed)?`You typed “${g.typed}” · answer: ${detail}`:detail;g.typed='';
     setStreak(0);
   }
   renderClimb();
@@ -1036,6 +1053,64 @@ function answer(idx){
   if(tf){$('tb-k').textContent=it.jp;$('tb-txt').textContent=tf;const tb=$('tidbit');tb.hidden=false;tb.classList.remove('pop');void tb.offsetWidth;tb.classList.add('pop')}
   $('nextBtn').hidden=false;$('nextBtn').focus({preventScroll:true});
   $('hearBtn').hidden=!canSpeak();
+}
+
+
+/* ---------- TYPED ANSWERS ---------- */
+const SMALL_ANY={'ゃ':'a','ゅ':'u','ょ':'o'};
+function toHira(s){return s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))}
+function kanaToRomaji(jp){
+  const units=splitKana(toHira(jp));let out='',dbl=false;
+  units.forEach(u=>{
+    if(u==='っ'){dbl=true;return}
+    if(u==='ー'){out+=out.slice(-1);return}
+    let r;
+    if(u.length===2&&SMALL_ANY[u[1]]){const b=KR[u[0]]||'';r=/^(shi|chi|ji)$/.test(b)?b.slice(0,-1)+SMALL_ANY[u[1]]:b.slice(0,-1)+'y'+SMALL_ANY[u[1]]}
+    else r=KR[u]||'';
+    if(dbl&&r){r=r[0]+r;dbl=false}
+    out+=r;
+  });
+  return out;
+}
+function normR(s){
+  s=String(s).toLowerCase().normalize('NFKC').replace(/[āâ]/g,'a').replace(/[īî]/g,'i').replace(/[ūû]/g,'u').replace(/[ēê]/g,'e').replace(/[ōô]/g,'o');
+  s=s.replace(/n'/g,'n').replace(/[^a-z]/g,'');
+  s=s.replace(/tch/g,'cch').replace(/shi/g,'si').replace(/sh/g,'sy').replace(/chi/g,'ti').replace(/ch/g,'ty').replace(/tsu/g,'tu').replace(/fu/g,'hu')
+     .replace(/ji/g,'zi').replace(/j/g,'zy').replace(/di/g,'zi').replace(/du/g,'zu').replace(/wo/g,'o').replace(/nn/g,'n');
+  s=s.replace(/ou/g,'o').replace(/oo/g,'o').replace(/uu/g,'u').replace(/ei/g,'e').replace(/ee/g,'e').replace(/aa/g,'a').replace(/ii/g,'i');
+  return s;
+}
+function typedCorrect(input,Q){
+  const it=Q.it,raw=input.normalize('NFKC').trim();
+  const hasKana=/[\u3040-\u30FF]/.test(raw);
+  if(Q.expect==='romaji'&&hasKana)return {ok:false,why:'Type the reading in letters (romaji), not kana.'};
+  if(hasKana){
+    const a=toHira(raw.replace(/\s/g,'')),b=toHira(it.jp);
+    if(a===b)return {ok:true};
+    return {ok:normR(kanaToRomaji(a))===normR(kanaToRomaji(b))};
+  }
+  const t=normR(raw);if(!t)return {ok:false};
+  const targets=[it.ro,kanaToRomaji(it.jp)].map(normR);
+  return {ok:targets.includes(t)};
+}
+function buildTypeBox(box,Q){
+  game.typed='';
+  box.innerHTML=`<form class="tbox" id="tForm" autocomplete="off">
+    <input id="tIn" class="tin" type="text" inputmode="${Q.expect==='romaji'?'latin':'text'}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="${Q.expect==='romaji'?'e.g. ka':'e.g. neko or ねこ'}" aria-label="Your answer">
+    <button class="big" type="submit" id="tGo">Check</button>
+  </form>`;
+  $('tForm').onsubmit=e=>{
+    e.preventDefault();if(game.locked)return;
+    const v=$('tIn').value;if(!v.trim()){$('tIn').focus();return}
+    const r=typedCorrect(v,Q);
+    if(r.why&&!r.ok){$('fb-msg').innerHTML=`<small>${esc(r.why)}</small>`;return}
+    game.typed=v.trim();answer(r.ok?1:0);
+  };
+  setTimeout(()=>{try{$('tIn').focus({preventScroll:true})}catch(e){}},50);
+}
+function typeLock(idx){
+  const inp=$('tIn');if(!inp)return;inp.disabled=true;$('tGo').hidden=true;
+  inp.classList.add(idx===1?'t-ok':'t-bad');
 }
 
 /* ---------- WRITING PAD ---------- */
@@ -1270,7 +1345,7 @@ function saveGame(g){
   if(g.saved||!g.log||!g.log.length)return;g.saved=true;
   const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
     score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
-    lessons:[...state.lessons],dir:state.answer==='write'?'write':state.dir,timer:state.time,replay:!!g.replay};
+    lessons:[...state.lessons],dir:state.answer==='write'?'write':state.answer==='type'?'type':state.dir,timer:state.time,replay:!!g.replay};
   const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
   if(!TRACKING_URL)return;
   const out=store.get('outbox')||[];
@@ -1350,6 +1425,7 @@ $('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)];startGame(m);ga
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
+  if(Qk&&Qk.type&&!game.locked)return;   // the text box handles its own keys
   if(Qk&&Qk.write&&!game.locked){
     if(e.key==='Enter'&&!game.checked){e.preventDefault();padCheck(false)}
     else if(game.checked&&(e.key==='y'||e.key==='1')){answer(1)}
