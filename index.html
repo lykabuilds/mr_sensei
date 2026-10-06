@@ -155,7 +155,9 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
 .climbcard[open] summary{margin-bottom:4px}
 
 /* Per-question progress strip: red = mistake */
-.qstrip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;height:10px;width:100%}
+.qstrip{display:grid;gap:3px;height:10px;width:100%;max-width:100%;overflow:hidden}
+.qstrip.dense i{border:0;border-radius:0}
+.qstrip.dense{border-radius:4px}
 .qstrip i{display:block;border-radius:3px;background:var(--panel-2);border:1px solid var(--line)}
 .qstrip i.ok{background:var(--good);border-color:transparent}
 .qstrip i.bad{background:var(--bad);border-color:transparent}
@@ -1204,6 +1206,10 @@ function padCheck(timedOut){
 }
 function renderStrip(el,showCur){
   const g=game;el.innerHTML='';
+  const n=g.qs.length;
+  el.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;   // always fits the width, however many questions
+  el.style.gap=n>80?'0px':n>30?'1px':'3px';
+  el.classList.toggle('dense',n>30);
   g.qs.forEach((_,i)=>{const s=document.createElement('i');if(g.marks[i])s.className=g.marks[i];else if(showCur&&i===g.i)s.className='cur';el.appendChild(s)});
 }
 function next(){
