@@ -369,6 +369,41 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
   .startbar{padding:8px 8px 8px 14px}
   .res-actions .link{margin-left:0;width:100%;text-align:center}
 }
+/* Lessons page */
+.lesson summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.lesson summary::-webkit-details-marker{display:none}
+.lesson .ls-name{font-size:1.02rem;color:var(--fg);font-family:var(--f-body)}
+.lesson .chev{color:var(--sakura);transition:transform .2s}
+.lesson[open] .chev{transform:rotate(180deg)}
+.ls-body{margin-top:14px}
+.lgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.ltile{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.ltile .k{font-size:1.7rem;font-weight:800;line-height:1.1}
+.ltile .r{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.ltile i,.lwords i{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%}
+.ltile:hover,.lwords button:hover{border-color:var(--sakura)}
+.lwords{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lwords button{position:relative;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 26px 10px 12px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.3fr);gap:10px;align-items:baseline}
+.lwords i{top:50%;margin-top:-4px;right:10px}
+.lwords .jp{font-weight:800;font-size:1.15rem;overflow-wrap:anywhere}
+.lwords .ro{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
+.lwords .en{font-size:.88rem}
+.dot-m{background:var(--good)}.dot-l{background:var(--yamabuki)}.dot-w{background:var(--bad)}.dot-n{background:transparent;border:1.5px solid var(--line)}
+.legend i.dot-m,.legend i.dot-l,.legend i.dot-w,.legend i.dot-n{border-radius:50%}
+.lwords .ls-fact{margin:2px 0 6px;border:1px solid var(--sakura);border-radius:12px;padding:12px;background:color-mix(in srgb,var(--sakura) 8%,var(--panel))}
+.ls-fact{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.ls-fact .jp{font-size:1.8rem;font-weight:800;grid-row:span 2}
+.ls-fact .ro{font-family:var(--f-mono);color:var(--muted);font-size:.85rem}
+.ls-fact p{margin:0;font-size:.9rem;line-height:1.5}
+.ls-fact small{grid-column:1 / -1;color:var(--muted);font-size:.78rem}
+.ls-actions{margin-top:14px;display:flex;justify-content:flex-end}
+.ls-actions .big{padding:10px 22px;font-size:1rem}
+@media (max-width:520px){
+  .lwords button{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .lwords .en{grid-column:1 / -1}
+  .ls-actions .big{width:100%}
+}
+
 /* Typed answers */
 .answers.type{display:block}
 .tbox{display:flex;gap:10px;align-items:stretch;width:100%}
@@ -412,6 +447,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
     <h1>Mr <span>Sensei</span> <small class="jp-sub">先生</small></h1>
     <nav class="topnav" id="topnav" aria-label="Main">
       <button class="navbtn" id="installBtn" hidden><b>⤓</b><span>Install</span></button>
+      <button class="navbtn" id="learnBtn"><b>学ぶ</b><span>Lessons</span></button>
       <button class="navbtn" id="libBtn"><b>単語帳</b><span>Library</span></button>
       <button class="navbtn" id="boardBtn"><b>番付</b><span>Ranks</span></button>
       <button class="me" id="meBtn" aria-label="Edit your profile"></button>
@@ -482,6 +518,20 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
       <span class="st" id="f-st"></span>
       <p id="f-txt"></p>
     </div>
+  </section>
+
+  <!-- LESSONS (study without testing) -->
+  <section id="lessonsPage" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="lib-head"><h2>Lessons 学ぶ</h2><button class="ghost" id="lessonsBack">← Back</button></div>
+    <p class="privacy" style="font-size:.88rem">Browse every lesson to study before you play. Tap any kana or word to hear it and see a fun fact. The dot shows how well you know it.</p>
+    <div class="card lib-tools">
+      <div class="row">
+        <div class="seg" id="lsLevel" role="group" aria-label="Level"></div>
+        <input class="search" id="lsQ" type="search" placeholder="Search kana, romaji or English" aria-label="Search lessons">
+      </div>
+      <div class="legend" style="justify-content:flex-start"><span><i class="dot-m"></i>Mastered</span><span><i class="dot-l"></i>Learning</span><span><i class="dot-w"></i>Need work</span><span><i class="dot-n"></i>Not practiced</span></div>
+    </div>
+    <div id="lsList" style="display:flex;flex-direction:column;gap:12px"></div>
   </section>
 
   <!-- PROFILE -->
@@ -976,7 +1026,7 @@ function startGame(items){
   $('factBox').hidden=true;
   show('play');renderQ();
 }
-function show(id){['setup','play','results','library','profile','board'].forEach(s=>$(s).hidden=s!==id);$('topnav').hidden=id==='play';window.scrollTo({top:0})}
+function show(id){['setup','play','results','library','profile','board','lessonsPage'].forEach(s=>$(s).hidden=s!==id);$('topnav').hidden=id==='play';window.scrollTo({top:0})}
 function renderQ(){
   const g=game,Q=g.qs[g.i];g.locked=false;g.t0=performance.now();
   $('h-q').textContent=`${g.i+1} / ${g.qs.length}`;
@@ -1256,6 +1306,58 @@ function renderLibrary(){
 }
 function openLibrary(from){lib.from=from;show('library');renderLibrary()}
 $('libBtn').onclick=()=>openLibrary(currentScreen());
+/* ---------- LESSONS (browse & study) ---------- */
+const ls={level:'all',q:'',from:'setup',open:new Set()};
+function dotClass(it){const st=statusOf(STATS[keyOf(it)]);return {master:'dot-m',learn:'dot-l',weak:'dot-w',new:'dot-n'}[st]}
+function renderLessons(){
+  const seg=$('lsLevel');seg.innerHTML='';
+  [['all','All'],...LEVELS.map(L=>[L.id,L.name])].forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(ls.level===v));b.onclick=()=>{ls.level=v;renderLessons()};seg.appendChild(b)});
+  const q=ls.q.trim().toLowerCase();
+  const list=$('lsList');list.innerHTML='';
+  let shown=0;
+  LEVELS.filter(L=>ls.level==='all'||ls.level===L.id).forEach(L=>{
+    const decks=DECKS.filter(d=>d.level===L.id);
+    const h=document.createElement('p');h.className='step';h.style.margin='6px 2px 0';h.textContent=`${L.name} · ${L.sub}`;
+    let any=false;const frag=document.createDocumentFragment();
+    decks.forEach(d=>{
+      const items=q?d.items.filter(it=>it.jp.includes(q)||it.ro.toLowerCase().includes(q)||(it.en||'').toLowerCase().includes(q)):d.items;
+      if(q&&!items.length&&!d.name.toLowerCase().includes(q))return;
+      any=true;shown++;
+      const seen=d.items.filter(it=>STATS[keyOf(it)]).length,mast=d.items.filter(it=>statusOf(STATS[keyOf(it)])==='master').length;
+      const det=document.createElement('details');det.className='card lesson';if(ls.open.has(d.id)||q)det.open=true;
+      det.ontoggle=()=>{det.open?ls.open.add(d.id):ls.open.delete(d.id)};
+      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}</span></span><span class="chev" aria-hidden="true">▾</span></summary>
+        <div class="ls-body"></div>
+        <div class="ls-fact" hidden></div>
+        <div class="ls-actions"><button class="big" type="button">Practice this lesson</button></div>`;
+      det.querySelector('.ls-name').textContent=d.name;
+      const body=det.querySelector('.ls-body'),fact=det.querySelector('.ls-fact');
+      const showFact=(it,anchor)=>{speak(it.jp);if(anchor)anchor.after(fact);else body.after(fact);const r=STATS[keyOf(it)];fact.hidden=false;
+        fact.innerHTML='<b class="jp"></b><span class="ro"></span><p></p><small></small>';
+        fact.querySelector('.jp').textContent=it.jp;fact.querySelector('.ro').textContent=it.en?`${it.ro} · ${it.en}`:it.ro;
+        fact.querySelector('p').textContent=charFact(it)||'';
+        fact.querySelector('small').textContent=r?`Your accuracy: ${Math.round(r[1]/r[0]*100)}% (${r[1]} of ${r[0]})`:'Not practiced yet';};
+      if(d.items[0].type==='kana'){
+        const g=document.createElement('div');g.className='lgrid';
+        items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='ltile';b.innerHTML=`<i class="${dotClass(it)}"></i><span class="k"></span><span class="r"></span>`;b.querySelector('.k').textContent=it.jp;b.querySelector('.r').textContent=it.ro;b.onclick=()=>showFact(it);g.appendChild(b)});
+        body.appendChild(g);
+      }else{
+        const ul=document.createElement('ul');ul.className='lwords';
+        items.forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML=`<i class="${dotClass(it)}"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>`;b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
+        body.appendChild(ul);
+      }
+      det.querySelector('.ls-actions .big').onclick=()=>{state.levels=new Set([d.level]);state.lessons=new Set([d.id]);startGame()};
+      frag.appendChild(det);
+    });
+    if(any){list.appendChild(h);list.appendChild(frag)}
+  });
+  if(!shown){const p=document.createElement('p');p.className='lib-empty';p.textContent='No lessons match your search.';list.appendChild(p)}
+}
+function openLessons(from){ls.from=from;show('lessonsPage');renderLessons()}
+$('learnBtn').onclick=()=>openLessons(currentScreen()==='lessonsPage'?ls.from:currentScreen());
+$('lessonsBack').onclick=()=>backTo(ls.from);
+$('lsQ').oninput=e=>{ls.q=e.target.value;renderLessons()};
+
 function setStreak(n){const e=$('h-streak');e.textContent=`連続 ${n}`;e.hidden=n<2}
 $('libBack').onclick=()=>backTo(lib.from);
 
@@ -1335,8 +1437,8 @@ function postProfile(){
 }
 $('profBack').onclick=()=>backTo(draft&&draft.from);
 $('meBtn').onclick=()=>openProfile(currentScreen());
-function currentScreen(){return ['setup','results','library','board','profile'].find(id=>!$(id).hidden)||'setup'}
-function backTo(from){if(from==='results'&&game)show('results');else if(from==='library'){show('library');renderLibrary()}else{show('setup');renderSetup()}}
+function currentScreen(){return ['setup','results','library','board','profile','lessonsPage'].find(id=>!$(id).hidden)||'setup'}
+function backTo(from){if(from==='results'&&game)show('results');else if(from==='library'){show('library');renderLibrary()}else if(from==='lessonsPage'){show('lessonsPage')}else{show('setup');renderSetup()}}
 
 /* answer log for the current game */
 function logAnswer(it,ok){const g=game;if(!g.log)g.log=[];g.log.push({deck:it.deck,jp:it.jp,ro:it.ro,ok:ok?1:0,ms:Math.round(performance.now()-(g.t0||performance.now()))})}
