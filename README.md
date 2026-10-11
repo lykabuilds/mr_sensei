@@ -19,6 +19,7 @@ The game is also where I try out a learning workflow: **class materials → stru
 | Feature | What it does |
 |---|---|
 | **Lessons 学ぶ (study mode)** | Browse every lesson without a quiz: kana grids and word lists with romaji and meaning. Tap any item to hear it, see a fun fact and your accuracy. A colored dot shows mastery, and each lesson has a Practice button |
+| **My class 授業** | Lessons from my own Japanese 101 class: Day 2 (dakuon words, small ゃゅょ, small っ, long vowels), Day 3 (katakana words and combos, greetings, classroom phrases) and Day 4 (numbers up to 90,000, counters, age) |
 | **Multi-select levels and lessons** | Choose かな, N5 and/or N4, then any mix of lessons (hiragana rows, dakuten ゛, handakuten ゜, combos like きゃ, katakana, class vocab, numbers, counters, greetings, verbs, adjectives) |
 | **Four-answer quiz** | Colored answer tiles, a countdown timer, more points for faster answers, and streak bonuses |
 | **Mt Fuji climb** | Points move you up 10 stations. Stations where you made a mistake turn red, and the station bars shake when you answer wrong |

@@ -652,7 +652,8 @@ const w=(jp,ro,en)=>({jp,ro,en,type:'word'});
 const LEVELS=[
   {id:'kana',name:'かな',sub:'Kana'},
   {id:'n5',name:'N5',sub:'Beginner'},
-  {id:'n4',name:'N4',sub:'Elementary'}
+  {id:'n4',name:'N4',sub:'Elementary'},
+  {id:'cls',name:'授業',sub:'My class'}
 ];
 
 const DECKS=[
@@ -686,7 +687,21 @@ const DECKS=[
   // N4
   {id:'n4-verb',level:'n4',name:'N4 verbs',items:[w('あつめる','atsumeru','collect'),w('うごく','ugoku','move'),w('えらぶ','erabu','choose'),w('おくる','okuru','send'),w('きめる','kimeru','decide'),w('さがす','sagasu','look for'),w('しらべる','shiraberu','look up / investigate'),w('そだてる','sodateru','raise / bring up'),w('つたえる','tsutaeru','convey'),w('なおす','naosu','fix / repair'),w('はこぶ','hakobu','carry'),w('ひろう','hirou','pick up'),w('まにあう','maniau','be in time'),w('よろこぶ','yorokobu','be glad')]},
   {id:'n4-adv',level:'n4',name:'N4 adverbs',items:[w('きっと','kitto','surely'),w('ぜひ','zehi','by all means'),w('だいたい','daitai','mostly / roughly'),w('とくに','tokuni','especially'),w('なかなか','nakanaka','quite / not easily'),w('もうすぐ','mousugu','soon'),w('ずいぶん','zuibun','considerably'),w('けっして','kesshite','never (+ neg.)'),w('たまに','tamani','occasionally'),w('やっと','yatto','finally')]},
-  {id:'n4-adj',level:'n4',name:'N4 adjectives',items:[w('あさい','asai','shallow'),w('ふかい','fukai','deep'),w('こわい','kowai','scary'),w('ねむい','nemui','sleepy'),w('うれしい','ureshii','happy'),w('かなしい','kanashii','sad'),w('はずかしい','hazukashii','embarrassed'),w('ひどい','hidoi','terrible'),w('ていねい','teinei','polite'),w('ふくざつ','fukuzatsu','complicated'),w('ねっしん','nesshin','enthusiastic'),w('とくべつ','tokubetsu','special')]}
+  {id:'n4-adj',level:'n4',name:'N4 adjectives',items:[w('あさい','asai','shallow'),w('ふかい','fukai','deep'),w('こわい','kowai','scary'),w('ねむい','nemui','sleepy'),w('うれしい','ureshii','happy'),w('かなしい','kanashii','sad'),w('はずかしい','hazukashii','embarrassed'),w('ひどい','hidoi','terrible'),w('ていねい','teinei','polite'),w('ふくざつ','fukuzatsu','complicated'),w('ねっしん','nesshin','enthusiastic'),w('とくべつ','tokubetsu','special')]},
+
+  // MY CLASS (Japanese 101)
+  {id:'c2-dak',level:'cls',name:'Day 2 · Dakuon words',items:[w('がっこう','gakkou','school'),w('ざせき','zaseki','seat'),w('だいがく','daigaku','university'),w('ばしょ','basho','place'),w('かんぱい','kanpai','cheers!'),w('えんぴつ','enpitsu','pencil'),w('てんぷら','tenpura','tempura'),w('ぺこぺこ','pekopeko','very hungry'),w('さんぽ','sanpo','a walk'),w('まど','mado','window'),w('まだ','mada','not yet'),w('すごい','sugoi','great'),w('でんわ','denwa','telephone')]},
+  {id:'c2-yoon',level:'cls',name:'Day 2 · Small ゃゅょ',items:[w('びょういん','byouin','hospital'),w('びよういん','biyouin','beauty salon'),w('きょう','kyou','today'),w('しゅくだい','shukudai','homework'),w('ちょきん','chokin','savings'),w('きゃく','kyaku','guest, customer'),w('しゃしん','shashin','photo'),w('りょこう','ryokou','trip'),w('じゅぎょう','jugyou','class, lesson'),w('ぎゅうにゅう','gyuunyuu','milk'),w('ちゅうい','chuui','caution'),w('じゅうしょ','juusho','address'),w('しゅうまつ','shuumatsu','weekend'),w('とうきょう','toukyou','Tokyo')]},
+  {id:'c2-soku',level:'cls',name:'Day 2 · Small っ & long vowels',items:[w('きって','kitte','stamp'),w('みつ','mitsu','honey'),w('けっこん','kekkon','marriage'),w('いっしょ','issho','together'),w('ざっし','zasshi','magazine'),w('きっぷ','kippu','ticket'),w('しっぱい','shippai','mistake, failure'),w('まっちゃ','matcha','green tea'),w('おかあさん','okaasan','mother'),w('おにいさん','oniisan','older brother'),w('すうじ','suuji','number'),w('せんせい','sensei','teacher'),w('おねえさん','oneesan','older sister'),w('おとうさん','otousan','father'),w('おおきい','ookii','big')]},
+  {id:'c3-kata1',level:'cls',name:'Day 3 · Katakana words',items:[w('シャツ','shatsu','shirt'),w('テキスト','tekisuto','textbook'),w('タクシー','takushii','taxi'),w('スキー','sukii','ski'),w('ステーキ','suteeki','steak'),w('シーツ','shiitsu','bed sheets'),w('ソース','soosu','sauce'),w('テニス','tenisu','tennis'),w('ツナ','tsuna','tuna'),w('ネクタイ','nekutai','necktie'),w('ヒーター','hiitaa','heater'),w('サービス','saabisu','service'),w('ノート','nooto','notebook'),w('メモ','memo','memo, note'),w('マイク','maiku','microphone'),w('トマト','tomato','tomato'),w('タイヤ','taiya','tire'),w('タオル','taoru','towel'),w('トイレ','toire','toilet, restroom')]},
+  {id:'c3-kata2',level:'cls',name:'Day 3 · Katakana combos',items:[w('ユーザー','yuuzaa','user'),w('レストラン','resutoran','restaurant'),w('ランチ','ranchi','lunch'),w('レッスン','ressun','lesson'),w('ワイン','wain','wine'),w('ラーメン','raamen','ramen'),w('スケジュール','sukejuuru','schedule'),w('レモンティー','remontii','lemon tea'),w('チェック','chekku','check'),w('シャンプー','shanpuu','shampoo'),w('オレンジジュース','orenjijuusu','orange juice'),w('インフォメーション','infomeeshon','information'),w('チョコレート','chokoreeto','chocolate'),w('メニュー','menyuu','menu')]},
+  {id:'c3-greet',level:'cls',name:'Day 3 · Greetings',items:[w('はじめまして','hajimemashite','nice to meet you'),w('どうぞよろしくおねがいします','douzo yoroshiku onegaishimasu','please treat me well'),w('おはようございます','ohayou gozaimasu','good morning'),w('こんにちは','konnichiwa','good afternoon (until ~5:30 pm)'),w('こんばんは','konbanwa','good evening (from ~5:30 pm)'),w('おやすみなさい','oyasuminasai','good night'),w('さようなら','sayounara','goodbye'),w('ありがとうございます','arigatou gozaimasu','thank you'),w('すみません','sumimasen','excuse me'),w('おねがいします','onegaishimasu','please'),w('ごめんなさい','gomen nasai','sorry'),w('いいえ、だいじょうぶですよ','iie, daijoubu desu yo','no, it’s okay'),w('いってきます','ittekimasu','I’ll go and come back'),w('いってらっしゃい','itterasshai','please go and come back'),w('ただいま','tadaima','I’m home!'),w('おかえりなさい','okaerinasai','welcome home!'),w('いただきます','itadakimasu','thanks for the meal (before eating)'),w('ごちそうさまでした','gochisousama deshita','thanks for the meal (after eating)')]},
+  {id:'c3-class',level:'cls',name:'Day 3 · Classroom phrases',items:[w('はじめましょう','hajimemashou','let’s begin'),w('おわりましょう','owarimashou','let’s end'),w('きゅうけいしましょう','kyuukei shimashou','let’s take a break'),w('そうしましょう','sou shimashou','let’s do that'),w('わかりましたか','wakarimashita ka','do you understand?'),w('はい、わかります','hai, wakarimasu','yes, I understand'),w('いいえ、わかりません','iie, wakarimasen','no, I don’t understand'),w('もういちど、おねがいします','mou ichido, onegaishimasu','one more time, please'),w('いいです','ii desu','good / no thanks'),w('ちがいます','chigaimasu','no, it’s not (that’s wrong)'),w('なまえ','namae','name'),w('しけん','shiken','exam'),w('しつもんはありますか','shitsumon wa arimasu ka','do you have any questions?')]},
+  {id:'c4-num',level:'cls',name:'Day 4 · Numbers 11–99',items:[w('じゅうよん','juuyon','14'),w('にじゅうご','nijuugo','25'),w('さんじゅう','sanjuu','30'),w('よんじゅうなな','yonjuunana','47'),w('ごじゅうろく','gojuuroku','56'),w('ろくじゅうはち','rokujuuhachi','68'),w('ななじゅうさん','nanajuusan','73'),w('はちじゅうに','hachijuuni','82'),w('きゅうじゅうきゅう','kyuujuukyuu','99'),w('ゼロ','zero','0')]},
+  {id:'c4-big',level:'cls',name:'Day 4 · 100 to 90,000',items:[w('ひゃく','hyaku','100'),w('にひゃく','nihyaku','200'),w('さんびゃく','sanbyaku','300'),w('よんひゃく','yonhyaku','400'),w('ごひゃく','gohyaku','500'),w('ろっぴゃく','roppyaku','600'),w('ななひゃく','nanahyaku','700'),w('はっぴゃく','happyaku','800'),w('きゅうひゃく','kyuuhyaku','900'),w('せん','sen','1,000'),w('にせん','nisen','2,000'),w('さんぜん','sanzen','3,000'),w('よんせん','yonsen','4,000'),w('はっせん','hassen','8,000'),w('いちまん','ichiman','10,000'),w('にまん','niman','20,000'),w('きゅうまん','kyuuman','90,000'),w('せんにひゃくさんじゅうよん','sen nihyaku sanjuu yon','1,234'),w('にせんにじゅうろく','nisen nijuu roku','2,026')]},
+  {id:'c4-cnt',level:'cls',name:'Day 4 · Counters',items:[w('〜まい','mai','counter: flat things'),w('〜ほん','hon','counter: long, thin things'),w('〜さつ','satsu','counter: books, notebooks'),w('〜にん','nin','counter: people'),w('〜こ','ko','counter: small things'),w('〜ひき','hiki','counter: small animals'),w('〜だい','dai','counter: cars, machines'),w('〜ばん','ban','counter: order, number'),w('〜さい','sai','counter: age'),w('いっこ','ikko','1 small thing'),w('じゅっこ','jukko','10 small things'),w('ろっかい','rokkai','6 times'),w('はっさつ','hassatsu','8 books'),w('いっぽん','ippon','1 long thing'),w('さんぼん','sanbon','3 long things'),w('はっぽん','happon','8 long things'),w('さんびき','sanbiki','3 small animals'),w('ろっぴき','roppiki','6 small animals'),w('じゅっぴき','juppiki','10 small animals'),w('さんがい','sangai','3rd floor'),w('さんまい','sanmai','3 flat things')]},
+  {id:'c4-age',level:'cls',name:'Day 4 · Age & 〜つ',items:[w('いっさい','issai','1 year old'),w('はっさい','hassai','8 years old'),w('じゅっさい','jussai','10 years old'),w('はたち','hatachi','20 years old'),w('なんさい','nansai','how old?'),w('ひとつ','hitotsu','1 thing'),w('ふたつ','futatsu','2 things'),w('みっつ','mittsu','3 things'),w('よっつ','yottsu','4 things'),w('いつつ','itsutsu','5 things'),w('むっつ','muttsu','6 things'),w('ななつ','nanatsu','7 things'),w('やっつ','yattsu','8 things'),w('ここのつ','kokonotsu','9 things'),w('とお','too','10 things')]},
+  {id:'c4-sent',level:'cls',name:'Day 4 · Counter sentences',items:[w('りんごをみっつください','ringo o mittsu kudasai','three apples, please'),w('おにぎりをふたつください','onigiri o futatsu kudasai','two rice balls, please'),w('ねこがにひきいます','neko ga nihiki imasu','there are two cats'),w('わたしはにじゅうごさいです','watashi wa nijuugo sai desu','I am 25 years old')]}
 ];
 DECKS.forEach(d=>d.items.forEach(it=>it.deck=d.id));
 
@@ -867,12 +882,23 @@ const WORD_FACT={
   'ほん':'Kanji: 本. It is also the counter for long thin things: いっぽん, にほん, さんぼん.',
   'わたし':'わたし works for everyone. Guys may say ぼく (casual) or おれ (very casual).',
   'こんにちは':'The last は is read "wa" because it began as 今日は, "as for today…"',
-  'こんばんは':'Like こんにちは, the は is read "wa": 今晩は, "as for this evening…"',
+  'こんばんは':'Your teacher\u2019s rule: こんにちは until about 5:30 pm, then こんばんは. The は is read "wa": 今晩は, "as for this evening…"',
   'ありがとうございます':'ありがとう comes from 有り難い, "hard to exist," meaning something rare and precious.',
   'おはようございます':'おはよう comes from はやい (early), so it literally praises you for being early.',
   'すみません':'すみません is also used to say thanks when someone goes out of their way for you.',
   'いただきます':'いただく is a humble verb meaning "to receive," so you are humbly receiving the meal.',
   'し':'',
+  'びょういん':'With a small ょ it means hospital. Write it with a big よ, びよういん, and it becomes beauty salon!',
+  'びよういん':'With a big よ it means beauty salon. Shrink it to ょ, びょういん, and it becomes hospital!',
+  'はたち':'20 years old has its own special word. Coming of Age Day ceremonies are traditionally held for 20-year-olds.',
+  'いちまん':'Unlike じゅう, ひゃく and せん, 10,000 always needs いち: いちまん.',
+  'さんびゃく':'After さん, ひゃく softens to びゃく. Same idea: さんぜん, さんぼん, さんびき.',
+  'ろっぴゃく':'6 shrinks to ろっ and ひゃく pops to ぴゃく.',
+  'はっぴゃく':'8 shrinks to はっ and ひゃく pops to ぴゃく.',
+  'しつもんはありますか':'しつもん = question, は = topic marker (read "wa"), あります = there is, か = question mark.',
+  'ただいま':'Say it when you get home. The person at home answers おかえりなさい.',
+  'おかえりなさい':'The reply to ただいま: "welcome home!"',
+  'いいです':'It means "good", but when someone offers you something it often means "no thanks".',
   'よん':'4 is read よん instead of し because し sounds like 死 (death).',
   'きゅう':'9 can be く, but く sounds like 苦 (suffering), so きゅう is preferred.',
   'なな':'7 can also be read しち, but なな avoids mixing it up with いち (1).',
@@ -881,8 +907,9 @@ const WORD_FACT={
   'いっぴき':'ひき becomes ぴき after a small っ. Compare: にひき, さんびき.'
 };
 
-function splitKana(s){const out=[];for(const ch of s){if(SMALL[ch]&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
-function unitRo(u){if(u==='っ')return 'pause';if(u.length===2&&KR[u])return KR[u];return KR[u]||u}
+const SMALL_RE=/[ゃゅょャュョぁぃぅぇぉァィゥェォ]/;
+function splitKana(s){const out=[];for(const ch of s){if(SMALL_RE.test(ch)&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
+function unitRo(u){if(u==='っ'||u==='ッ')return 'pause';if(u==='ー')return 'long';return kanaToRomaji(u)||u}
 function charFact(it){
   const jp=it.jp;
   if(it.type==='kana'){
@@ -1110,6 +1137,7 @@ function answer(idx){
 
 /* ---------- TYPED ANSWERS ---------- */
 const SMALL_ANY={'ゃ':'a','ゅ':'u','ょ':'o'};
+const SMALL_V={'ぁ':'a','ぃ':'i','ぅ':'u','ぇ':'e','ぉ':'o'};
 function toHira(s){return s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))}
 function kanaToRomaji(jp){
   const units=splitKana(toHira(jp));let out='',dbl=false;
@@ -1117,7 +1145,8 @@ function kanaToRomaji(jp){
     if(u==='っ'){dbl=true;return}
     if(u==='ー'){out+=out.slice(-1);return}
     let r;
-    if(u.length===2&&SMALL_ANY[u[1]]){const b=KR[u[0]]||'';r=/^(shi|chi|ji)$/.test(b)?b.slice(0,-1)+SMALL_ANY[u[1]]:b.slice(0,-1)+'y'+SMALL_ANY[u[1]]}
+    if(u.length===2&&SMALL_V[u[1]]){const b=KR[u[0]]||'';r=b.slice(0,-1)+SMALL_V[u[1]]}
+    else if(u.length===2&&SMALL_ANY[u[1]]){const b=KR[u[0]]||'';r=/^(shi|chi|ji)$/.test(b)?b.slice(0,-1)+SMALL_ANY[u[1]]:b.slice(0,-1)+'y'+SMALL_ANY[u[1]]}
     else r=KR[u]||'';
     if(dbl&&r){r=r[0]+r;dbl=false}
     out+=r;
