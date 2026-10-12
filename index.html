@@ -379,6 +379,21 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .ls-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .ls-quick{font:inherit;font-size:.82rem;font-weight:600;color:var(--sakura);background:transparent;border:1px solid var(--sakura);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .ls-quick:hover,.ls-quick:focus-visible{background:var(--sakura);color:#1a1530}
+.qsheet{position:fixed;inset:0;z-index:50;background:rgba(8,9,24,.66);display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.qsheet[hidden]{display:none!important}
+.qsheet .card{width:min(100%,460px);margin-bottom:max(8px,env(safe-area-inset-bottom,0px));box-shadow:0 -8px 40px rgba(0,0,0,.45)}
+.qsheet h3{margin:0;font-size:1.05rem;color:var(--fg)}
+.qsheet .sub{margin:-8px 0 0;color:var(--muted);font-size:.86rem}
+.qmodes{display:grid;gap:10px}
+.qmode{font:inherit;text-align:left;display:grid;grid-template-columns:44px 1fr;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);cursor:pointer}
+.qmode:hover,.qmode:focus-visible{border-color:var(--sakura)}
+.qmode.last{border-color:var(--sakura)}
+.qmode:disabled{opacity:.45;cursor:not-allowed;border-color:var(--line)}
+.qmode .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:1.3rem;background:var(--ink)}
+.qmode b{display:block;font-size:.98rem}
+.qmode small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+.qsheet .cancel{align-self:center}
+.wbox.wide{width:100%;max-width:520px;aspect-ratio:2/1;background-image:linear-gradient(to bottom,transparent calc(50% - 1px),rgba(91,94,143,.22) calc(50% - 1px),rgba(91,94,143,.22) calc(50% + 1px),transparent calc(50% + 1px))}
 .lesson[open] .chev{transform:rotate(180deg)}
 .ls-body{margin-top:14px}
 .lgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
@@ -526,6 +541,14 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
   </section>
 
   <!-- LESSONS (study without testing) -->
+  <div class="qsheet" id="qSheet" hidden role="dialog" aria-modal="true" aria-labelledby="qTitle">
+    <div class="card">
+      <h3 id="qTitle">Quick test</h3>
+      <p class="sub" id="qSub">5 questions · how do you want to answer?</p>
+      <div class="qmodes" id="qModes"></div>
+      <button class="link cancel" id="qCancel" type="button">Cancel</button>
+    </div>
+  </div>
   <section id="lessonsPage" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="lib-head"><h2>Lessons 学ぶ</h2><button class="ghost" id="lessonsBack">← Back</button></div>
     <p class="privacy" style="font-size:.88rem">Browse every lesson to study before you play. Tap any kana or word to hear it and see a fun fact. The dot shows how well you know it.</p>
@@ -1009,7 +1032,7 @@ function renderSetup(){
   segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
   segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
   segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍']],'answer');
-  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana questions show the romaji and you write the character. You check your own writing. Word questions stay multiple choice. Writing games are not ranked on the leaderboard.':'';
+  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana: see the romaji, write the character. Words: see the English, write the word (up to 6 kana; longer phrases stay multiple choice). You check your own writing. Writing games are not ranked on the leaderboard.':'';
   const pool=poolItems();
   const n=state.count?Math.min(state.count,pool.length):pool.length;
   $('startBtn').disabled=!pool.length;
@@ -1017,6 +1040,8 @@ function renderSetup(){
   const dirL={fwd:'日本語 → ?',rev:'? → 日本語',mix:'Mixed'}[state.dir];
   $('setSummary').textContent=`${state.answer==='write'?'Write kana · ':state.answer==='type'?'Type answers · ':''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
 }
+const WRITE_MAX=6;  // longer words and phrases stay multiple choice in write mode
+function canWrite(it){return it.type==='kana'||(/^[\u3040-\u30FF]+$/.test(it.jp)&&[...it.jp].length<=WRITE_MAX)}
 function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.items)}
 
 /* ---------- GAME ---------- */
@@ -1026,6 +1051,10 @@ function makeQuestion(it,pool){
     if(isKana)return {it,type:true,expect:'romaji',dir:'fwd',ask:'Type the romaji',q:it.jp,hint:'',qClass:it.jp.length>4?'long':'',options:[]};
     const n=splitKana(it.jp).length;
     return {it,type:true,expect:'jp',dir:'rev',ask:'Say it in Japanese',q:it.en,hint:state.hints?`${n} sound${n>1?'s':''} · type romaji or kana`:'type romaji or kana',qClass:'latin'+(it.en.length>6?' long':''),options:[]};
+  }
+  if(!isKana&&state.answer==='write'&&canWrite(it)){
+    const n=[...it.jp].length;
+    return {it,write:true,dir:'rev',ask:'Write this in Japanese',q:it.en,hint:state.hints?`${it.ro} · ${n} character${n>1?'s':''}`:`${n} character${n>1?'s':''}`,qClass:'latin'+(it.en.length>6?' long':''),options:[]};
   }
   if(isKana&&state.answer==='write'){
     const kata=/[\u30A0-\u30FF]/.test(it.jp);
@@ -1197,13 +1226,13 @@ let pad=null;
 function buildPad(box,Q){
   game.checked=false;game.timedOut=false;
   box.innerHTML=`<div class="wpad">
-    <div class="wbox" id="wbox"><canvas id="wcv" aria-label="Writing area. Draw the kana here."></canvas><div class="wghost" id="wghost" hidden></div></div>
+    <div class="wbox${Q.it.type==='kana'?'':' wide'}" id="wbox"><canvas id="wcv" aria-label="Writing area. Draw the kana here."></canvas><div class="wghost" id="wghost" hidden></div></div>
     <div class="wtools" id="wTools"><button class="ghost" id="wUndo" type="button">Undo</button><button class="ghost" id="wClear" type="button">Clear</button><button class="big" id="wCheck" type="button">Check</button></div>
     <div class="wgrade" id="wGrade" hidden><p>Does yours match? The pink shape is the correct one.</p><div class="wgrade-btns"><button class="gbtn ok" id="wYes" type="button">✓ I got it</button><button class="gbtn no" id="wNo" type="button">✗ Not quite</button></div></div>
   </div>`;
   const cv=$('wcv'),wb=$('wbox');
-  pad={cv,ctx:cv.getContext('2d'),strokes:[],cur:null,size:0};
-  const fit=()=>{const r=wb.getBoundingClientRect(),d=window.devicePixelRatio||1;pad.size=r.width;cv.width=Math.round(r.width*d);cv.height=Math.round(r.width*d);pad.ctx.setTransform(d,0,0,d,0,0);redrawPad()};
+  pad={cv,ctx:cv.getContext('2d'),strokes:[],cur:null,size:0,w:0,h:0};
+  const fit=()=>{const r=wb.getBoundingClientRect(),d=window.devicePixelRatio||1;pad.w=r.width;pad.h=r.height||r.width;pad.size=Math.min(pad.w,pad.h);cv.width=Math.round(pad.w*d);cv.height=Math.round(pad.h*d);pad.ctx.setTransform(d,0,0,d,0,0);redrawPad()};
   fit();
   const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]};
   cv.onpointerdown=e=>{if(game.checked||game.locked)return;e.preventDefault();cv.setPointerCapture(e.pointerId);pad.cur=[pt(e)];pad.strokes.push(pad.cur);redrawPad()};
@@ -1214,16 +1243,16 @@ function buildPad(box,Q){
   $('wCheck').onclick=()=>padCheck(false);
   $('wYes').onclick=()=>answer(1);
   $('wNo').onclick=()=>answer(0);
-  const g=$('wghost');g.textContent=Q.it.jp;g.style.fontSize=(Q.it.jp.length>1?36:72)+'cqh';
+  const g=$('wghost');g.textContent=Q.it.jp;const L=[...Q.it.jp].length;g.style.fontSize=Q.it.type==='kana'?(L>1?36:72)+'cqh':`min(70cqh,${Math.floor(88/L)}cqw)`;
 }
 function redrawPad(){
-  if(!pad)return;const c=pad.ctx,S=pad.size;c.clearRect(0,0,S,S);
+  if(!pad)return;const c=pad.ctx,S=pad.size,W=pad.w||S,H=pad.h||S;c.clearRect(0,0,W,H);
   c.lineCap='round';c.lineJoin='round';c.strokeStyle='#1c1e3d';c.lineWidth=Math.max(5,S*.035);
-  pad.strokes.forEach(st=>{c.beginPath();st.forEach(([x,y],i)=>i?c.lineTo(x*S,y*S):c.moveTo(x*S,y*S));if(st.length===1)c.lineTo(st[0][0]*S+.1,st[0][1]*S);c.stroke()});
+  pad.strokes.forEach(st=>{c.beginPath();st.forEach(([x,y],i)=>i?c.lineTo(x*W,y*H):c.moveTo(x*W,y*H));if(st.length===1)c.lineTo(st[0][0]*W+.1,st[0][1]*H);c.stroke()});
 }
 function padCheck(timedOut){
   const g=game;if(!g||g.locked||g.checked)return;
-  if(!timedOut&&!pad.strokes.length){$('fb-msg').innerHTML='<small>Draw the character first, then tap Check.</small>';return}
+  if(!timedOut&&!pad.strokes.length){$('fb-msg').innerHTML='<small>Write your answer first, then tap Check.</small>';return}
   g.checked=true;g.timedOut=timedOut;cancelAnimationFrame(g.raf);if(timedOut)g.left=0;
   if(timedOut&&!pad.strokes.length)return answer(0);
   $('wghost').hidden=false;$('wTools').hidden=true;$('wGrade').hidden=false;
@@ -1251,7 +1280,7 @@ function finish(){
   $('r-acc').textContent=acc+'%';$('r-right').textContent=`${g.right}/${total}`;$('r-streak').textContent=g.best;
   $('r-kanji').textContent=acc===100?'満点':acc>=80?'合格':acc>=50?'もう少し':'がんばって';
   const key='best:'+g.lessonKey;const prev=store.get(key);
-  if(g.quick)$('r-best').textContent=`Quick test · ${g.quick.name}`;
+  if(g.quick)$('r-best').textContent=`Quick test · ${g.quick.name} · ${{tap:'Tap',type:'Type',write:'Write'}[g.answer]||'Tap'}`;
   else if(!g.replay&&(!prev||g.score>prev)){store.set(key,g.score);$('r-best').textContent=prev?`New best for these lessons (was ${prev.toLocaleString()})`:'First score saved for these lessons'}
   else $('r-best').textContent=prev?`Best for these lessons: ${prev.toLocaleString()}`:'';
   const lad=$('r-ladder');lad.innerHTML='';
@@ -1296,7 +1325,7 @@ $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
 $('quitBtn').onclick=()=>{if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
 $('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
-$('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick):startGame();
+$('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick,game.answer):startGame();
 $('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
 /* ---------- WORD LIBRARY ---------- */
 const DECK_BY_ID=Object.fromEntries(DECKS.map(d=>[d.id,d]));
@@ -1388,7 +1417,7 @@ function renderLessons(){
         body.appendChild(ul);
       }
       det.querySelector('.ls-actions .big').onclick=()=>{state.levels=new Set([d.level]);state.lessons=new Set([d.id]);startGame()};
-      det.querySelector('.ls-quick').onclick=e=>{e.preventDefault();e.stopPropagation();quickTest(d)};
+      det.querySelector('.ls-quick').onclick=e=>{e.preventDefault();e.stopPropagation();quickPick(d)};
       frag.appendChild(det);
     });
     if(any){list.appendChild(h);list.appendChild(frag)}
@@ -1397,12 +1426,36 @@ function renderLessons(){
 }
 /* Quick test: 5 questions from one lesson, weakest and unpractised words first */
 const QUICK_N=5;
-function quickTest(d){
-  const rank={weak:0,new:1,learn:2,master:3};
-  const picked=shuffle(d.items).map(it=>({it,r:rank[statusOf(STATS[keyOf(it)])]})).sort((a,b)=>a.r-b.r).slice(0,QUICK_N).map(x=>x.it);
-  state.levels=new Set([d.level]);state.lessons=new Set([d.id]);
-  startGame(picked);game.quick=d;
+const QUICK_MODES=[['tap','👆','Tap','Pick from 4 choices'],['type','⌨','Type','Type the romaji or the Japanese'],['write','✍','Write','Write the kana on a drawing pad']];
+function quickPick(d){
+  const qs=$('qSheet'),box=$('qModes');box.innerHTML='';
+  $('qTitle').textContent=`Quick test · ${d.name}`;
+  const writable=d.items.filter(canWrite).length;
+  const last=store.get('quickMode')||'tap';
+  QUICK_MODES.forEach(([m,ic,name,desc])=>{
+    const off=m==='write'&&!writable;
+    const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
+    b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
+    b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
+    b.querySelector('small').textContent=off?'Not available here: these phrases are too long to write':m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
+    box.appendChild(b);
+  });
+  qs.hidden=false;box.querySelector('.last,button:not(:disabled)')?.focus();
 }
+function quickTest(d,mode){
+  mode=mode||'tap';
+  const rank={weak:0,new:1,learn:2,master:3};
+  const pref=mode==='write'?(it=>canWrite(it)?0:1):(()=>0);   // in write mode, prefer words you can actually write
+  const picked=shuffle(d.items).map(it=>({it,r:rank[statusOf(STATS[keyOf(it)])],p:pref(it)})).sort((a,b)=>a.p-b.p||a.r-b.r).slice(0,QUICK_N).map(x=>x.it);
+  state.levels=new Set([d.level]);state.lessons=new Set([d.id]);
+  const keep=state.answer;state.answer=mode;   // use the chosen mode for this test only
+  startGame(picked);game.quick=d;game.answer=mode;
+  state.answer=keep;
+}
+$('qCancel').onclick=()=>{$('qSheet').hidden=true};
+$('qSheet').onclick=e=>{if(e.target.id==='qSheet')$('qSheet').hidden=true};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('qSheet').hidden)$('qSheet').hidden=true});
 function openLessons(from){ls.from=from;show('lessonsPage');renderLessons()}
 $('learnBtn').onclick=()=>openLessons(currentScreen()==='lessonsPage'?ls.from:currentScreen());
 $('lessonsBack').onclick=()=>backTo(ls.from);
@@ -1497,7 +1550,7 @@ function saveGame(g){
   if(g.saved||!g.log||!g.log.length)return;g.saved=true;
   const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
     score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
-    lessons:[...state.lessons],dir:state.answer==='write'?'write':state.answer==='type'?'type':state.dir,timer:state.time,replay:!!g.replay};
+    lessons:[...state.lessons],dir:(g.answer||state.answer)==='write'?'write':(g.answer||state.answer)==='type'?'type':state.dir,timer:state.time,replay:!!g.replay};
   const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
   if(!TRACKING_URL)return;
   const out=store.get('outbox')||[];
@@ -1573,7 +1626,7 @@ $('copyCsv').onclick=()=>{
 };
 function fallbackCopy(text,done){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){$('csvToast').textContent='Copy failed. Try again in another browser.'}ta.remove()}
 
-$('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)],q=game.quick;startGame(m);game.replay=true;if(q)game.quick=q};
+$('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)],q=game.quick,a=game.answer,keep=state.answer;if(a)state.answer=a;startGame(m);state.answer=keep;game.replay=true;if(q){game.quick=q;game.answer=a}};
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
