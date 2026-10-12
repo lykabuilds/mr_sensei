@@ -18,7 +18,7 @@ The game is also where I try out a learning workflow: **class materials → stru
 
 | Feature | What it does |
 |---|---|
-| **Lessons 学ぶ (study mode)** | Browse every lesson without a quiz: kana grids and word lists with romaji and meaning. Tap any item to hear it, see a fun fact and your accuracy. A colored dot shows mastery, and each lesson has a Practice button |
+| **Lessons 学ぶ (study mode)** | Browse every lesson without a quiz: kana grids and word lists with romaji and meaning. Tap any item to hear it, see a fun fact and your accuracy. A colored dot shows mastery, and each lesson has a Practice button. A **Quick test** button on every lesson card gives a 5-question check, weakest and unpractised words first, then takes you back to the lessons |
 | **Topic lessons in N5** | Every word from my Japanese 101 class, grouped by topic rather than by class day: greetings, classroom phrases, school, people and family, food, places, home, nature and animals, time, useful words, adjectives, verbs, numbers up to 90,000, counters and age. Each word appears in one lesson only |
 | **Multi-select levels and lessons** | Choose かな, N5 and/or N4, then any mix of lessons (hiragana rows, dakuten ゛, handakuten ゜, combos like きゃ, katakana, class vocab, numbers, counters, greetings, verbs, adjectives) |
 | **Four-answer quiz** | Colored answer tiles, a countdown timer, more points for faster answers, and streak bonuses |

@@ -376,6 +376,9 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .lesson summary::-webkit-details-marker{display:none}
 .lesson .ls-name{font-size:1.02rem;color:var(--fg);font-family:var(--f-body)}
 .lesson .chev{color:var(--sakura);transition:transform .2s}
+.ls-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ls-quick{font:inherit;font-size:.82rem;font-weight:600;color:var(--sakura);background:transparent;border:1px solid var(--sakura);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.ls-quick:hover,.ls-quick:focus-visible{background:var(--sakura);color:#1a1530}
 .lesson[open] .chev{transform:rotate(180deg)}
 .ls-body{margin-top:14px}
 .lgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
@@ -1248,7 +1251,8 @@ function finish(){
   $('r-acc').textContent=acc+'%';$('r-right').textContent=`${g.right}/${total}`;$('r-streak').textContent=g.best;
   $('r-kanji').textContent=acc===100?'満点':acc>=80?'合格':acc>=50?'もう少し':'がんばって';
   const key='best:'+g.lessonKey;const prev=store.get(key);
-  if(!g.replay&&(!prev||g.score>prev)){store.set(key,g.score);$('r-best').textContent=prev?`New best for these lessons (was ${prev.toLocaleString()})`:'First score saved for these lessons'}
+  if(g.quick)$('r-best').textContent=`Quick test · ${g.quick.name}`;
+  else if(!g.replay&&(!prev||g.score>prev)){store.set(key,g.score);$('r-best').textContent=prev?`New best for these lessons (was ${prev.toLocaleString()})`:'First score saved for these lessons'}
   else $('r-best').textContent=prev?`Best for these lessons: ${prev.toLocaleString()}`:'';
   const lad=$('r-ladder');lad.innerHTML='';
   const nNew=g.newFacts.length;
@@ -1278,6 +1282,8 @@ function finish(){
     li.children[0].textContent=it.jp;li.children[1].textContent=it.ro;li.children[2].textContent=it.en||'';
     ul.appendChild(li);
   });
+  $('againBtn').textContent=g.quick?'Test again':'Play again';
+  $('changeBtn').textContent=g.quick?'Back to lessons':'Change lessons';
   show('results');
 }
 
@@ -1290,8 +1296,8 @@ $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
 $('quitBtn').onclick=()=>{if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
 $('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
-$('againBtn').onclick=()=>startGame();
-$('changeBtn').onclick=()=>{show('setup');renderSetup()};
+$('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick):startGame();
+$('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
 /* ---------- WORD LIBRARY ---------- */
 const DECK_BY_ID=Object.fromEntries(DECKS.map(d=>[d.id,d]));
 const keyOf=it=>it.deck+'|'+it.jp;
@@ -1361,7 +1367,7 @@ function renderLessons(){
       const seen=d.items.filter(it=>STATS[keyOf(it)]).length,mast=d.items.filter(it=>statusOf(STATS[keyOf(it)])==='master').length;
       const det=document.createElement('details');det.className='card lesson';if(ls.open.has(d.id)||q)det.open=true;
       det.ontoggle=()=>{det.open?ls.open.add(d.id):ls.open.delete(d.id)};
-      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}</span></span><span class="chev" aria-hidden="true">▾</span></summary>
+      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
         <div class="ls-body"></div>
         <div class="ls-fact" hidden></div>
         <div class="ls-actions"><button class="big" type="button">Practice this lesson</button></div>`;
@@ -1382,11 +1388,20 @@ function renderLessons(){
         body.appendChild(ul);
       }
       det.querySelector('.ls-actions .big').onclick=()=>{state.levels=new Set([d.level]);state.lessons=new Set([d.id]);startGame()};
+      det.querySelector('.ls-quick').onclick=e=>{e.preventDefault();e.stopPropagation();quickTest(d)};
       frag.appendChild(det);
     });
     if(any){list.appendChild(h);list.appendChild(frag)}
   });
   if(!shown){const p=document.createElement('p');p.className='lib-empty';p.textContent='No lessons match your search.';list.appendChild(p)}
+}
+/* Quick test: 5 questions from one lesson, weakest and unpractised words first */
+const QUICK_N=5;
+function quickTest(d){
+  const rank={weak:0,new:1,learn:2,master:3};
+  const picked=shuffle(d.items).map(it=>({it,r:rank[statusOf(STATS[keyOf(it)])]})).sort((a,b)=>a.r-b.r).slice(0,QUICK_N).map(x=>x.it);
+  state.levels=new Set([d.level]);state.lessons=new Set([d.id]);
+  startGame(picked);game.quick=d;
 }
 function openLessons(from){ls.from=from;show('lessonsPage');renderLessons()}
 $('learnBtn').onclick=()=>openLessons(currentScreen()==='lessonsPage'?ls.from:currentScreen());
@@ -1558,7 +1573,7 @@ $('copyCsv').onclick=()=>{
 };
 function fallbackCopy(text,done){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){$('csvToast').textContent='Copy failed. Try again in another browser.'}ta.remove()}
 
-$('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)];startGame(m);game.replay=true};
+$('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)],q=game.quick;startGame(m);game.replay=true;if(q)game.quick=q};
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
