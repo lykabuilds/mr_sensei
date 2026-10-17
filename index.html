@@ -79,6 +79,21 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
 .chip[aria-pressed="true"]{border-color:var(--sakura);background:color-mix(in srgb,var(--sakura) 18%,var(--panel-2))}
 .chip[aria-pressed="true"]::before{content:"✓";color:var(--sakura);font-weight:800}
 .empty{color:var(--muted);font-size:.9rem;margin:0}
+.subgroup{border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel-2) 55%,transparent)}
+.subgroup>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px}
+.subgroup>summary::-webkit-details-marker{display:none}
+.subgroup .sg-name{font-weight:800;font-size:.92rem;flex:1;min-width:0}
+.subgroup .sg-n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+.subgroup .sg-n.on{color:var(--sakura)}
+.subgroup .sg-all{padding:4px 6px}
+.subgroup .chev{color:var(--sakura);font-size:.8rem;transition:transform .2s}
+.subgroup[open] .chev{transform:rotate(180deg)}
+.subgroup>.chips{padding:0 12px 12px}
+.sg-title{margin:10px 2px -4px;font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--sakura)}
+.clockface{margin:2px 0}
+.clockface svg{display:block}
+.answers.ck .txt{word-break:keep-all;overflow-wrap:anywhere;font-size:.95em}
+.ck-note>p{margin:0 0 10px;color:var(--muted);font-size:.9rem}
 .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .opt{display:flex;flex-direction:column;gap:6px;min-width:0}
 .opt label{font-size:.82rem;color:var(--muted);font-weight:700}
@@ -519,6 +534,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
     <div class="prompt" id="promptBox">
       <button class="hear" id="hearBtn" hidden>Hear it</button>
       <div class="ask" id="p-ask">What is this?</div>
+      <div class="clockface" id="p-clock" hidden></div>
       <div class="q" id="p-q">か</div>
       <div class="hint" id="p-hint"></div>
       <div class="timer" id="timerBar"><i id="timerFill"></i></div>
@@ -717,19 +733,103 @@ const DECKS=[
   {id:'c4-big',level:'n5',name:'Numbers 100–1,000,000',items:[w('ひゃく','hyaku','100'),w('にひゃく','nihyaku','200'),w('さんびゃく','sanbyaku','300'),w('よんひゃく','yonhyaku','400'),w('ごひゃく','gohyaku','500'),w('ろっぴゃく','roppyaku','600'),w('ななひゃく','nanahyaku','700'),w('はっぴゃく','happyaku','800'),w('きゅうひゃく','kyuuhyaku','900'),w('せん','sen','1,000'),w('にせん','nisen','2,000'),w('さんぜん','sanzen','3,000'),w('よんせん','yonsen','4,000'),w('はっせん','hassen','8,000'),w('いちまん','ichiman','10,000'),w('にまん','niman','20,000'),w('きゅうまん','kyuuman','90,000'),w('せんにひゃくさんじゅうよん','sen nihyaku sanjuu yon','1,234'),w('にせんにじゅうろく','nisen nijuu roku','2,026'),w('じゅうまん','juuman','100,000'),w('ひゃくまん','hyakuman','1,000,000'),w('じゅうにまんろくせんひゃく','juuniman rokusen hyaku','126,100'),w('ごじゅうろくまんよんせんにひゃく','gojuurokuman yonsen nihyaku','564,200'),w('きゅうじゅうにまんさんぜん','kyuujuuniman sanzen','923,000')]},
   {id:'n5-cnt',level:'n5',name:'Counters 〜つ',items:[w('ひとつ','hitotsu','1 thing'),w('ふたつ','futatsu','2 things'),w('みっつ','mittsu','3 things'),w('よっつ','yottsu','4 things'),w('いつつ','itsutsu','5 things'),w('むっつ','muttsu','6 things'),w('ななつ','nanatsu','7 things'),w('やっつ','yattsu','8 things'),w('ここのつ','kokonotsu','9 things'),w('とお','too','10 things')]},
   {id:'c4-cnt',level:'n5',name:'Counters & sound changes',items:[w('〜まい','mai','counter: flat things'),w('〜ほん','hon','counter: long, thin things'),w('〜さつ','satsu','counter: books, notebooks'),w('〜にん','nin','counter: people'),w('〜こ','ko','counter: small things'),w('〜ひき','hiki','counter: small animals'),w('〜だい','dai','counter: cars, machines'),w('〜ばん','ban','counter: order, number'),w('〜さい','sai','counter: age'),w('さんがい','sangai','3rd floor'),w('さんまい','sanmai','3 flat things'),w('〜かい','kai','counter: times, floors'),w('ひとり','hitori','1 person'),w('ふたり','futari','2 people'),w('よにん','yonin','4 people'),w('にだい','nidai','2 cars, machines'),w('ごまい','gomai','5 flat things'),w('いちばん','ichiban','number one, the best'),w('ごばんめ','gobanme','5th')]},
-  {id:'n5-howmany',level:'n5',name:'How many? なん + counter',items:[w('いくつ','ikutsu','how many (things)?'),w('なんにん','nannin','how many people?'),w('おいくつ','oikutsu','how old? (polite)'),w('なんまい','nanmai','how many flat things?'),w('なんぼん','nanbon','how many long things?'),w('なんさつ','nansatsu','how many books?'),w('なんかい','nankai','how many times?'),w('なんがい','nangai','what floor?'),w('なんこ','nanko','how many small things?'),w('なんびき','nanbiki','how many small animals?'),w('なんだい','nandai','how many cars, machines?'),w('なんばん','nanban','what number?')]},
+  {id:'n5-howmany',level:'n5',name:'How many? なん〜',items:[w('いくつ','ikutsu','how many (things)?'),w('なんにん','nannin','how many people?'),w('おいくつ','oikutsu','how old? (polite)'),w('なんまい','nanmai','how many flat things?'),w('なんぼん','nanbon','how many long things?'),w('なんさつ','nansatsu','how many books?'),w('なんかい','nankai','how many times?'),w('なんがい','nangai','what floor?'),w('なんこ','nanko','how many small things?'),w('なんびき','nanbiki','how many small animals?'),w('なんだい','nandai','how many cars, machines?'),w('なんばん','nanban','what number?')]},
   {id:'c4-age',level:'n5',name:'Age 〜さい',items:[w('いっさい','issai','1 year old'),w('はっさい','hassai','8 years old'),w('じゅっさい','jussai','10 years old'),w('はたち','hatachi','20 years old'),w('なんさい','nansai','how old?')]},
   {id:'c4-sent',level:'n5',name:'Counter sentences',items:[w('りんごをみっつください','ringo o mittsu kudasai','three apples, please'),w('おにぎりをふたつください','onigiri o futatsu kudasai','two rice balls, please'),w('ねこがにひきいます','neko ga nihiki imasu','there are two cats'),w('わたしはにじゅうごさいです','watashi wa nijuugo sai desu','I am 25 years old'),w('きっぷはいくらですか','kippu wa ikura desu ka','how much is the ticket?'),w('このかばんはいくらですか','kono kaban wa ikura desu ka','how much is this bag?'),w('かみをにまいください','kami o nimai kudasai','two sheets of paper, please'),w('ペンがさんぼんあります','pen ga sanbon arimasu','there are three pens'),w('ほんをいっさつかいました','hon o issatsu kaimashita','I bought one book'),w('あめをごこたべました','ame o goko tabemashita','I ate five candies'),w('トイレはなんがいですか','toire wa nangai desu ka','what floor is the restroom on?'),w('わたしはいちばんです','watashi wa ichiban desu','I’m number one!')]},
-  {id:'n5-pattern',level:'n5',name:'The 1-3-6-8-10 pattern (counters & minutes)',items:[w('いっぽん','ippon','1 long thing'),w('さんぼん','sanbon','3 long things'),w('ろっぽん','roppon','6 long things'),w('はっぽん','happon','8 long things'),w('じゅっぽん','juppon','10 long things'),w('いっぴき','ippiki','1 small animal'),w('さんびき','sanbiki','3 small animals'),w('ろっぴき','roppiki','6 small animals'),w('はっぴき','happiki','8 small animals'),w('じゅっぴき','juppiki','10 small animals'),w('いっこ','ikko','1 small thing'),w('さんこ','sanko','3 small things'),w('ろっこ','rokko','6 small things'),w('はっこ','hakko','8 small things'),w('じゅっこ','jukko','10 small things'),w('いっかい','ikkai','once'),w('さんかい','sankai','3 times'),w('ろっかい','rokkai','6 times'),w('はっかい','hakkai','8 times'),w('じゅっかい','jukkai','10 times'),w('いっさつ','issatsu','1 book'),w('さんさつ','sansatsu','3 books'),w('ろくさつ','rokusatsu','6 books'),w('はっさつ','hassatsu','8 books'),w('じゅっさつ','jussatsu','10 books'),w('いっぷん','ippun','1 min'),w('さんぷん','sanpun','3 min'),w('ろっぷん','roppun','6 min'),w('はっぷん','happun','8 min'),w('じゅっぷん','juppun','10 min')]},
-  {id:'n5-hours',level:'n5',name:'Telling time: hours じ',items:[w('いまなんじですか','ima nanji desu ka','what time is it? (polite)'),w('いまなんじ','ima nanji','what time is it? (casual)'),w('なんじ','nanji','what time?'),w('いちじ','ichiji','1:00'),w('にじ','niji','2:00'),w('さんじ','sanji','3:00'),w('よじ','yoji','4:00'),w('ごじ','goji','5:00'),w('ろくじ','rokuji','6:00'),w('しちじ','shichiji','7:00'),w('はちじ','hachiji','8:00'),w('くじ','kuji','9:00'),w('じゅうじ','juuji','10:00'),w('じゅういちじ','juuichiji','11:00'),w('じゅうにじ','juuniji','12:00'),w('ごぜん','gozen','a.m.'),w('ごご','gogo','p.m.'),w('ちょうど','choudo','exactly'),w('しょうご','shougo','noon'),w('れいじ','reiji','midnight (0:00)')]},
-  {id:'n5-mins',level:'n5',name:'Telling time: minutes ふん・ぷん',items:[w('なんぷん','nanpun','how many minutes?'),w('にふん','nifun','2 min'),w('よんぷん','yonpun','4 min'),w('ごふん','gofun','5 min'),w('ななふん','nanafun','7 min'),w('きゅうふん','kyuufun','9 min'),w('じゅうごふん','juugofun','15 min'),w('にじゅっぷん','nijuppun','20 min'),w('さんじゅっぷん','sanjuppun','30 min'),w('さんじゅうさんぷん','sanjuusanpun','33 min'),w('よんじゅうごふん','yonjuugofun','45 min'),w('ごじゅっぷん','gojuppun','50 min'),w('はん','han','half past (:30)')]},
-  {id:'n5-clock',level:'n5',name:'What time is it? なんじ',items:[w('ごぜんくじじゅうごふん','gozen kuji juugofun','9:15 a.m.'),w('ごごさんじはん','gogo sanji han','3:30 p.m.'),w('ごごしちじはん','gogo shichiji han','7:30 p.m.'),w('ちょうどじゅうじ','choudo juuji','10:00 sharp'),w('ごぜんれいじ','gozen reiji','midnight'),w('じゅうにじさんじゅうにふん','juuniji sanjuunifun','12:32'),w('はちじにじゅうごふん','hachiji nijuugofun','8:25'),w('しちじよんじゅうごふん','shichiji yonjuugofun','7:45'),w('ろくじにじゅっぷん','rokuji nijuppun','6:20'),w('よじはん','yoji han','4:30'),w('くじじゅっぷん','kuji juppun','9:10'),w('いちじごじゅうごふん','ichiji gojuugofun','1:55')]},
+  {id:'n5-pattern',level:'n5',name:'1-3-6-8-10 pattern',items:[w('いっぽん','ippon','1 long thing'),w('さんぼん','sanbon','3 long things'),w('ろっぽん','roppon','6 long things'),w('はっぽん','happon','8 long things'),w('じゅっぽん','juppon','10 long things'),w('いっぴき','ippiki','1 small animal'),w('さんびき','sanbiki','3 small animals'),w('ろっぴき','roppiki','6 small animals'),w('はっぴき','happiki','8 small animals'),w('じゅっぴき','juppiki','10 small animals'),w('いっこ','ikko','1 small thing'),w('さんこ','sanko','3 small things'),w('ろっこ','rokko','6 small things'),w('はっこ','hakko','8 small things'),w('じゅっこ','jukko','10 small things'),w('いっかい','ikkai','once'),w('さんかい','sankai','3 times'),w('ろっかい','rokkai','6 times'),w('はっかい','hakkai','8 times'),w('じゅっかい','jukkai','10 times'),w('いっさつ','issatsu','1 book'),w('さんさつ','sansatsu','3 books'),w('ろくさつ','rokusatsu','6 books'),w('はっさつ','hassatsu','8 books'),w('じゅっさつ','jussatsu','10 books'),w('いっぷん','ippun','1 min'),w('さんぷん','sanpun','3 min'),w('ろっぷん','roppun','6 min'),w('はっぷん','happun','8 min'),w('じゅっぷん','juppun','10 min')]},
+  {id:'n5-hours',level:'n5',name:'Hours じ',items:[w('いまなんじですか','ima nanji desu ka','what time is it? (polite)'),w('いまなんじ','ima nanji','what time is it? (casual)'),w('なんじ','nanji','what time?'),w('いちじ','ichiji','1:00'),w('にじ','niji','2:00'),w('さんじ','sanji','3:00'),w('よじ','yoji','4:00'),w('ごじ','goji','5:00'),w('ろくじ','rokuji','6:00'),w('しちじ','shichiji','7:00'),w('はちじ','hachiji','8:00'),w('くじ','kuji','9:00'),w('じゅうじ','juuji','10:00'),w('じゅういちじ','juuichiji','11:00'),w('じゅうにじ','juuniji','12:00'),w('ごぜん','gozen','a.m.'),w('ごご','gogo','p.m.'),w('ちょうど','choudo','exactly'),w('しょうご','shougo','noon'),w('れいじ','reiji','midnight (0:00)')]},
+  {id:'n5-mins',level:'n5',name:'Minutes ふん・ぷん',items:[w('なんぷん','nanpun','how many minutes?'),w('にふん','nifun','2 min'),w('よんぷん','yonpun','4 min'),w('ごふん','gofun','5 min'),w('ななふん','nanafun','7 min'),w('きゅうふん','kyuufun','9 min'),w('じゅうごふん','juugofun','15 min'),w('にじゅっぷん','nijuppun','20 min'),w('さんじゅっぷん','sanjuppun','30 min'),w('さんじゅうさんぷん','sanjuusanpun','33 min'),w('よんじゅうごふん','yonjuugofun','45 min'),w('ごじゅっぷん','gojuppun','50 min'),w('はん','han','half past (:30)')]},
+  {id:'n5-clock',level:'n5',name:'What time? なんじ',items:[w('ごぜんくじじゅうごふん','gozen kuji juugofun','9:15 a.m.'),w('ごごさんじはん','gogo sanji han','3:30 p.m.'),w('ごごしちじはん','gogo shichiji han','7:30 p.m.'),w('ちょうどじゅうじ','choudo juuji','10:00 sharp'),w('ごぜんれいじ','gozen reiji','midnight'),w('じゅうにじさんじゅうにふん','juuniji sanjuunifun','12:32'),w('はちじにじゅうごふん','hachiji nijuugofun','8:25'),w('しちじよんじゅうごふん','shichiji yonjuugofun','7:45'),w('ろくじにじゅっぷん','rokuji nijuppun','6:20'),w('よじはん','yoji han','4:30'),w('くじじゅっぷん','kuji juppun','9:10'),w('いちじごじゅうごふん','ichiji gojuugofun','1:55')]},
+  {id:'n5-clk1',level:'n5',name:'Clock: on the hour & half',items:[]},
+  {id:'n5-clk2',level:'n5',name:'Clock: any minute',items:[]},
+  {id:'n5-clk3',level:'n5',name:'Clock: with a.m. / p.m.',items:[]},
 
   // N4
   {id:'n4-verb',level:'n4',name:'N4 verbs',items:[w('あつめる','atsumeru','collect'),w('うごく','ugoku','move'),w('えらぶ','erabu','choose'),w('おくる','okuru','send'),w('きめる','kimeru','decide'),w('さがす','sagasu','look for'),w('しらべる','shiraberu','look up / investigate'),w('そだてる','sodateru','raise / bring up'),w('つたえる','tsutaeru','convey'),w('なおす','naosu','fix / repair'),w('はこぶ','hakobu','carry'),w('ひろう','hirou','pick up'),w('まにあう','maniau','be in time'),w('よろこぶ','yorokobu','be glad')]},
   {id:'n4-adv',level:'n4',name:'N4 adverbs',items:[w('きっと','kitto','surely'),w('ぜひ','zehi','by all means'),w('だいたい','daitai','mostly / roughly'),w('とくに','tokuni','especially'),w('なかなか','nakanaka','quite / not easily'),w('もうすぐ','mousugu','soon'),w('ずいぶん','zuibun','considerably'),w('けっして','kesshite','never (+ neg.)'),w('たまに','tamani','occasionally'),w('やっと','yatto','finally')]},
   {id:'n4-adj',level:'n4',name:'N4 adjectives',items:[w('あさい','asai','shallow'),w('ふかい','fukai','deep'),w('こわい','kowai','scary'),w('ねむい','nemui','sleepy'),w('うれしい','ureshii','happy'),w('かなしい','kanashii','sad'),w('はずかしい','hazukashii','embarrassed'),w('ひどい','hidoi','terrible'),w('ていねい','teinei','polite'),w('ふくざつ','fukuzatsu','complicated'),w('ねっしん','nesshin','enthusiastic'),w('とくべつ','tokubetsu','special')]}
 ];
+/* ---------- CLOCK CHALLENGE: random times, read with the rules ---------- */
+const CK_H=[null,['いちじ','ichiji'],['にじ','niji'],['さんじ','sanji'],['よじ','yoji'],['ごじ','goji'],['ろくじ','rokuji'],['しちじ','shichiji'],['はちじ','hachiji'],['くじ','kuji'],['じゅうじ','juuji'],['じゅういちじ','juuichiji'],['じゅうにじ','juuniji']];
+const CK_U=[null,['いっぷん','ippun'],['にふん','nifun'],['さんぷん','sanpun'],['よんぷん','yonpun'],['ごふん','gofun'],['ろっぷん','roppun'],['ななふん','nanafun'],['はっぷん','happun'],['きゅうふん','kyuufun']];
+const CK_T=[null,['じゅう','juu'],['にじゅう','nijuu'],['さんじゅう','sanjuu'],['よんじゅう','yonjuu'],['ごじゅう','gojuu']];
+const CK_TEN0=[null,['じゅっぷん','juppun'],['にじゅっぷん','nijuppun'],['さんじゅっぷん','sanjuppun'],['よんじゅっぷん','yonjuppun'],['ごじゅっぷん','gojuppun']];
+const ckR=n=>Math.floor(Math.random()*n);
+function ckMin(m){if(!m)return null;const t=Math.floor(m/10),u=m%10;if(!u)return CK_TEN0[t];const a=CK_U[u];return t?[CK_T[t][0]+a[0],CK_T[t][1]+a[1]]:a}
+function ckBuild(h,m,ap,han){
+  const jp=[],ro=[];
+  if(ap){jp.push(ap==='am'?'ごぜん':'ごご');ro.push(ap==='am'?'gozen':'gogo')}
+  jp.push(CK_H[h][0]);ro.push(CK_H[h][1]);
+  if(m===30&&han){jp.push('はん');ro.push('han')}else{const x=ckMin(m);if(x){jp.push(x[0]);ro.push(x[1])}}
+  return {jp:jp.join(' '),ro:ro.join(' ')};
+}
+function ckItem(deck,h,m,ap){
+  const r=ckBuild(h,m,ap,true);
+  return {jp:r.jp,ro:r.ro,en:`${h}:${String(m).padStart(2,'0')}${ap?(ap==='am'?' a.m.':' p.m.'):''}`,type:'word',deck,gen:true,clock:{h,m,ap},alt:m===30?[ckBuild(h,m,ap,false)]:[]};
+}
+const CK_GEN={
+  'n5-clk1':()=>({h:1+ckR(12),m:Math.random()<.5?0:30,ap:''}),
+  'n5-clk2':()=>({h:1+ckR(12),m:1+ckR(59),ap:''}),
+  'n5-clk3':()=>({h:1+ckR(12),m:ckR(60),ap:Math.random()<.5?'am':'pm'}),
+};
+const CK_DESC={
+  'n5-clk1':'A new random clock every question, on the hour or half past (はん). Watch the special hours: よじ, しちじ and くじ.',
+  'n5-clk2':'A new random clock every question, any minute. Check the last digit: 1, 3, 4, 6, 8 or 0 → ぷん; 2, 5, 7 or 9 → ふん.',
+  'n5-clk3':'Random times with ごぜん (a.m.) or ごご (p.m.). Remember: they go FIRST, before the hour.',
+};
+function ckGen(id,n){const seen=new Set(),out=[];let guard=0;while(out.length<n&&guard++<500){const t=CK_GEN[id]();const it=ckItem(id,t.h,t.m,t.ap);if(seen.has(it.en))continue;seen.add(it.en);out.push(it)}return out}
+DECKS.forEach(d=>{if(CK_GEN[d.id]){d.gen=true;d.items=ckGen(d.id,12)}});
+const JP_ITEM={};DECKS.forEach(d=>{if(!d.gen)d.items.forEach(it=>{if(!JP_ITEM[it.jp])JP_ITEM[it.jp]=it})});
+// a clock answer counts toward the rule words it uses (よじ, はっぷん, ごご…), so the library shows which rule needs work
+function ckTargets(it){const {h,m,ap}=it.clock;const js=[CK_H[h][0]];if(ap)js.push(ap==='am'?'ごぜん':'ごご');
+  if(m===30)js.push('はん');else if(m){const u=m%10;js.push(u?CK_U[u][0]:'じゅっぷん')}
+  return js.map(j=>JP_ITEM[j]).filter(Boolean)}
+function ckDistractors(it){
+  const {h,m,ap}=it.clock,J=it.jp,bad=new Set([J,...it.alt.map(a=>a.jp)]),out=[];
+  const add=x=>{if(x&&!bad.has(x)){bad.add(x);out.push(x)}};
+  const traps=[];
+  if(h===4)traps.push(J.replace('よじ','よんじ'));
+  if(h===9)traps.push(J.replace('くじ','きゅうじ'));
+  if(h===7)traps.push(J.replace('しちじ','しじ'));
+  if(/っぷん$/.test(J))traps.push(J.replace(/いっぷん$/,'いちぷん').replace(/ろっぷん$/,'ろくぷん').replace(/はっぷん$/,'はちぷん').replace(/じゅっぷん$/,'じゅうぷん'));
+  if(/ぷん$/.test(J))traps.push(J.replace(/ぷん$/,'ふん'));
+  if(/ふん$/.test(J))traps.push(J.replace(/ふん$/,'ぷん'));
+  if(ap)traps.push(J.replace(ap==='am'?'ごぜん':'ごご',ap==='am'?'ごご':'ごぜん'));
+  shuffle(traps).forEach(add);
+  const near=shuffle([[h%12+1,m],[(h+10)%12+1,m],[h,(m+1)%60],[h,(m+59)%60],[h,(m+10)%60],[h,(m+50)%60]]);
+  for(const [hh,mm] of near){if(out.length>=3)break;add(ckBuild(hh,mm,ap,true).jp)}
+  return out.slice(0,3);
+}
+function clockQuestion(it){
+  if(state.answer==='type')return {it,type:true,expect:'jp',dir:'rev',ask:'What time is it? Type the reading',q:it.en,hint:'type romaji or kana',qClass:'latin',options:[]};
+  const opts=shuffle([it.jp,...ckDistractors(it)]).map(text=>({text,correct:text===it.jp}));
+  return {it,dir:'rev',ask:'What time is it?',q:it.en,hint:'',qClass:'latin',options:opts};
+}
+function clockFact(it){const {h,m,ap}=it.clock,bits=[];
+  if(ap)bits.push(`${ap==='am'?'ごぜん':'ごご'} goes first, before the hour.`);
+  if(h===4)bits.push('4 o’clock is よじ, not よんじ.');else if(h===7)bits.push('7 o’clock is しちじ.');else if(h===9)bits.push('9 o’clock is くじ, not きゅうじ.');
+  if(m===30)bits.push(':30 is はん (half), or さんじゅっぷん.');
+  else if(m){const u=m%10;bits.push(u?`${m} ends in ${u} → ${[1,3,4,6,8].includes(u)?'ぷん':'ふん'}${[1,6,8].includes(u)?' with a small っ':''}.`:`${m} ends in 0 → ぷん with a small っ.`)}
+  return bits.join(' ')||'Hour + じ. Nothing tricky in this one!';
+}
+function clockSVG({h,m}){const P=n=>n.toFixed(2),rad=d=>d*Math.PI/180,ha=rad(((h%12)+m/60)*30),ma=rad(m*6);
+  const dots=Array.from({length:12},(_,i)=>{const a=rad(i*30),big=i%3===0;return `<circle cx="${P(50+40*Math.sin(a))}" cy="${P(50-40*Math.cos(a))}" r="${big?3:1.6}" fill="${big?'#e8678a':'#d9c4cc'}"/>`}).join('');
+  return `<svg viewBox="0 0 100 100" width="132" height="132" role="img" aria-label="A clock"><circle cx="50" cy="50" r="47" fill="#fffaf6" stroke="#4a3b40" stroke-width="3.5"/>${dots}<line x1="50" y1="50" x2="${P(50+24*Math.sin(ha))}" y2="${P(50-24*Math.cos(ha))}" stroke="#4a3b40" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${P(50+35*Math.sin(ma))}" y2="${P(50-35*Math.cos(ma))}" stroke="#3fae8c" stroke-width="3.2" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#e8678a"/></svg>`}
+/* ---------- N5 lesson groups (setup picker + Lessons page) ---------- */
+const N5_GROUPS=[['phr','話 Phrases',['n5-greet','c3-class']],
+  ['voc','語 Vocabulary',['n5-school','n5-people','n5-food','n5-places','n5-home','n5-nature','n5-time','n5-useful']],
+  ['va','動 Verbs & adjectives',['n5-verb','n5-adj']],
+  ['num','数 Numbers & money',['n5-num','c4-num','c4-big','n5-money']],
+  ['cnt','個 Counters',['n5-cnt','c4-cnt','n5-howmany','c4-age','c4-sent','n5-pattern']],
+  ['time','時 Time',['n5-hours','n5-mins','n5-clock','n5-clk1','n5-clk2','n5-clk3']]];
+const SG_OPEN=new Set(),SG_SEEN=new Set();
+function groupsOf(L,decks){
+  if(L.id!=='n5')return [[null,null,decks]];
+  const used=new Set();
+  const out=N5_GROUPS.map(([id,label,ids])=>{const ds=ids.map(i=>decks.find(d=>d.id===i)).filter(Boolean);ds.forEach(d=>used.add(d.id));return [id,label,ds]}).filter(g=>g[2].length);
+  const rest=decks.filter(d=>!used.has(d.id));if(rest.length)out.push(['more','More',rest]);
+  return out;
+}
 DECKS.forEach(d=>d.items.forEach(it=>it.deck=d.id));
 
 /* Mt Fuji stations: share of a "perfect" score (1000 per question) needed to reach each */
@@ -953,6 +1053,7 @@ const SMALL_RE=/[ゃゅょャュョぁぃぅぇぉァィゥェォ]/;
 function splitKana(s){const out=[];for(const ch of s){if(SMALL_RE.test(ch)&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
 function unitRo(u){if(u==='っ'||u==='ッ')return 'pause';if(u==='ー')return 'long';return kanaToRomaji(u)||u}
 function charFact(it){
+  if(it.clock)return clockFact(it);
   const jp=it.jp;
   if(it.type==='kana'){
     if(VOICED[jp]){const b=VOICED[jp];return (K_NOTE[jp]?K_NOTE[jp]+' ':'')+`${jp} = ${b} + ゛ (てんてん). The two marks make "${KR[b]}" voiced: touch your throat and say "${it.ro}" and you can feel it buzz.`}
@@ -1029,17 +1130,30 @@ function renderSetup(){
     const decks=DECKS.filter(d=>d.level===L.id);
     const g=document.createElement('div');g.className='group';
     const allOn=decks.every(d=>state.lessons.has(d.id));
-    g.innerHTML=`<div class="group-head"><h3>${L.name}</h3></div><div class="chips"></div>`;
+    g.innerHTML=`<div class="group-head"><h3>${L.name}</h3></div>`;
     const t=document.createElement('button');t.type='button';t.className='link';t.textContent=allOn?'Clear all':'Select all';
     t.onclick=()=>{decks.forEach(d=>allOn?state.lessons.delete(d.id):state.lessons.add(d.id));renderSetup()};
     g.querySelector('.group-head').appendChild(t);
-    const c=g.querySelector('.chips');
-    decks.forEach(d=>{
-      const b=document.createElement('button');b.type='button';b.className='chip';
-      b.setAttribute('aria-pressed',String(state.lessons.has(d.id)));
-      b.innerHTML=`<span class="jp">${d.name}</span><span class="n">${d.items.length}</span>`;
-      b.onclick=()=>{state.lessons.has(d.id)?state.lessons.delete(d.id):state.lessons.add(d.id);renderSetup()};
-      c.appendChild(b);
+    const chipsFor=ds=>{const c=document.createElement('div');c.className='chips';
+      ds.forEach(d=>{
+        const b=document.createElement('button');b.type='button';b.className='chip';
+        b.setAttribute('aria-pressed',String(state.lessons.has(d.id)));
+        b.innerHTML=`<span class="jp"></span><span class="n">${d.gen?'∞':d.items.length}</span>`;b.querySelector('.jp').textContent=d.name;
+        if(d.gen)b.title='New random times every game';
+        b.onclick=()=>{state.lessons.has(d.id)?state.lessons.delete(d.id):state.lessons.add(d.id);renderSetup()};
+        c.appendChild(b);
+      });return c};
+    groupsOf(L,decks).forEach(([gid,label,ds])=>{
+      if(!gid){g.appendChild(chipsFor(ds));return}
+      const key=L.id+':'+gid,on=ds.filter(d=>state.lessons.has(d.id)).length,full=on===ds.length;
+      const sub=document.createElement('details');sub.className='subgroup';
+      sub.open=SG_OPEN.has(key)||(!SG_SEEN.has(key)&&on>0);
+      sub.innerHTML=`<summary><span class="sg-name"></span><span class="sg-n${on?' on':''}">${on?`${on}/${ds.length} on`:`${ds.length} lessons`}</span><button type="button" class="link sg-all"></button><span class="chev" aria-hidden="true">▾</span></summary>`;
+      sub.querySelector('.sg-name').textContent=label;
+      const a=sub.querySelector('.sg-all');a.textContent=full?'Clear':'All';a.setAttribute('aria-label',(full?'Clear ':'Select all ')+label);
+      a.onclick=e=>{e.preventDefault();e.stopPropagation();ds.forEach(d=>full?state.lessons.delete(d.id):state.lessons.add(d.id));SG_SEEN.add(key);if(!full)SG_OPEN.add(key);renderSetup()};
+      sub.ontoggle=()=>{SG_SEEN.add(key);sub.open?SG_OPEN.add(key):SG_OPEN.delete(key)};
+      sub.appendChild(chipsFor(ds));g.appendChild(sub);
     });
     ls.appendChild(g);
   });
@@ -1063,10 +1177,11 @@ function renderSetup(){
 }
 const WRITE_MAX=6;  // longer words and phrases stay multiple choice in write mode
 function canWrite(it){return it.type==='kana'||(/^[\u3040-\u30FF]+$/.test(it.jp)&&[...it.jp].length<=WRITE_MAX)}
-function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.items)}
+function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.gen?ckGen(d.id,Math.max(state.count||20,10)):d.items)}
 
 /* ---------- GAME ---------- */
 function makeQuestion(it,pool){
+  if(it.clock)return clockQuestion(it);
   const isKana=it.type==='kana';
   if(state.answer==='type'){
     if(isKana)return {it,type:true,expect:'romaji',dir:'fwd',ask:'Type the romaji',q:it.jp,hint:'',qClass:it.jp.length>4?'long':'',options:[]};
@@ -1086,7 +1201,7 @@ function makeQuestion(it,pool){
   const ansOf=x=>dir==='fwd'?(isKana?x.ro:x.en):x.jp;
   const clash=x=>x.jp===it.jp||(isKana?x.ro===it.ro:(x.en===it.en||x.ro===it.ro));
   const seen=new Set([ansOf(it)]);const distract=[];
-  const sources=[shuffle(pool.filter(x=>x.type===it.type)),shuffle(DECKS.flatMap(d=>d.items).filter(x=>x.type===it.type))];
+  const sources=[shuffle(pool.filter(x=>!x.gen&&x.type===it.type)),shuffle(DECKS.flatMap(d=>d.items).filter(x=>!x.gen&&x.type===it.type))];
   for(const src of sources){for(const x of src){if(distract.length>=3)break;if(clash(x))continue;const a=ansOf(x);if(seen.has(a))continue;seen.add(a);distract.push(x)}}
   const options=shuffle([it,...distract]).map(x=>({text:ansOf(x),correct:x===it}));
   let ask,q,hint='',qClass='';
@@ -1113,9 +1228,10 @@ function renderQ(){
   $('p-ask').textContent=Q.ask;
   const qe=$('p-q');qe.textContent=Q.q;qe.className='q '+Q.qClass;
   $('p-hint').textContent=Q.hint;
+  const ck=$('p-clock');if(Q.it.clock){ck.innerHTML=clockSVG(Q.it.clock);ck.hidden=false}else{ck.hidden=true;ck.innerHTML=''}
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
   $('hearBtn').hidden=!canSpeak()||(!Q.write&&(Q.dir!=='fwd'||Q.it.type==='kana'));  // don't give away kana readings before answering
-  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':'');
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':'')+(Q.it.clock?' ck':'');
   if(Q.type){buildTypeBox(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Type your answer, then press Enter or Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   const shapes=['▲','◆','●','■'];
@@ -1213,14 +1329,13 @@ function typedCorrect(input,Q){
   const it=Q.it,raw=input.normalize('NFKC').trim();
   const hasKana=/[\u3040-\u30FF]/.test(raw);
   if(Q.expect==='romaji'&&hasKana)return {ok:false,why:'Type the reading in letters (romaji), not kana.'};
+  const forms=[it,...(it.alt||[])];
   if(hasKana){
-    const a=toHira(raw.replace(/\s/g,'')),b=toHira(it.jp);
-    if(a===b)return {ok:true};
-    return {ok:normR(kanaToRomaji(a))===normR(kanaToRomaji(b))};
+    const a=toHira(raw.replace(/\s/g,''));
+    return {ok:forms.some(f=>{const b=toHira(f.jp.replace(/\s/g,''));return a===b||normR(kanaToRomaji(a))===normR(kanaToRomaji(b))})};
   }
   const t=normR(raw);if(!t)return {ok:false};
-  const targets=[it.ro,kanaToRomaji(it.jp)].map(normR);
-  return {ok:targets.includes(t)};
+  return {ok:forms.some(f=>[f.ro,kanaToRomaji(f.jp.replace(/\s/g,''))].map(normR).includes(t))};
 }
 function buildTypeBox(box,Q){
   game.typed='';
@@ -1357,13 +1472,13 @@ let STATS=store.get('stats')||{};
   Object.keys(STATS).forEach(k=>{if(ok.has(k))return;const i=k.indexOf('|');const jp=k.slice(i+1);const nd=home[jp];if(!nd)return;
     const nk=nd+'|'+jp,a=STATS[k],b=STATS[nk]||[0,0,0];STATS[nk]=[a[0]+b[0],a[1]+b[1],Math.max(a[2]||0,b[2]||0)];delete STATS[k];ch=true});
   if(ch)store.set('stats',STATS)})();
-function record(it,ok){const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
+function record(it,ok){if(it.gen){ckTargets(it).forEach(t=>record(t,ok));return}const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
 function statusOf(r){if(!r||!r[0])return 'new';const a=r[1]/r[0];if(r[0]>=3&&a>=.8)return 'master';if(a<.6)return 'weak';return 'learn'}
 const TAG={new:['New','t-new'],weak:['Need work','t-weak'],learn:['Learning','t-learn'],master:['Mastered','t-master']};
 const lib={type:'all',status:'all',sort:'weak',q:'',unseen:false};
 function libSeg(el,opts,key){el.innerHTML='';opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(lib[key]===v));b.onclick=()=>{lib[key]=v;renderLibrary()};el.appendChild(b)})}
 function libRows(){
-  const all=DECKS.flatMap(d=>d.items);
+  const all=DECKS.filter(d=>!d.gen).flatMap(d=>d.items);
   return all.map(it=>{const r=STATS[keyOf(it)];return {it,r,seen:r?r[0]:0,acc:r&&r[0]?r[1]/r[0]:null,st:statusOf(r)}});
 }
 function renderLibrary(){
@@ -1410,14 +1525,16 @@ function renderLessons(){
     const decks=DECKS.filter(d=>d.level===L.id);
     const h=document.createElement('p');h.className='step';h.style.margin='6px 2px 0';h.textContent=`${L.name} · ${L.sub}`;
     let any=false;const frag=document.createDocumentFragment();
-    decks.forEach(d=>{
+    let lastG=null;
+    groupsOf(L,decks).flatMap(([gid,gn,ds])=>ds.map(d=>({d,gn}))).forEach(({d,gn})=>{
       const items=q?d.items.filter(it=>it.jp.includes(q)||it.ro.toLowerCase().includes(q)||(it.en||'').toLowerCase().includes(q)):d.items;
       if(q&&!items.length&&!d.name.toLowerCase().includes(q))return;
       any=true;shown++;
+      if(gn&&gn!==lastG){lastG=gn;const hp=document.createElement('p');hp.className='sg-title';hp.textContent=gn;frag.appendChild(hp)}
       const seen=d.items.filter(it=>STATS[keyOf(it)]).length,mast=d.items.filter(it=>statusOf(STATS[keyOf(it)])==='master').length;
       const det=document.createElement('details');det.className='card lesson';if(ls.open.has(d.id)||q)det.open=true;
       det.ontoggle=()=>{det.open?ls.open.add(d.id):ls.open.delete(d.id)};
-      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
+      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?'New random times every game':`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
         <div class="ls-body"></div>
         <div class="ls-fact" hidden></div>
         <div class="ls-actions"><button class="big" type="button">Practice this lesson</button></div>`;
@@ -1428,7 +1545,13 @@ function renderLessons(){
         fact.querySelector('.jp').textContent=it.jp;fact.querySelector('.ro').textContent=it.en?`${it.ro} · ${it.en}`:it.ro;
         fact.querySelector('p').textContent=charFact(it)||'';
         fact.querySelector('small').textContent=r?`Your accuracy: ${Math.round(r[1]/r[0]*100)}% (${r[1]} of ${r[0]})`:'Not practiced yet';};
-      if(d.items[0].type==='kana'){
+      if(d.gen){
+        const p=document.createElement('div');p.className='ck-note';p.innerHTML='<p></p><ul class="lwords"></ul>';
+        p.querySelector('p').textContent=CK_DESC[d.id]+' Examples:';
+        const ul=p.querySelector('ul');
+        ckGen(d.id,4).forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML='<i class="dot-n"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>';b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
+        body.appendChild(p);
+      }else if(d.items[0].type==='kana'){
         const g=document.createElement('div');g.className='lgrid';
         items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='ltile';b.innerHTML=`<i class="${dotClass(it)}"></i><span class="k"></span><span class="r"></span>`;b.querySelector('.k').textContent=it.jp;b.querySelector('.r').textContent=it.ro;b.onclick=()=>showFact(it);g.appendChild(b)});
         body.appendChild(g);
@@ -1458,7 +1581,7 @@ function quickPick(d){
     const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
     b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
     b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
-    b.querySelector('small').textContent=off?'Not available here: these phrases are too long to write':m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.querySelector('small').textContent=off?(d.gen?'Not available here: full times are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
     b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
     box.appendChild(b);
   });
@@ -1468,7 +1591,7 @@ function quickTest(d,mode){
   mode=mode||'tap';
   const rank={weak:0,new:1,learn:2,master:3};
   const pref=mode==='write'?(it=>canWrite(it)?0:1):(()=>0);   // in write mode, prefer words you can actually write
-  const picked=shuffle(d.items).map(it=>({it,r:rank[statusOf(STATS[keyOf(it)])],p:pref(it)})).sort((a,b)=>a.p-b.p||a.r-b.r).slice(0,QUICK_N).map(x=>x.it);
+  const picked=shuffle(d.gen?ckGen(d.id,QUICK_N):d.items).map(it=>({it,r:rank[statusOf(STATS[keyOf(it)])],p:pref(it)})).sort((a,b)=>a.p-b.p||a.r-b.r).slice(0,QUICK_N).map(x=>x.it);
   state.levels=new Set([d.level]);state.lessons=new Set([d.id]);
   const keep=state.answer;state.answer=mode;   // use the chosen mode for this test only
   startGame(picked);game.quick=d;game.answer=mode;
