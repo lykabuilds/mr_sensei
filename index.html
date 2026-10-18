@@ -486,6 +486,26 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .sp-heard b{color:var(--fg);font-size:1.15rem}
 .answers.spk-wrap{display:block}
 .prompt .q.listen{font-size:clamp(3rem,16vw,5rem);cursor:pointer}
+.pl-player{align-items:stretch}
+.pl-pos{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);text-align:center}
+.pl-card{background:var(--fg);color:var(--ink);border-radius:20px;padding:24px 16px;text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.pl-q{font-weight:800;font-size:clamp(1.5rem,7vw,2.4rem);line-height:1.2;overflow-wrap:anywhere}
+.pl-a{font-size:1.15rem;color:#8b8db5;min-height:1.4em}
+.pl-a.shown{color:var(--ink);font-weight:700}
+.pl-beat{height:6px;border-radius:9px;background:var(--panel-2);overflow:hidden}
+.pl-beat i{display:block;height:100%;width:0;background:var(--sakura)}
+.pl-ctrl{display:flex;justify-content:center;align-items:center;gap:12px}
+.pl-ctrl .big{min-width:150px}
+.pl-ctrl .ghost{font-size:1.2rem;padding:10px 16px}
+.pl-opts{margin-top:4px}
+.lwords li{display:flex;gap:6px;align-items:stretch}
+.lwords li>button:first-child{flex:1;min-width:0}
+.pl-q small,.pl-a small{display:block;font-family:var(--f-mono);font-size:.9rem;font-weight:400;color:#6b6d95;margin-top:4px}
+.pl-word{display:grid;place-items:center;flex:0 0 44px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);font-size:1rem;cursor:pointer}
+.pl-word.on{border-color:var(--sakura);color:var(--sakura)}
+.pl-add.on{border-color:var(--sakura);color:var(--sakura)}
+.ls-actions{gap:10px;flex-wrap:wrap}
+.pl-list li.now>button:first-child{border-color:var(--sakura)}
 .gbtn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:1.05rem;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.35)}
 .gbtn.ok{background:var(--matcha)}
 .gbtn.no{background:var(--shu)}
@@ -588,8 +608,35 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
       <button class="link cancel" id="qCancel" type="button">Cancel</button>
     </div>
   </div>
+  <section id="playlistPage" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="lib-head"><h2>Playlist 🎧</h2><button class="ghost" id="plBack">← Back</button></div>
+    <p class="privacy" style="font-size:.88rem">Your own audio drill. It says each item, waits a few beats so you can answer in your head, then says the answer. Add words or whole lessons from the Lessons page with 🎧.</p>
+    <div class="card pl-player" id="plPlayer">
+      <div class="pl-pos" id="plPos">0 / 0</div>
+      <div class="pl-card"><div class="pl-q" id="plQ">Add some words to start</div><div class="pl-a" id="plA"></div></div>
+      <div class="pl-beat"><i id="plBeat"></i></div>
+      <div class="pl-ctrl">
+        <button class="ghost" id="plPrev" type="button" aria-label="Previous">⏮</button>
+        <button class="big" id="plPlay" type="button">▶ Play</button>
+        <button class="ghost" id="plNext" type="button" aria-label="Next">⏭</button>
+      </div>
+      <div class="opts pl-opts">
+        <div class="opt"><label id="l-plo">It says first</label><div class="seg" id="pl-order" role="group" aria-labelledby="l-plo"></div></div>
+        <div class="opt"><label id="l-plg">Pause before the answer</label><div class="seg" id="pl-gap" role="group" aria-labelledby="l-plg"></div></div>
+        <div class="opt"><label id="l-plr">Say the Japanese</label><div class="seg" id="pl-rep" role="group" aria-labelledby="l-plr"></div></div>
+        <div class="opt"><label id="l-pls">Speed</label><div class="seg" id="pl-speed" role="group" aria-labelledby="l-pls"></div></div>
+        <div class="opt"><label id="l-plh">Order</label><div class="seg" id="pl-shuf" role="group" aria-labelledby="l-plh"></div></div>
+        <div class="opt"><label id="l-pll">At the end</label><div class="seg" id="pl-loop" role="group" aria-labelledby="l-pll"></div></div>
+      </div>
+      <p class="note" id="plNote"></p>
+    </div>
+    <div class="card">
+      <div class="lib-head"><p class="step" style="margin:0" id="plCount">0 items</p><button class="link" id="plClear" type="button">Clear all</button></div>
+      <ul class="lwords pl-list" id="plList"></ul>
+    </div>
+  </section>
   <section id="lessonsPage" hidden style="display:flex;flex-direction:column;gap:14px">
-    <div class="lib-head"><h2>Lessons 学ぶ</h2><button class="ghost" id="lessonsBack">← Back</button></div>
+    <div class="lib-head"><h2>Lessons 学ぶ</h2><div class="btn-row" style="margin:0"><button class="ghost" id="plOpen" type="button">🎧 Playlist</button><button class="ghost" id="lessonsBack">← Back</button></div></div>
     <p class="privacy" style="font-size:.88rem">Browse every lesson to study before you play. Tap any kana or word to hear it and see a fun fact. The dot shows how well you know it.</p>
     <div class="card lib-tools">
       <div class="row">
@@ -670,6 +717,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
     <ul class="words" id="lib-list"></ul>
     <div class="btn-row">
       <button class="big" id="practiceWeak">Practice weakest 20</button>
+      <button class="ghost" id="plWeak" type="button">🎧 Add weakest to playlist</button>
       <button class="ghost" id="copyCsv">Copy stats as CSV</button>
       <span class="toast" id="csvToast" aria-live="polite"></span>
     </div>
@@ -1371,7 +1419,7 @@ function startGame(items){
   $('factBox').hidden=true;
   show('play');renderQ();
 }
-function show(id){['setup','play','results','library','profile','board','lessonsPage'].forEach(s=>$(s).hidden=s!==id);$('topnav').hidden=id==='play';window.scrollTo({top:0})}
+function show(id){if(id!=='playlistPage'&&typeof plStop==='function')plStop();['setup','play','results','library','profile','board','lessonsPage','playlistPage'].forEach(s=>$(s).hidden=s!==id);$('topnav').hidden=id==='play';window.scrollTo({top:0})}
 function renderQ(){
   const g=game,Q=g.qs[g.i];g.locked=false;g.t0=performance.now();
   $('h-q').textContent=`${g.i+1} / ${g.qs.length}`;
@@ -1705,7 +1753,7 @@ function renderLessons(){
       det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?(d.id==='n5-datecl'?'New random dates every game':'New random times every game'):`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
         <div class="ls-body"></div>
         <div class="ls-fact" hidden></div>
-        <div class="ls-actions"><button class="big" type="button">Practice this lesson</button></div>`;
+        <div class="ls-actions">${d.gen?'':'<button class="ghost pl-add" type="button"></button>'}<button class="big" type="button">Practice this lesson</button></div>`;
       det.querySelector('.ls-name').textContent=d.name;
       const body=det.querySelector('.ls-body'),fact=det.querySelector('.ls-fact');
       const showFact=(it,anchor)=>{speak(it.jp);if(anchor)anchor.after(fact);else body.after(fact);const r=STATS[keyOf(it)];fact.hidden=false;
@@ -1725,11 +1773,13 @@ function renderLessons(){
         body.appendChild(g);
       }else{
         const ul=document.createElement('ul');ul.className='lwords';
-        items.forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML=`<i class="${dotClass(it)}"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>`;b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
+        items.forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML=`<i class="${dotClass(it)}"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>`;b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);li.appendChild(plWordBtn(it));ul.appendChild(li)});
         body.appendChild(ul);
       }
       det.querySelector('.ls-actions .big').onclick=()=>{state.levels=new Set([d.level]);state.lessons=new Set([d.id]);startGame()};
       det.querySelector('.ls-quick').onclick=e=>{e.preventDefault();e.stopPropagation();quickPick(d)};
+      const pa=det.querySelector('.pl-add');if(pa){const sync=()=>{const all=d.items.every(it=>plHas(it));pa.textContent=all?'✓ In playlist':'🎧 Add lesson to playlist';pa.classList.toggle('on',all)};sync();pa.syncL=sync;
+        pa.onclick=()=>{const all=d.items.every(it=>plHas(it));d.items.forEach(it=>all?plRemove(it):plAdd(it));sync();det.querySelectorAll('.pl-word').forEach(x=>x.sync&&x.sync())}}
       frag.appendChild(det);
     });
     if(any){if(q)list.appendChild(h);list.appendChild(frag)}
@@ -1788,6 +1838,93 @@ function renderTopicTiles(list){
     list.appendChild(grid);
   });
 }
+/* ---------- PLAYLIST: audio drill ---------- */
+const PL_KEY='playlist';
+let PL=(store.get(PL_KEY)||[]).filter(k=>typeof k==='string');
+const PL_OPT=Object.assign({order:'jp',gap:4,rep:1,speed:'normal',shuf:false,loop:true},store.get('playlistOpt')||{});
+const pl={i:0,tok:0,playing:false,list:[],lock:null};
+const plHas=it=>PL.includes(keyOf(it));
+function plSave(){store.set(PL_KEY,PL);const b=$('plOpen');if(b)b.textContent=PL.length?`🎧 Playlist (${PL.length})`:'🎧 Playlist'}
+function plAdd(it){if(!it.gen&&!plHas(it)){PL.push(keyOf(it));plSave()}}
+function plRemove(it){const k=keyOf(it);PL=PL.filter(x=>x!==k);plSave()}
+function plItems(){const by={};DECKS.forEach(d=>d.items.forEach(it=>by[keyOf(it)]=it));return PL.map(k=>by[k]||by[Object.keys(by).find(x=>x.endsWith('|'+k.split('|').slice(1).join('|')))]).filter(Boolean)}
+function plWordBtn(it){const b=document.createElement('button');b.type='button';b.className='pl-word';
+  b.sync=()=>{const on=plHas(it);b.textContent=on?'✓':'🎧';b.classList.toggle('on',on);b.setAttribute('aria-label',(on?'Remove from':'Add to')+' playlist: '+it.jp)};b.sync();
+  b.onclick=e=>{e.stopPropagation();plHas(it)?plRemove(it):plAdd(it);b.sync();const pa=b.closest('details')&&b.closest('details').querySelector('.pl-add');if(pa&&pa.syncL)pa.syncL()};return b}
+function plVoice(lang){try{const vs=speechSynthesis.getVoices();return vs.find(v=>v.lang.replace('_','-').toLowerCase().startsWith(lang.toLowerCase()))||vs.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2)))||null}catch(e){return null}}
+function plSay(text,lang){return new Promise(res=>{if(!canSpeak()||!text)return res();let done=false;const fin=()=>{if(!done){done=true;res()}};
+  try{const u=new SpeechSynthesisUtterance(text);u.lang=lang;const v=plVoice(lang);if(v)u.voice=v;
+    u.rate=(PL_OPT.speed==='slow'?.6:lang.startsWith('ja')?.85:1);u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);
+    setTimeout(fin,1500+text.length*(lang.startsWith('ja')?450:120)/u.rate)}catch(e){fin()}})}
+const plWait=ms=>new Promise(r=>setTimeout(r,ms));
+function plBeat(ms){const b=$('plBeat');b.style.transition='none';b.style.width='0%';void b.offsetWidth;b.style.transition=`width ${ms}ms linear`;b.style.width='100%'}
+function plShow(it,reveal){const jpFirst=PL_OPT.order==='jp';
+  const en=it.en||it.ro;
+  const setJp=el=>{el.textContent=it.jp;if(it.ro&&it.en){const sm=document.createElement('small');sm.textContent=it.ro;el.append(sm)}};
+  const q=$('plQ'),a=$('plA');
+  if(jpFirst)setJp(q);else q.textContent=en;
+  if(!reveal)a.textContent='…';else if(jpFirst)a.textContent=en;else setJp(a);
+  a.classList.toggle('shown',!!reveal);
+  $('plPos').textContent=`${pl.i+1} / ${pl.list.length}`;
+  document.querySelectorAll('#plList li').forEach(li=>li.classList.toggle('now',li.dataset.k===keyOf(it)))}
+async function plRun(){
+  const tok=++pl.tok;const alive=()=>pl.playing&&tok===pl.tok;
+  while(alive()){
+    if(pl.i>=pl.list.length){if(!PL_OPT.loop){plStop();pl.i=0;return}pl.i=0;if(PL_OPT.shuf)pl.list=shuffle(pl.list)}
+    const it=pl.list[pl.i];plShow(it,false);
+    const sayJp=async()=>{for(let r=0;r<PL_OPT.rep&&alive();r++){if(r)await plWait(500);await plSay(it.jp,'ja-JP')}};
+    const sayEn=()=>plSay(it.en||'',it.en?'en-US':'ja-JP');
+    if(PL_OPT.order==='jp')await sayJp();else await sayEn();
+    if(!alive())return;
+    const gap=PL_OPT.gap*1000;plBeat(gap);await plWait(gap);if(!alive())return;
+    plShow(it,true);
+    if(PL_OPT.order==='jp'){if(it.en)await sayEn()}else await sayJp();
+    if(!alive())return;
+    await plWait(1200);if(!alive())return;
+    pl.i++;
+  }
+}
+async function plStart(){const items=plItems();if(!items.length)return;
+  if(!pl.list.length||pl.list.length!==items.length)pl.list=PL_OPT.shuf?shuffle(items):items;
+  pl.playing=true;$('plPlay').textContent='⏸ Pause';
+  try{if('wakeLock' in navigator)pl.lock=await navigator.wakeLock.request('screen')}catch(e){}
+  plRun()}
+function plStop(){if(!pl.playing&&!pl.lock)return;pl.playing=false;pl.tok++;try{speechSynthesis.cancel()}catch(e){}
+  const b=$('plPlay');if(b)b.textContent='▶ Play';const bt=$('plBeat');if(bt){bt.style.transition='none';bt.style.width='0%'}
+  try{pl.lock&&pl.lock.release()}catch(e){}pl.lock=null}
+function plSeg(id,opts,key){const el=$(id);el.innerHTML='';opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(PL_OPT[key]===v));
+  b.onclick=()=>{PL_OPT[key]=v;store.set('playlistOpt',PL_OPT);if(key==='shuf'||key==='order'){pl.list=[]}renderPlaylist()};el.appendChild(b)})}
+function renderPlaylist(){
+  plSeg('pl-order',[['jp','日本語'],['en','English']],'order');
+  plSeg('pl-gap',[[2,'2s'],[4,'4s'],[6,'6s'],[8,'8s']],'gap');
+  plSeg('pl-rep',[[1,'Once'],[2,'Twice']],'rep');
+  plSeg('pl-speed',[['slow','Slow'],['normal','Normal']],'speed');
+  plSeg('pl-shuf',[[false,'In order'],[true,'Shuffle']],'shuf');
+  plSeg('pl-loop',[[true,'Loop'],[false,'Stop']],'loop');
+  const items=plItems();if(pl.list.length!==items.length)pl.list=[];
+  $('plCount').textContent=`${items.length} item${items.length===1?'':'s'}`;$('plClear').hidden=!items.length;
+  $('plPlay').disabled=!items.length;$('plPrev').disabled=$('plNext').disabled=!items.length;
+  $('plNote').textContent=!canSpeak()?'This device can’t read text aloud, so the playlist will show the words only.':'Tip: keep the app open. Phones usually stop speaking when the screen locks.';
+  if(!items.length){$('plQ').textContent='Add words or lessons with 🎧 on the Lessons page';$('plA').textContent='';$('plPos').textContent='0 / 0'}
+  else if(!pl.playing){const it=(pl.list.length?pl.list:items)[Math.min(pl.i,items.length-1)];if(it)plShow(it,false)}
+  const ul=$('plList');ul.innerHTML='';
+  items.forEach(it=>{const li=document.createElement('li');li.dataset.k=keyOf(it);
+    const b=document.createElement('button');b.type='button';b.innerHTML='<span class="jp"></span><span class="ro"></span><span class="en"></span>';
+    b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro||'';b.querySelector('.en').textContent=it.en||'';b.onclick=()=>speak(it.jp);
+    const x=document.createElement('button');x.type='button';x.className='pl-word';x.textContent='✕';x.setAttribute('aria-label','Remove '+it.jp);
+    x.onclick=()=>{plRemove(it);if(pl.playing){plStop()}pl.list=[];pl.i=0;renderPlaylist()};
+    li.append(b,x);ul.appendChild(li)});
+}
+function openPlaylist(from){pl.from=from;show('playlistPage');renderPlaylist()}
+$('plOpen').onclick=()=>openPlaylist(currentScreen());
+$('plBack').onclick=()=>{plStop();backTo(pl.from==='playlistPage'?'lessonsPage':(pl.from||'lessonsPage'))};
+$('plPlay').onclick=()=>pl.playing?plStop():plStart();
+$('plNext').onclick=()=>{const was=pl.playing;plStop();if(!pl.list.length)pl.list=plItems();pl.i=(pl.i+1)%pl.list.length;plShow(pl.list[pl.i],false);if(was)plStart()};
+$('plPrev').onclick=()=>{const was=pl.playing;plStop();if(!pl.list.length)pl.list=plItems();pl.i=(pl.i-1+pl.list.length)%pl.list.length;plShow(pl.list[pl.i],false);if(was)plStart()};
+$('plClear').onclick=()=>{if(!confirm('Remove everything from your playlist?'))return;plStop();PL=[];plSave();pl.list=[];pl.i=0;renderPlaylist()};
+$('plWeak').onclick=()=>{const w=libRows().filter(x=>x.seen&&x.st!=='master').sort((a,b)=>a.acc-b.acc).slice(0,20).map(x=>x.it);w.forEach(plAdd);openPlaylist('library')};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&pl.playing)plStop()});
+plSave();
 function openLessons(from){ls.from=from;show('lessonsPage');renderLessons()}
 $('learnBtn').onclick=()=>openLessons(currentScreen()==='lessonsPage'?ls.from:currentScreen());
 $('lessonsBack').onclick=()=>{if(ls.group&&!ls.q.trim()){ls.group=null;renderLessons();window.scrollTo({top:0})}else backTo(ls.from)};
@@ -1872,7 +2009,7 @@ function postProfile(){
 }
 $('profBack').onclick=()=>backTo(draft&&draft.from);
 $('meBtn').onclick=()=>openProfile(currentScreen());
-function currentScreen(){return ['setup','results','library','board','profile','lessonsPage'].find(id=>!$(id).hidden)||'setup'}
+function currentScreen(){return ['setup','results','library','board','profile','lessonsPage','playlistPage'].find(id=>!$(id).hidden)||'setup'}
 function backTo(from){if(from==='results'&&game)show('results');else if(from==='library'){show('library');renderLibrary()}else if(from==='lessonsPage'){show('lessonsPage')}else{show('setup');renderSetup()}}
 
 /* answer log for the current game */
