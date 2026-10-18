@@ -476,6 +476,16 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .wgrade{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
 .wgrade p{margin:0;color:var(--muted);font-size:.88rem;text-align:center}
 .wgrade-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(100%,420px)}
+.spk{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.mic{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;font-size:1.1rem}
+.mic .dot{width:12px;height:12px;border-radius:50%;background:currentColor;opacity:.35}
+.mic.on{background:var(--shu);color:#fff}
+.mic.on .dot{opacity:1;animation:micpulse 1s ease-in-out infinite}
+@keyframes micpulse{50%{transform:scale(1.6);opacity:.4}}
+.sp-heard{margin:0;color:var(--muted);text-align:center;font-size:.95rem}
+.sp-heard b{color:var(--fg);font-size:1.15rem}
+.answers.spk-wrap{display:block}
+.prompt .q.listen{font-size:clamp(3rem,16vw,5rem);cursor:pointer}
 .gbtn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:1.05rem;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.35)}
 .gbtn.ok{background:var(--matcha)}
 .gbtn.no{background:var(--shu)}
@@ -1256,21 +1266,73 @@ function renderSetup(){
   segment($('o-count'),[[10,'10'],[20,'20'],[0,'All']],'count');
   segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
   segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
-  segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍']],'answer');
-  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana: see the romaji, write the character. Words: see the English, write the word (up to 6 kana; longer phrases stay multiple choice). You check your own writing. Writing games are not ranked on the leaderboard.':'';
+  segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍'],['speak','Speak 🎤'],['listen','Listen 👂']],'answer');
+  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana: see the romaji, write the character. Words: see the English, write the word (up to 6 kana; longer phrases stay multiple choice). You check your own writing. Writing games are not ranked on the leaderboard.':state.answer==='speak'?(canMic()?'See the word, tap the mic and say it. The app checks what it heard; if it can’t tell (kanji or numbers), you compare with Hear it and mark yourself. Speaking games are not ranked.':'Your browser can’t listen to the mic here (try Chrome or the installed app). You can still say it aloud, compare with Hear it and mark yourself.'):state.answer==='listen'?(canSpeak()?'No text, just sound: hear the Japanese, then pick the meaning. Tap the speaker to replay.':'This device has no voice for reading Japanese aloud, so questions will show the text instead.'):'';
   const pool=poolItems();
   const n=state.count?Math.min(state.count,pool.length):pool.length;
   $('startBtn').disabled=!pool.length;
   $('summary').innerHTML=pool.length?`<div><b>${n}</b> questions</div><span>${state.lessons.size} lesson${state.lessons.size>1?'s':''} · ${pool.length} items</span>`:'<span>Pick a lesson to start</span>';
   const dirL={fwd:'日本語 → ?',rev:'? → 日本語',mix:'Mixed'}[state.dir];
-  $('setSummary').textContent=`${state.answer==='write'?'Write kana · ':state.answer==='type'?'Type answers · ':''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
+  $('setSummary').textContent=`${{write:'Write · ',type:'Type answers · ',speak:'Speak 🎤 · ',listen:'Listen 👂 · '}[state.answer]||''}${dirL} · ${state.count||'All'} questions · ${state.time?state.time+'s timer':'no timer'} · hints ${state.hints?'on':'off'}`;
 }
 const WRITE_MAX=6;  // longer words and phrases stay multiple choice in write mode
 function canWrite(it){return it.type==='kana'||(/^[\u3040-\u30FF]+$/.test(it.jp)&&[...it.jp].length<=WRITE_MAX)}
 function poolItems(){return DECKS.filter(d=>state.lessons.has(d.id)).flatMap(d=>d.gen?ckGen(d.id,Math.max(state.count||20,10)):d.items)}
 
+/* ---------- VOICE: Speak (say it, the browser listens) and Listen (hear it, pick the meaning) ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+const canMic=()=>!!SR;
+let spRec=null;
+function spStop(){try{spRec&&spRec.abort()}catch(e){}spRec=null}
+const spNorm=t=>toHira(String(t).normalize('NFKC')).replace(/[\s、。・，,.．？?！!ー〜~「」]/g,'');
+function spMatch(heard,it){
+  const forms=[it,...(it.alt||[])].map(f=>spNorm(f.jp)).filter(Boolean);
+  return heard.some(h=>{const a=spNorm(h);if(!a)return false;
+    return forms.some(b=>a===b||(b.length>=2&&a.includes(b))||normR(kanaToRomaji(a))===normR(kanaToRomaji(b)))});
+}
+function speakQuestion(it){
+  if(it.gen)return {it,speak:true,dir:'rev',ask:it.clock?'Say this time in Japanese':'Say this date in Japanese',q:it.en,hint:'',qClass:'latin',options:[]};
+  const isKana=it.type==='kana';
+  return {it,speak:true,dir:'fwd',ask:'Say it out loud',q:it.jp,hint:isKana?'':(state.hints?`${it.ro} · ${it.en}`:it.en),qClass:it.jp.length>4?'long':'',options:[]};
+}
+function listenQuestion(it,pool){
+  if(it.gen){const others=shuffle(ckGen(it.deck,12)).filter(x=>x.en!==it.en).slice(0,3);
+    return {it,listen:true,dir:'fwd',ask:'What did you hear?',q:'🔊',hint:'Tap to hear it again',qClass:'listen',options:shuffle([it,...others]).map(x=>({text:x.en,correct:x===it}))}}
+  const keep=state.dir;state.dir='fwd';const Q=makeQuestion(it,pool,true);state.dir=keep;
+  return {...Q,listen:true,ask:it.type==='kana'?'Which sound did you hear?':'What did you hear?',q:'🔊',hint:'Tap to hear it again',qClass:'listen'};
+}
+function buildSpeak(box,Q){
+  game.spTries=0;
+  box.innerHTML=`<div class="spk">
+    <button class="big mic" id="spMic" type="button"><span class="dot" aria-hidden="true"></span><span class="t">🎤 Tap, then say it</span></button>
+    <p class="sp-heard" id="spHeard" hidden></p>
+    <div class="wgrade" id="spGrade" hidden><p id="spAsk">Did you say it right? Tap Hear it to compare.</p><div class="wgrade-btns"><button class="gbtn ok" id="spYes" type="button">✓ I said it right</button><button class="gbtn no" id="spNo" type="button">✗ Not quite</button></div></div>
+  </div>`;
+  const mic=$('spMic'),heard=$('spHeard'),grade=$('spGrade');
+  const selfGrade=msg=>{grade.hidden=false;$('spAsk').textContent=msg;$('hearBtn').hidden=!canSpeak()};
+  $('spYes').onclick=()=>answer(1);$('spNo').onclick=()=>answer(0);
+  if(!canMic()){mic.querySelector('.t').textContent='🎤 Say it out loud';mic.disabled=true;
+    heard.hidden=false;heard.textContent='This browser can’t listen (try Chrome, or the installed app). Say it out loud, tap Hear it to compare, then mark yourself.';
+    selfGrade('Did you say it right?');return}
+  mic.onclick=()=>{
+    if(game.locked||spRec)return;
+    const r=new SR();spRec=r;r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=5;r.continuous=false;
+    mic.classList.add('on');mic.querySelector('.t').textContent='Listening… speak now';heard.hidden=true;
+    let got=false;
+    r.onresult=e=>{got=true;const alts=[...e.results[0]].map(a=>a.transcript);game.spTries++;
+      if(spMatch(alts,Q.it)){heard.hidden=false;heard.textContent=`I heard: ${alts[0]}`;return answer(1)}
+      heard.hidden=false;heard.innerHTML='';const b=document.createElement('b');b.textContent=alts[0]||'(nothing)';heard.append('I heard: ',b);
+      selfGrade(/[一-鿿\d]/.test(alts[0]||'')?'It was written in kanji or numbers, so I can’t check it exactly. Tap Hear it to compare, then mark yourself, or try again.':'That doesn’t match yet. Try again, or tap Hear it to compare and mark yourself.')};
+    r.onerror=e=>{const m=e.error==='not-allowed'||e.error==='service-not-allowed'?'Microphone is blocked. Allow it in your browser settings, or mark yourself.':e.error==='no-speech'?'I didn’t hear anything. Tap the mic and try again.':'Couldn’t listen just now. Try again, or mark yourself.';
+      heard.hidden=false;heard.textContent=m;selfGrade('Did you say it right?')};
+    r.onend=()=>{spRec=null;mic.classList.remove('on');if(!game.locked)mic.querySelector('.t').textContent=got?'🎤 Try again':'🎤 Tap, then say it'};
+    try{r.start()}catch(err){spRec=null;mic.classList.remove('on');selfGrade('Did you say it right?')}
+  };
+}
 /* ---------- GAME ---------- */
-function makeQuestion(it,pool){
+function makeQuestion(it,pool,plain){
+  if(!plain&&state.answer==='speak')return speakQuestion(it);
+  if(!plain&&state.answer==='listen'&&canSpeak())return listenQuestion(it,pool);
   if(it.clock)return clockQuestion(it);
   if(it.date)return dateQuestion(it);
   const isKana=it.type==='kana';
@@ -1319,11 +1381,12 @@ function renderQ(){
   $('p-ask').textContent=Q.ask;
   const qe=$('p-q');qe.textContent=Q.q;qe.className='q '+Q.qClass;
   $('p-hint').textContent=Q.hint;
-  const ck=$('p-clock');if(Q.it.clock){ck.innerHTML=clockSVG(Q.it.clock);ck.hidden=false}else if(Q.it.date){ck.innerHTML=calSVG(Q.it.date.d);ck.hidden=false}else{ck.hidden=true;ck.innerHTML=''}
+  const ck=$('p-clock');if(Q.listen){ck.hidden=true;ck.innerHTML=''}else if(Q.it.clock){ck.innerHTML=clockSVG(Q.it.clock);ck.hidden=false}else if(Q.it.date){ck.innerHTML=calSVG(Q.it.date.d);ck.hidden=false}else{ck.hidden=true;ck.innerHTML=''}
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
   $('hearBtn').hidden=!canSpeak()||(!Q.write&&(Q.dir!=='fwd'||Q.it.type==='kana'));  // don't give away kana readings before answering
-  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':'')+(Q.it.clock||Q.it.date?' ck':'');
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':Q.speak?' spk-wrap':'')+(Q.it.clock||Q.it.date?' ck':'');
   if(Q.type){buildTypeBox(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Type your answer, then press Enter or Check.</small>';$('nextBtn').hidden=true;startTimer();return}
+  if(Q.speak){buildSpeak(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap the mic, say it in Japanese, and the app checks it.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   const shapes=['▲','◆','●','■'];
   Q.options.forEach((o,idx)=>{
@@ -1333,6 +1396,7 @@ function renderQ(){
     b.onclick=()=>answer(idx);
     box.appendChild(b);
   });
+  if(Q.listen){$('hearBtn').hidden=true;$('promptBox').onclick=()=>speak(Q.it.jp);setTimeout(()=>{if(game&&game.qs[game.i]===Q)speak(Q.it.jp)},350)}else $('promptBox').onclick=null;
   $('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap an answer or press 1–4.</small>';
   $('nextBtn').hidden=true;
   startTimer();
@@ -1341,21 +1405,22 @@ function startTimer(){
   cancelAnimationFrame(game.raf);
   const bar=$('timerBar'),fill=$('timerFill');
   if(!state.time){bar.hidden=true;return}
-  const Qw=game.qs[game.i].write,Qt=game.qs[game.i].type;
+  const Qw=game.qs[game.i].write||game.qs[game.i].speak,Qt=game.qs[game.i].type||game.qs[game.i].listen;
   bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):Qt?Math.max(state.time*1.5,10):state.time)*1000;
   const tick=now=>{
     const left=Math.max(0,1-(now-t0)/dur);game.left=left;
     fill.style.transform=`scaleX(${left})`;
     fill.style.background=left<.3?'var(--bad)':'var(--sakura)';
-    if(left<=0){if(Qw)padCheck(true);else answer(-1);return}
+    if(left<=0){if(game.qs[game.i].write)padCheck(true);else answer(-1);return}
     game.raf=requestAnimationFrame(tick);
   };
   game.left=1;game.raf=requestAnimationFrame(tick);
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
-  const Q=g.qs[g.i];const ci=(Q.write||Q.type)?1:Q.options.findIndex(o=>o.correct);
+  const Q=g.qs[g.i];const ci=(Q.write||Q.type||Q.speak)?1:Q.options.findIndex(o=>o.correct);
   if(Q.type){typeLock(idx)}
+  else if(Q.speak){spStop();const m=$('spMic');if(m){m.disabled=true;m.classList.remove('on')}const gr=$('spGrade');if(gr)gr.hidden=true}
   else if(!Q.write){const btns=[...$('answers').children];
   btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});}
   else{$('wGrade').hidden=true}
@@ -1386,6 +1451,7 @@ function answer(idx){
   const tf=charFact(it);
   if(tf){$('tb-k').textContent=it.jp;$('tb-txt').textContent=tf;const tb=$('tidbit');tb.hidden=false;tb.classList.remove('pop');void tb.offsetWidth;tb.classList.add('pop')}
   $('nextBtn').hidden=false;$('nextBtn').focus({preventScroll:true});
+  if(Q.listen||Q.speak)$('promptBox').onclick=()=>speak(it.jp);
   $('hearBtn').hidden=!canSpeak();
 }
 
@@ -1550,7 +1616,7 @@ function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.r
 /* ---------- WIRING ---------- */
 $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
-$('quitBtn').onclick=()=>{if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
+$('quitBtn').onclick=()=>{spStop();if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
 $('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
 $('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick,game.answer):startGame();
 $('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
@@ -1672,18 +1738,18 @@ function renderLessons(){
 }
 /* Quick test: 5 questions from one lesson, weakest and unpractised words first */
 const QUICK_N=5;
-const QUICK_MODES=[['tap','👆','Tap','Pick from 4 choices'],['type','⌨','Type','Type the romaji or the Japanese'],['write','✍','Write','Write the kana on a drawing pad']];
+const QUICK_MODES=[['tap','👆','Tap','Pick from 4 choices'],['type','⌨','Type','Type the romaji or the Japanese'],['write','✍','Write','Write the kana on a drawing pad'],['speak','🎤','Speak','Say it out loud, the app checks your pronunciation'],['listen','👂','Listen','Hear it, then pick what it means']];
 function quickPick(d){
   const qs=$('qSheet'),box=$('qModes');box.innerHTML='';
   $('qTitle').textContent=`Quick test · ${d.name}`;
   const writable=d.items.filter(canWrite).length;
   const last=store.get('quickMode')||'tap';
   QUICK_MODES.forEach(([m,ic,name,desc])=>{
-    const off=m==='write'&&!writable;
+    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak());
     const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
     b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
     b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
-    b.querySelector('small').textContent=off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.querySelector('small').textContent=m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
     b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
     box.appendChild(b);
   });
@@ -1816,7 +1882,7 @@ function saveGame(g){
   if(g.saved||!g.log||!g.log.length)return;g.saved=true;
   const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
     score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
-    lessons:[...state.lessons],dir:(g.answer||state.answer)==='write'?'write':(g.answer||state.answer)==='type'?'type':state.dir,timer:state.time,replay:!!g.replay};
+    lessons:[...state.lessons],dir:['write','type','speak','listen'].includes(g.answer||state.answer)?(g.answer||state.answer):state.dir,timer:state.time,replay:!!g.replay};
   const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
   if(!TRACKING_URL)return;
   const out=store.get('outbox')||[];
@@ -1897,6 +1963,7 @@ document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
   if(Qk&&Qk.type&&!game.locked)return;   // the text box handles its own keys
+  if(Qk&&Qk.speak&&!game.locked){const g=$('spGrade');if(g&&!g.hidden){if(e.key==='y')answer(1);else if(e.key==='n')answer(0)}return}
   if(Qk&&Qk.write&&!game.locked){
     if(e.key==='Enter'&&!game.checked){e.preventDefault();padCheck(false)}
     else if(game.checked&&(e.key==='y'||e.key==='1')){answer(1)}
