@@ -89,6 +89,19 @@ button:focus-visible{outline:3px solid var(--sakura);outline-offset:2px}
 .subgroup .chev{color:var(--sakura);font-size:.8rem;transition:transform .2s}
 .subgroup[open] .chev{transform:rotate(180deg)}
 .subgroup>.chips{padding:0 12px 12px}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.topic{font:inherit;text-align:left;display:grid;grid-template-columns:52px 1fr;grid-template-rows:auto auto auto auto;column-gap:14px;row-gap:3px;padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer;transition:border-color .15s,transform .15s}
+.topic:hover,.topic:focus-visible{border-color:var(--sakura);transform:translateY(-1px)}
+.topic .tp-k{grid-row:1/5;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:1.6rem;font-weight:800;background:color-mix(in srgb,var(--sakura) 16%,var(--panel-2));color:var(--sakura)}
+.topic b{font-size:1.02rem}
+.topic small{color:var(--muted);font-size:.82rem;line-height:1.35}
+.topic .tp-bar{height:5px;border-radius:9px;background:var(--panel-2);overflow:hidden;margin-top:6px}
+.topic .tp-bar i{display:block;height:100%;background:var(--ok,#3b9f66)}
+.topic .tp-n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.topic-head{display:flex;flex-direction:column;gap:2px;margin:2px 2px 4px}
+.topic-head .link{align-self:flex-start;padding:4px 0}
+.topic-head h3{margin:0;font-size:1.3rem}
+.topic-head span{color:var(--muted);font-size:.85rem}
 .sg-title{margin:10px 2px -4px;font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--sakura)}
 .clockface{margin:2px 0}
 .clockface svg{display:block}
@@ -1588,20 +1601,31 @@ function renderLibrary(){
 function openLibrary(from){lib.from=from;show('library');renderLibrary()}
 $('libBtn').onclick=()=>openLibrary(currentScreen());
 /* ---------- LESSONS (browse & study) ---------- */
-const ls={level:'all',q:'',from:'setup',open:new Set()};
+const ls={level:'all',q:'',from:'setup',open:new Set(),group:null};
 function dotClass(it){const st=statusOf(STATS[keyOf(it)]);return {master:'dot-m',learn:'dot-l',weak:'dot-w',new:'dot-n'}[st]}
 function renderLessons(){
   const seg=$('lsLevel');seg.innerHTML='';
-  [['all','All'],...LEVELS.map(L=>[L.id,L.name])].forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(ls.level===v));b.onclick=()=>{ls.level=v;renderLessons()};seg.appendChild(b)});
+  [['all','All'],...LEVELS.map(L=>[L.id,L.name])].forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(ls.level===v));b.onclick=()=>{ls.level=v;ls.group=null;renderLessons()};seg.appendChild(b)});
   const q=ls.q.trim().toLowerCase();
   const list=$('lsList');list.innerHTML='';
+  $('lessonsBack').textContent=ls.group&&!q?'← Topics':'← Back';
+  if(!q&&!ls.group){renderTopicTiles(list);return}
+  if(!q&&ls.group){
+    const [lid,gid]=ls.group.split(':'),L=LEVELS.find(x=>x.id===lid),g=L&&groupsOf(L,DECKS.filter(d=>d.level===lid)).find(x=>(x[0]||'all')===gid);
+    if(!g){ls.group=null;return renderLessons()}
+    const hd=document.createElement('div');hd.className='topic-head';
+    hd.innerHTML='<button type="button" class="link">← All topics</button><h3></h3><span></span>';
+    hd.querySelector('h3').textContent=g[1]||L.name;hd.querySelector('span').textContent=`${L.name} · ${g[2].length} lesson${g[2].length>1?'s':''}`;
+    hd.querySelector('button').onclick=()=>{ls.group=null;renderLessons();window.scrollTo({top:0})};
+    list.appendChild(hd);
+  }
   let shown=0;
-  LEVELS.filter(L=>ls.level==='all'||ls.level===L.id).forEach(L=>{
+  LEVELS.filter(L=>q?(ls.level==='all'||ls.level===L.id):ls.group.split(':')[0]===L.id).forEach(L=>{
     const decks=DECKS.filter(d=>d.level===L.id);
     const h=document.createElement('p');h.className='step';h.style.margin='6px 2px 0';h.textContent=`${L.name} · ${L.sub}`;
     let any=false;const frag=document.createDocumentFragment();
     let lastG=null;
-    groupsOf(L,decks).flatMap(([gid,gn,ds])=>ds.map(d=>({d,gn}))).forEach(({d,gn})=>{
+    groupsOf(L,decks).filter(([gid])=>q||(gid||'all')===ls.group.split(':')[1]).flatMap(([gid,gn,ds])=>ds.map(d=>({d,gn:q?gn:null}))).forEach(({d,gn})=>{
       const items=q?d.items.filter(it=>it.jp.includes(q)||it.ro.toLowerCase().includes(q)||(it.en||'').toLowerCase().includes(q)):d.items;
       if(q&&!items.length&&!d.name.toLowerCase().includes(q))return;
       any=true;shown++;
@@ -1639,7 +1663,7 @@ function renderLessons(){
       det.querySelector('.ls-quick').onclick=e=>{e.preventDefault();e.stopPropagation();quickPick(d)};
       frag.appendChild(det);
     });
-    if(any){list.appendChild(h);list.appendChild(frag)}
+    if(any){if(q)list.appendChild(h);list.appendChild(frag)}
   });
   if(!shown){const p=document.createElement('p');p.className='lib-empty';p.textContent='No lessons match your search.';list.appendChild(p)}
 }
@@ -1675,9 +1699,29 @@ function quickTest(d,mode){
 $('qCancel').onclick=()=>{$('qSheet').hidden=true};
 $('qSheet').onclick=e=>{if(e.target.id==='qSheet')$('qSheet').hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('qSheet').hidden)$('qSheet').hidden=true});
+const TOPIC_SUB={phr:'Greetings, classroom, meeting people, sentence patterns',voc:'People, jobs, countries, food, places, home, nature…',va:'Basic verbs and adjectives',num:'Numbers up to 1,000,000, prices, phone numbers',cnt:'Counters, how many?, age, the 1-3-6-8-10 pattern',time:'Hours, minutes, clock challenge',cal:'Days, weeks, dates, date challenge',more:'Other lessons'};
+function renderTopicTiles(list){
+  LEVELS.filter(L=>ls.level==='all'||ls.level===L.id).forEach(L=>{
+    const decks=DECKS.filter(d=>d.level===L.id);if(!decks.length)return;
+    const h=document.createElement('p');h.className='step';h.style.margin='6px 2px 0';h.textContent=`${L.name} · ${L.sub}`;list.appendChild(h);
+    const grid=document.createElement('div');grid.className='topic-grid';
+    groupsOf(L,decks).forEach(([gid,label,ds])=>{
+      const words=ds.filter(d=>!d.gen).flatMap(d=>d.items),mast=words.filter(it=>statusOf(STATS[keyOf(it)])==='master').length,seen=words.filter(it=>STATS[keyOf(it)]).length;
+      const pct=words.length?Math.round(mast/words.length*100):0;
+      const b=document.createElement('button');b.type='button';b.className='topic';
+      b.innerHTML=`<span class="tp-k"></span><b></b><small></small><span class="tp-bar"><i style="width:${pct}%"></i></span><span class="tp-n">${ds.length} lesson${ds.length>1?'s':''} · ${seen?`${pct}% mastered`:'not started'}</span>`;
+      const name=label||L.name,m=/^(\S)\s+(.*)$/.exec(name);
+      b.querySelector('.tp-k').textContent=m?m[1]:(L.id==='kana'?'あ':'語');b.querySelector('b').textContent=m?m[2]:name;
+      b.querySelector('small').textContent=gid?(TOPIC_SUB[gid]||''):ds.slice(0,4).map(d=>d.name).join(', ')+(ds.length>4?'…':'');
+      b.onclick=()=>{ls.group=`${L.id}:${gid||'all'}`;renderLessons();window.scrollTo({top:0})};
+      grid.appendChild(b);
+    });
+    list.appendChild(grid);
+  });
+}
 function openLessons(from){ls.from=from;show('lessonsPage');renderLessons()}
 $('learnBtn').onclick=()=>openLessons(currentScreen()==='lessonsPage'?ls.from:currentScreen());
-$('lessonsBack').onclick=()=>backTo(ls.from);
+$('lessonsBack').onclick=()=>{if(ls.group&&!ls.q.trim()){ls.group=null;renderLessons();window.scrollTo({top:0})}else backTo(ls.from)};
 $('lsQ').oninput=e=>{ls.q=e.target.value;renderLessons()};
 
 function setStreak(n){const e=$('h-streak');e.textContent=`連続 ${n}`;e.hidden=n<2}
