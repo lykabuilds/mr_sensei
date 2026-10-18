@@ -485,6 +485,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .sp-heard{margin:0;color:var(--muted);text-align:center;font-size:.95rem}
 .sp-heard b{color:var(--fg);font-size:1.15rem}
 .answers.spk-wrap{display:block}
+.prompt .q.long{overflow-wrap:anywhere}
 .prompt .q.listen{font-size:clamp(3rem,16vw,5rem);cursor:pointer}
 .pl-player{align-items:stretch}
 .pl-pos{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);text-align:center}
@@ -790,6 +791,7 @@ const DECKS=[
   {id:'c3-class',level:'n5',name:'Classroom phrases',items:[w('はじめましょう','hajimemashou','let’s begin'),w('おわりましょう','owarimashou','let’s end'),w('きゅうけいしましょう','kyuukei shimashou',"let's take a break"),w('そうしましょう','sou shimashou','let’s do that'),w('わかりましたか','wakarimashita ka','did you understand?'),w('はい、わかります','hai, wakarimasu','yes, I understand'),w('いいえ、わかりません','iie, wakarimasen','no, I don’t understand'),w('もういちど、おねがいします','mou ichido, onegaishimasu','one more time, please'),w('しつもんはありますか','shitsumon wa arimasu ka','do you have any questions?'),w('いいです','ii desu','good / no thanks'),w('ちがいます','chigaimasu','no, it’s not (that’s wrong)'),w('よんでください','yonde kudasai','please read'),w('かいてください','kaite kudasai','please write'),w('きいてください','kiite kudasai','please listen'),w('ことば','kotoba','word')]},
   {id:'n5-meet',level:'n5',name:'Meeting someone',items:[w('だれ','dare','who?'),w('どなた','donata','who? (polite)'),w('しつれいですが','shitsurei desu ga','excuse me, but…'),w('おなまえは','onamae wa','may I have your name?'),w('おいくつですか','oikutsu desu ka','how old are you? (polite)'),w('なんさいですか','nansai desu ka','how old are you?'),w('あのひとはだれですか','ano hito wa dare desu ka','who is that person?'),w('あのかたはどなたですか','ano kata wa donata desu ka','who is that person? (polite)'),w('こうべびょういん','koube byouin','Kobe Hospital'),w('こうべびょういんのいしゃです','koube byouin no isha desu','(he/she) is a doctor at Kobe Hospital'),w('こちら','kochira','this person (polite), this way'),w('こちらはやまださんです','kochira wa yamada san desu','this is Mr./Ms. Yamada')]},
   {id:'n5-sent',level:'n5',name:'Sentences: は・も・の・です',items:[w('は','wa','topic marker: as for ~'),w('も','mo','also, too'),w('です','desu','is, am, are'),w('じゃありません','ja arimasen','is not (polite)'),w('じゃない','ja nai','is not (casual)'),w('ではありません','de wa arimasen','is not (formal)'),w('ですか','desu ka','is it…? (question)'),w('なん','nan','what'),w('わたしはがくせいじゃありません','watashi wa gakusei ja arimasen','I am not a student'),w('あのひとはにほんじんです','ano hito wa nihonjin desu','that person is Japanese'),w('あのひとはフィリピンじんですか','ano hito wa firipinjin desu ka','is that person Filipino?'),w('いいえフィリピンじんじゃありません','iie firipinjin ja arimasen','no, (they) are not Filipino'),w('あのひとはやまださんじゃありませんか','ano hito wa yamada san ja arimasen ka','isn’t that Mr. Yamada?'),w('やまださんはなんさいですか','yamada san wa nansai desu ka','how old is Mr. Yamada?'),w('やまださんもがくせいです','yamada san mo gakusei desu','Mr. Yamada is also a student'),w('たなかさんもやまださんもがくせいです','tanaka san mo yamada san mo gakusei desu','both Tanaka and Yamada are students'),w('これはなんですか','kore wa nan desu ka','what is this?'),w('わたしはIMCのしゃいんです','watashi wa IMC no shain desu','I am an employee of IMC'),w('カリナさんはミクルだいがくのがくせいです','karina san wa mikuru daigaku no gakusei desu','Ms. Karina is a student at Mikuru University'),w('たなかさんはさくらだいがくのせんせいです','tanaka san wa sakura daigaku no sensei desu','Mr. Tanaka is a professor at Sakura University'),w('エンゾさんはにほんごのせんせいです','enzo san wa nihongo no sensei desu','Enzo is a Japanese teacher'),w('サントスさんはとうきょうびょういんのいしゃです','santosu san wa toukyou byouin no isha desu','Santos is a doctor at Tokyo Hospital'),w('じもとはラグナのカランバです','jimoto wa raguna no karanba desu','my hometown is Calamba, Laguna'),w('パクさんはサムスンのしゃいんです','paku san wa samusun no shain desu','Park is a Samsung employee'),w('マーさんはペキンびょういんのいしゃです','maa san wa pekin byouin no isha desu','Ma is a doctor at Beijing Hospital')]},
+  {id:'n5-part',level:'n5',name:'Particle challenge は・も・の・か',items:[]},
   {id:'n5-school',level:'n5',name:'School & study',items:[w('がっこう','gakkou','school'),w('だいがく','daigaku','university'),w('じゅぎょう','jugyou','class, lesson'),w('レッスン','ressun','lesson'),w('しゅくだい','shukudai','homework'),w('しけん','shiken','exam'),w('れんしゅう','renshuu','practice'),w('なまえ','namae','name'),w('テキスト','tekisuto','textbook'),w('ノート','nooto','notebook'),w('メモ','memo','memo, note'),w('ほん','hon','book'),w('えんぴつ','enpitsu','pencil'),w('つくえ','tsukue','desk'),w('ざせき','zaseki','seat'),w('ちず','chizu','map'),w('すうじ','suuji','number'),w('れきし','rekishi','history'),w('スケジュール','sukejuuru','schedule'),w('じしょ','jisho','dictionary')]},
   {id:'n5-people',level:'n5',name:'People, family & body',items:[w('おかあさん','okaasan','mother'),w('おとうさん','otousan','father'),w('おにいさん','oniisan','older brother'),w('おねえさん','oneesan','older sister'),w('わかもの','wakamono','young people'),w('きゃく','kyaku','guest, customer'),w('ユーザー','yuuzaa','user'),w('けっこん','kekkon','marriage'),w('かお','kao','face'),w('こえ','koe','voice'),w('のど','nodo','throat'),w('ともだち','tomodachi','friend'),w('こども','kodomo','child'),w('かぞく','kazoku','family')]},
   {id:'n5-food',level:'n5',name:'Food & drink',items:[w('さかな','sakana','fish'),w('すし','sushi','sushi'),w('みそ','miso','miso'),w('しお','shio','salt'),w('かき','kaki','oyster'),w('りんご','ringo','apple'),w('てんぷら','tenpura','tempura'),w('ラーメン','raamen','ramen'),w('ステーキ','suteeki','steak'),w('ツナ','tsuna','tuna'),w('トマト','tomato','tomato'),w('ソース','soosu','sauce'),w('チョコレート','chokoreeto','chocolate'),w('まっちゃ','matcha','green tea'),w('ぎゅうにゅう','gyuunyuu','milk'),w('オレンジジュース','orenjijuusu','orange juice'),w('レモンティー','remontii','lemon tea'),w('ワイン','wain','wine'),w('みつ','mitsu','honey'),w('ランチ','ranchi','lunch'),w('メニュー','menyuu','menu'),w('レストラン','resutoran','restaurant'),w('ぺこぺこ','pekopeko','very hungry'),w('たまご','tamago','egg'),w('バナナ','banana','banana')]},
@@ -857,9 +859,10 @@ const CK_DESC={
   'n5-clk1':'A new random clock every question, on the hour or half past (はん). Watch the special hours: よじ, しちじ and くじ.',
   'n5-clk2':'A new random clock every question, any minute. Check the last digit: 1, 3, 4, 6, 8 or 0 → ぷん; 2, 5, 7 or 9 → ふん.',
   'n5-clk3':'Random times with ごぜん (a.m.) or ごご (p.m.). Remember: they go FIRST, before the hour.',
+  'n5-part':'New sentences every game, built from your class words. Pick the particle that fits: は (topic), も (also), の (of / at), か (question). The English underneath tells you what the sentence means.',
   'n5-datecl':'A random day of the month every question. The special ones (1st–10th, 14th, 20th, 24th) come up more often.',
 };
-function ckGen(id,n){if(id==='n5-datecl')return dtGen(n);const seen=new Set(),out=[];let guard=0;while(out.length<n&&guard++<500){const t=CK_GEN[id]();const it=ckItem(id,t.h,t.m,t.ap);if(seen.has(it.en))continue;seen.add(it.en);out.push(it)}return out}
+function ckGen(id,n){if(id==='n5-part')return ptGen(n);if(id==='n5-datecl')return dtGen(n);const seen=new Set(),out=[];let guard=0;while(out.length<n&&guard++<500){const t=CK_GEN[id]();const it=ckItem(id,t.h,t.m,t.ap);if(seen.has(it.en))continue;seen.add(it.en);out.push(it)}return out}
 // a clock answer counts toward the rule words it uses (よじ, はっぷん, ごご…), so the library shows which rule needs work
 function ckTargets(it){const {h,m,ap}=it.clock;const js=[CK_H[h][0]];if(ap)js.push(ap==='am'?'ごぜん':'ごご');
   if(m===30)js.push('はん');else if(m){const u=m%10;js.push(u?CK_U[u][0]:'じゅっぷん')}
@@ -928,10 +931,43 @@ function dateFact(it){const d=it.date.d;
 }
 function dtTargets(it){return [JP_ITEM[it.jp]].filter(Boolean)}
 function calSVG(d){return `<svg viewBox="0 0 100 100" width="112" height="112" role="img" aria-label="A calendar page"><rect x="12" y="16" width="76" height="74" rx="10" fill="#fffaf6" stroke="#4a3b40" stroke-width="3.5"/><path d="M13.75 26a8.25 8.25 0 0 1 8.25-8.25h56a8.25 8.25 0 0 1 8.25 8.25v8H13.75z" fill="#e8678a"/><rect x="29" y="8" width="7" height="16" rx="3.5" fill="#4a3b40"/><rect x="64" y="8" width="7" height="16" rx="3.5" fill="#4a3b40"/><text x="50" y="77" text-anchor="middle" font-size="36" font-weight="800" fill="#4a3b40" font-family="system-ui,sans-serif">${d}</text></svg>`}
-DECKS.forEach(d=>{if(CK_GEN[d.id]||d.id==='n5-datecl'){d.gen=true;d.items=ckGen(d.id,12)}});
+/* ---------- PARTICLE CHALLENGE: は・も・の・か fill-in-the-blank, built from class vocabulary ---------- */
+const PT_PEOPLE=[['たなかさん','Tanaka'],['やまださん','Yamada'],['カリナさん','Karina'],['サントスさん','Santos'],['パクさん','Park'],['マーさん','Ma'],['リンダさん','Linda'],['エンゾさん','Enzo']];
+const PT_NOUN=[['がくせい','a student'],['せんせい','a teacher'],['いしゃ','a doctor'],['かいしゃいん','a company employee'],['エンジニア','an engineer'],['けんきゅうしゃ','a researcher'],['にほんじん','Japanese'],['フィリピンじん','Filipino'],['かんこくじん','Korean'],['ちゅうごくじん','Chinese'],['にじゅうごさい','25 years old'],['さんじゅうさい','30 years old']];
+const PT_ORG=[['さくらだいがく','Sakura University','がくせい','a student'],['さくらだいがく','Sakura University','せんせい','a teacher'],['ミクルだいがく','Mikuru University','がくせい','a student'],['とうきょうびょういん','Tokyo Hospital','いしゃ','a doctor'],['ペキンびょういん','Beijing Hospital','いしゃ','a doctor'],['IMC','IMC','しゃいん','an employee'],['サムスン','Samsung','しゃいん','an employee'],['グーグル','Google','しゃいん','an employee'],['にほんご','Japanese (language)','せんせい','a teacher'],['とうきょうだいがく','Tokyo University','けんきゅうしゃ','a researcher']];
+const PT_MINE=[['ほん','book'],['かばん','bag'],['ペン','pen'],['ノート','notebook'],['かさ','umbrella'],['なまえ','name']];
+const PT_RO={'は':'wa','も':'mo','の':'no','か':'ka'};
+const PT_WHY={'は':'は (wa) marks the topic: "as for ~". Use it for a new statement.','も':'も means "also": the same thing is true again, so も replaces は.','の':'の links two nouns: the first one describes the second (Sakura University の student = a student at Sakura University).','か':'か at the end turns the sentence into a question, like a spoken "?".'};
+const pick=a=>a[ckR(a.length)];
+function ptMake(){
+  const two=()=>{const a=pick(PT_PEOPLE);let b=pick(PT_PEOPLE);while(b===a)b=pick(PT_PEOPLE);return [a,b]};
+  const T=[
+    ()=>{const a=pick(PT_PEOPLE),n=pick(PT_NOUN);return ['は',`${a[0]}（　）${n[0]}です。`,`${a[1]} is ${n[1]}.`]},
+    ()=>{const [a,b]=two(),n=pick(PT_NOUN);return ['も',`${a[0]}は ${n[0]}です。${b[0]}（　）${n[0]}です。`,`${a[1]} is ${n[1]}. ${b[1]} is also ${n[1]}.`]},
+    ()=>{const [a,b]=two(),n=pick(PT_NOUN);let m=pick(PT_NOUN);while(m===n)m=pick(PT_NOUN);return ['は',`${a[0]}は ${n[0]}です。${b[0]}（　）${m[0]}です。`,`${a[1]} is ${n[1]}. ${b[1]} is ${m[1]}.`]},
+    ()=>{const a=pick(PT_PEOPLE),o=pick(PT_ORG);return ['の',`${a[0]}は ${o[0]}（　）${o[2]}です。`,`${a[1]} is ${o[3]} at ${o[1]}.`]},
+    ()=>{const a=pick(PT_PEOPLE),n=pick(PT_NOUN);return ['か',`${a[0]}は ${n[0]}です（　）。`,`Is ${a[1]} ${n[1]}?`]},
+    ()=>{const a=pick(PT_PEOPLE),n=pick(PT_NOUN);return ['か',`${a[0]}は ${n[0]}じゃありません（　）。`,`Isn’t ${a[1]} ${n[1]}?`]},
+    ()=>['は','あのひと（　）だれですか。','Who is that person?'],
+    ()=>{const a=pick(PT_PEOPLE);return ['は',`${a[0]}（　）なんさいですか。`,`How old is ${a[1]}?`]},
+    ()=>{const x=pick(PT_MINE);return ['の',`これは わたし（　）${x[0]}です。`,`This is my ${x[1]}.`]},
+    ()=>{const [a,b]=two(),n=pick(PT_NOUN);return ['も',`${a[0]}も ${b[0]}（　）${n[0]}です。`,`Both ${a[1]} and ${b[1]} are ${n[1].replace(/^an? /,'')}${/^an? /.test(n[1])?'s':''}.`]},
+    ()=>{const a=pick(PT_PEOPLE);return ['は',`いいえ、${a[0]}（　）にほんじん じゃありません。`,`No, ${a[1]} is not Japanese.`]},
+  ];
+  const [p,q,en]=pick(T)();
+  return {jp:p,ro:PT_RO[p],en,type:'word',deck:'n5-part',gen:true,part:{q,full:q.replace('（　）',p),why:PT_WHY[p]},alt:p==='は'?[{jp:'は',ro:'ha'}]:[]};
+}
+function ptGen(n){const seen=new Set(),out=[];let g=0;while(out.length<n&&g++<400){const it=ptMake();if(seen.has(it.part.q))continue;seen.add(it.part.q);out.push(it)}return out}
+function partQuestion(it){
+  if(state.answer==='type')return {it,type:true,expect:'romaji',dir:'fwd',ask:'Type the particle (romaji)',q:it.part.q,hint:it.en,qClass:'long',options:[]};
+  return {it,dir:'rev',ask:'Which particle fits?',q:it.part.q,hint:it.en,qClass:'long',options:['は','も','の','か'].map(t=>({text:t,correct:t===it.jp}))};
+}
+function ptTargets(it){const want=it.jp==='か'?'ですか':it.jp;const d=DECKS.find(x=>['n5-sent','n5-useful'].includes(x.id)&&x.items.some(i=>i.jp===want));return d?[d.items.find(i=>i.jp===want)]:[]}
+const partFact=it=>`${it.part.full}  ${it.part.why}`;
+DECKS.forEach(d=>{if(CK_GEN[d.id]||d.id==='n5-datecl'||d.id==='n5-part'){d.gen=true;d.items=ckGen(d.id,12)}});
 const JP_ITEM={};DECKS.forEach(d=>{if(!d.gen)d.items.forEach(it=>{if(!JP_ITEM[it.jp])JP_ITEM[it.jp]=it})});
 /* ---------- N5 lesson groups (setup picker + Lessons page) ---------- */
-const N5_GROUPS=[['phr','話 Phrases',['n5-sent','n5-greet','c3-class','n5-meet']],
+const N5_GROUPS=[['phr','話 Phrases',['n5-sent','n5-part','n5-greet','c3-class','n5-meet']],
   ['voc','語 Vocabulary',['n5-pron','n5-jobs','n5-country','n5-school','n5-people','n5-food','n5-places','n5-home','n5-nature','n5-time','n5-useful','n5-pos']],
   ['va','動 Verbs & adjectives',['n5-verb','n5-adj']],
   ['num','数 Numbers & money',['n5-num','c4-num','c4-big','n5-money']],
@@ -1201,6 +1237,7 @@ function splitKana(s){const out=[];for(const ch of s){if(SMALL_RE.test(ch)&&out.
 function unitRo(u){if(u==='っ'||u==='ッ')return 'pause';if(u==='ー')return 'long';return kanaToRomaji(u)||u}
 function charFact(it){
   if(it.clock)return clockFact(it);
+  if(it.part)return partFact(it);
   if(it.date)return dateFact(it);
   const jp=it.jp;
   if(it.type==='kana'){
@@ -1379,6 +1416,7 @@ function buildSpeak(box,Q){
 }
 /* ---------- GAME ---------- */
 function makeQuestion(it,pool,plain){
+  if(it.part)return partQuestion(it);
   if(!plain&&state.answer==='speak')return speakQuestion(it);
   if(!plain&&state.answer==='listen'&&canSpeak())return listenQuestion(it,pool);
   if(it.clock)return clockQuestion(it);
@@ -1665,7 +1703,7 @@ function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.r
 $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
 $('quitBtn').onclick=()=>{spStop();if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
-$('hearBtn').onclick=()=>game&&speak(game.qs[game.i].it.jp);
+$('hearBtn').onclick=()=>{if(!game)return;const it=game.qs[game.i].it;speak(it.part?it.part.full:it.jp)};
 $('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick,game.answer):startGame();
 $('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
 /* ---------- WORD LIBRARY ---------- */
@@ -1677,7 +1715,7 @@ let STATS=store.get('stats')||{};
   Object.keys(STATS).forEach(k=>{if(ok.has(k))return;const i=k.indexOf('|');const jp=k.slice(i+1);const nd=home[jp];if(!nd)return;
     const nk=nd+'|'+jp,a=STATS[k],b=STATS[nk]||[0,0,0];STATS[nk]=[a[0]+b[0],a[1]+b[1],Math.max(a[2]||0,b[2]||0)];delete STATS[k];ch=true});
   if(ch)store.set('stats',STATS)})();
-function record(it,ok){if(it.gen){(it.clock?ckTargets(it):dtTargets(it)).forEach(t=>record(t,ok));return}const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
+function record(it,ok){if(it.gen){(it.clock?ckTargets(it):it.part?ptTargets(it):dtTargets(it)).forEach(t=>record(t,ok));return}const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
 function statusOf(r){if(!r||!r[0])return 'new';const a=r[1]/r[0];if(r[0]>=3&&a>=.8)return 'master';if(a<.6)return 'weak';return 'learn'}
 const TAG={new:['New','t-new'],weak:['Need work','t-weak'],learn:['Learning','t-learn'],master:['Mastered','t-master']};
 const lib={type:'all',status:'all',sort:'weak',q:'',unseen:false};
@@ -1750,7 +1788,7 @@ function renderLessons(){
       const seen=d.items.filter(it=>STATS[keyOf(it)]).length,mast=d.items.filter(it=>statusOf(STATS[keyOf(it)])==='master').length;
       const det=document.createElement('details');det.className='card lesson';if(ls.open.has(d.id)||q)det.open=true;
       det.ontoggle=()=>{det.open?ls.open.add(d.id):ls.open.delete(d.id)};
-      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?(d.id==='n5-datecl'?'New random dates every game':'New random times every game'):`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
+      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?(d.id==='n5-datecl'?'New random dates every game':d.id==='n5-part'?'New sentences every game':'New random times every game'):`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
         <div class="ls-body"></div>
         <div class="ls-fact" hidden></div>
         <div class="ls-actions">${d.gen?'':'<button class="ghost pl-add" type="button"></button>'}<button class="big" type="button">Practice this lesson</button></div>`;
@@ -1765,7 +1803,7 @@ function renderLessons(){
         const p=document.createElement('div');p.className='ck-note';p.innerHTML='<p></p><ul class="lwords"></ul>';
         p.querySelector('p').textContent=CK_DESC[d.id]+' Examples:';
         const ul=p.querySelector('ul');
-        ckGen(d.id,4).forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML='<i class="dot-n"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>';b.querySelector('.jp').textContent=it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
+        ckGen(d.id,4).forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML='<i class="dot-n"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>';b.querySelector('.jp').textContent=it.part?it.part.full:it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
         body.appendChild(p);
       }else if(d.items[0].type==='kana'){
         const g=document.createElement('div');g.className='lgrid';
@@ -1795,11 +1833,11 @@ function quickPick(d){
   const writable=d.items.filter(canWrite).length;
   const last=store.get('quickMode')||'tap';
   QUICK_MODES.forEach(([m,ic,name,desc])=>{
-    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak());
+    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak())||(d.id==='n5-part'&&['write','speak','listen'].includes(m));
     const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
     b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
     b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
-    b.querySelector('small').textContent=m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.querySelector('small').textContent=d.id==='n5-part'&&off?'Not for particles: use Tap or Type':m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
     b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
     box.appendChild(b);
   });
