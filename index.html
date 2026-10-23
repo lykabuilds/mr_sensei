@@ -507,6 +507,20 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .pl-add.on{border-color:var(--sakura);color:var(--sakura)}
 .ls-actions{gap:10px;flex-wrap:wrap}
 .pl-list li.now>button:first-child{border-color:var(--sakura)}
+.review{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-color:var(--sakura)}
+.review>div{display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px}
+.review b{font-size:1.05rem}
+.review small{color:var(--muted);font-size:.8rem;line-height:1.35}
+.answers.sb-wrap{display:block}
+.sb{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.sb-ans{min-height:64px;border:2px dashed var(--line);border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sb-ans.right{border-style:solid;border-color:var(--matcha)}
+.sb-ans.wrong{border-style:solid;border-color:var(--shu)}
+.sb-ph{color:var(--muted);font-size:.88rem}
+.sb-bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sb-tile{font:inherit;font-size:1.15rem;font-weight:700;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.sb-tile.on{background:var(--fg);color:var(--ink)}
+.sb-tile:disabled{opacity:.25;cursor:default;box-shadow:none}
 .gbtn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:1.05rem;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.35)}
 .gbtn.ok{background:var(--matcha)}
 .gbtn.no{background:var(--shu)}
@@ -535,6 +549,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 
   <!-- SETUP -->
   <section id="setup" style="display:flex;flex-direction:column;gap:14px">
+    <div class="card review" id="reviewCard" hidden><div><p class="step" style="margin:0">🔁 Today’s review</p><b id="rvText"></b><small>Words come back on a schedule: miss one and it returns tomorrow, get it right and it waits longer (1, 2, 4, 7, 14, 30 days).</small></div><button class="big" id="rvBtn" type="button">Review now</button></div>
     <div class="card">
       <div class="pick-head"><p class="step">What to practice</p><div class="levels" id="levels" role="group" aria-label="Levels"></div></div>
       <div id="lessons" style="display:flex;flex-direction:column;gap:16px"></div>
@@ -718,6 +733,7 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
     <ul class="words" id="lib-list"></ul>
     <div class="btn-row">
       <button class="big" id="practiceWeak">Practice weakest 20</button>
+      <button class="big" id="plReview" type="button" hidden>🔁 Review due</button>
       <button class="ghost" id="plWeak" type="button">🎧 Add weakest to playlist</button>
       <button class="ghost" id="copyCsv">Copy stats as CSV</button>
       <span class="toast" id="csvToast" aria-live="polite"></span>
@@ -792,6 +808,7 @@ const DECKS=[
   {id:'n5-meet',level:'n5',name:'Meeting someone',items:[w('だれ','dare','who?'),w('どなた','donata','who? (polite)'),w('しつれいですが','shitsurei desu ga','excuse me, but…'),w('おなまえは','onamae wa','may I have your name?'),w('おいくつですか','oikutsu desu ka','how old are you? (polite)'),w('なんさいですか','nansai desu ka','how old are you?'),w('あのひとはだれですか','ano hito wa dare desu ka','who is that person?'),w('あのかたはどなたですか','ano kata wa donata desu ka','who is that person? (polite)'),w('こうべびょういん','koube byouin','Kobe Hospital'),w('こうべびょういんのいしゃです','koube byouin no isha desu','(he/she) is a doctor at Kobe Hospital'),w('こちら','kochira','this person (polite), this way'),w('こちらはやまださんです','kochira wa yamada san desu','this is Mr./Ms. Yamada')]},
   {id:'n5-sent',level:'n5',name:'Sentences: は・も・の・です',items:[w('は','wa','topic marker: as for ~'),w('も','mo','also, too'),w('です','desu','is, am, are'),w('じゃありません','ja arimasen','is not (polite)'),w('じゃない','ja nai','is not (casual)'),w('ではありません','de wa arimasen','is not (formal)'),w('ですか','desu ka','is it…? (question)'),w('なん','nan','what'),w('わたしはがくせいじゃありません','watashi wa gakusei ja arimasen','I am not a student'),w('あのひとはにほんじんです','ano hito wa nihonjin desu','that person is Japanese'),w('あのひとはフィリピンじんですか','ano hito wa firipinjin desu ka','is that person Filipino?'),w('いいえフィリピンじんじゃありません','iie firipinjin ja arimasen','no, (they) are not Filipino'),w('あのひとはやまださんじゃありませんか','ano hito wa yamada san ja arimasen ka','isn’t that Mr. Yamada?'),w('やまださんはなんさいですか','yamada san wa nansai desu ka','how old is Mr. Yamada?'),w('やまださんもがくせいです','yamada san mo gakusei desu','Mr. Yamada is also a student'),w('たなかさんもやまださんもがくせいです','tanaka san mo yamada san mo gakusei desu','both Tanaka and Yamada are students'),w('これはなんですか','kore wa nan desu ka','what is this?'),w('わたしはIMCのしゃいんです','watashi wa IMC no shain desu','I am an employee of IMC'),w('カリナさんはミクルだいがくのがくせいです','karina san wa mikuru daigaku no gakusei desu','Ms. Karina is a student at Mikuru University'),w('たなかさんはさくらだいがくのせんせいです','tanaka san wa sakura daigaku no sensei desu','Mr. Tanaka is a professor at Sakura University'),w('エンゾさんはにほんごのせんせいです','enzo san wa nihongo no sensei desu','Enzo is a Japanese teacher'),w('サントスさんはとうきょうびょういんのいしゃです','santosu san wa toukyou byouin no isha desu','Santos is a doctor at Tokyo Hospital'),w('じもとはラグナのカランバです','jimoto wa raguna no karanba desu','my hometown is Calamba, Laguna'),w('パクさんはサムスンのしゃいんです','paku san wa samusun no shain desu','Park is a Samsung employee'),w('マーさんはペキンびょういんのいしゃです','maa san wa pekin byouin no isha desu','Ma is a doctor at Beijing Hospital')]},
   {id:'n5-part',level:'n5',name:'Particle challenge は・も・の・か',items:[]},
+  {id:'n5-build',level:'n5',name:'Sentence builder',items:[]},
   {id:'n5-school',level:'n5',name:'School & study',items:[w('がっこう','gakkou','school'),w('だいがく','daigaku','university'),w('じゅぎょう','jugyou','class, lesson'),w('レッスン','ressun','lesson'),w('しゅくだい','shukudai','homework'),w('しけん','shiken','exam'),w('れんしゅう','renshuu','practice'),w('なまえ','namae','name'),w('テキスト','tekisuto','textbook'),w('ノート','nooto','notebook'),w('メモ','memo','memo, note'),w('ほん','hon','book'),w('えんぴつ','enpitsu','pencil'),w('つくえ','tsukue','desk'),w('ざせき','zaseki','seat'),w('ちず','chizu','map'),w('すうじ','suuji','number'),w('れきし','rekishi','history'),w('スケジュール','sukejuuru','schedule'),w('じしょ','jisho','dictionary')]},
   {id:'n5-people',level:'n5',name:'People, family & body',items:[w('おかあさん','okaasan','mother'),w('おとうさん','otousan','father'),w('おにいさん','oniisan','older brother'),w('おねえさん','oneesan','older sister'),w('わかもの','wakamono','young people'),w('きゃく','kyaku','guest, customer'),w('ユーザー','yuuzaa','user'),w('けっこん','kekkon','marriage'),w('かお','kao','face'),w('こえ','koe','voice'),w('のど','nodo','throat'),w('ともだち','tomodachi','friend'),w('こども','kodomo','child'),w('かぞく','kazoku','family')]},
   {id:'n5-food',level:'n5',name:'Food & drink',items:[w('さかな','sakana','fish'),w('すし','sushi','sushi'),w('みそ','miso','miso'),w('しお','shio','salt'),w('かき','kaki','oyster'),w('りんご','ringo','apple'),w('てんぷら','tenpura','tempura'),w('ラーメン','raamen','ramen'),w('ステーキ','suteeki','steak'),w('ツナ','tsuna','tuna'),w('トマト','tomato','tomato'),w('ソース','soosu','sauce'),w('チョコレート','chokoreeto','chocolate'),w('まっちゃ','matcha','green tea'),w('ぎゅうにゅう','gyuunyuu','milk'),w('オレンジジュース','orenjijuusu','orange juice'),w('レモンティー','remontii','lemon tea'),w('ワイン','wain','wine'),w('みつ','mitsu','honey'),w('ランチ','ranchi','lunch'),w('メニュー','menyuu','menu'),w('レストラン','resutoran','restaurant'),w('ぺこぺこ','pekopeko','very hungry'),w('たまご','tamago','egg'),w('バナナ','banana','banana'),w('はし','hashi','chopsticks'),w('おはし','ohashi','chopsticks (polite)')]},
@@ -812,6 +829,7 @@ const DECKS=[
   {id:'c4-big',level:'n5',name:'Numbers 100–1,000,000',items:[w('ひゃく','hyaku','100'),w('にひゃく','nihyaku','200'),w('さんびゃく','sanbyaku','300'),w('よんひゃく','yonhyaku','400'),w('ごひゃく','gohyaku','500'),w('ろっぴゃく','roppyaku','600'),w('ななひゃく','nanahyaku','700'),w('はっぴゃく','happyaku','800'),w('きゅうひゃく','kyuuhyaku','900'),w('せん','sen','1,000'),w('にせん','nisen','2,000'),w('さんぜん','sanzen','3,000'),w('よんせん','yonsen','4,000'),w('はっせん','hassen','8,000'),w('いちまん','ichiman','10,000'),w('にまん','niman','20,000'),w('きゅうまん','kyuuman','90,000'),w('せんにひゃくさんじゅうよん','sen nihyaku sanjuu yon','1,234'),w('にせんにじゅうろく','nisen nijuu roku','2,026'),w('じゅうまん','juuman','100,000'),w('ひゃくまん','hyakuman','1,000,000'),w('じゅうにまんろくせんひゃく','juuniman rokusen hyaku','126,100'),w('ごじゅうろくまんよんせんにひゃく','gojuurokuman yonsen nihyaku','564,200'),w('きゅうじゅうにまんさんぜん','kyuujuuniman sanzen','923,000')]},
   {id:'n5-cnt',level:'n5',name:'Counters 〜つ',items:[w('ひとつ','hitotsu','1 thing'),w('ふたつ','futatsu','2 things'),w('みっつ','mittsu','3 things'),w('よっつ','yottsu','4 things'),w('いつつ','itsutsu','5 things'),w('むっつ','muttsu','6 things'),w('ななつ','nanatsu','7 things'),w('やっつ','yattsu','8 things'),w('ここのつ','kokonotsu','9 things'),w('とお','too','10 things')]},
   {id:'c4-cnt',level:'n5',name:'Counters & sound changes',items:[w('〜まい','mai','counter: flat things'),w('〜ほん','hon','counter: long, thin things'),w('〜さつ','satsu','counter: books, notebooks'),w('〜にん','nin','counter: people'),w('〜こ','ko','counter: small things'),w('〜ひき','hiki','counter: small animals'),w('〜だい','dai','counter: cars, machines'),w('〜ばん','ban','counter: order, number'),w('〜さい','sai','counter: age'),w('さんがい','sangai','3rd floor'),w('さんまい','sanmai','3 flat things'),w('〜かい','kai','counter: times, floors'),w('ひとり','hitori','1 person'),w('ふたり','futari','2 people'),w('よにん','yonin','4 people'),w('にだい','nidai','2 cars, machines'),w('ごまい','gomai','5 flat things'),w('いちばん','ichiban','number one, the best'),w('ごばんめ','gobanme','5th'),w('〜ぜん','zen','counter: pairs of chopsticks'),w('いちぜん','ichizen','1 pair of chopsticks'),w('にぜん','nizen','2 pairs of chopsticks'),w('よんぜん','yonzen','4 pairs of chopsticks'),w('ろくぜん','rokuzen','6 pairs of chopsticks'),w('ななぜん','nanazen','7 pairs of chopsticks'),w('はちぜん','hachizen','8 pairs of chopsticks'),w('きゅうぜん','kyuuzen','9 pairs of chopsticks'),w('じゅうぜん','juuzen','10 pairs of chopsticks')]},
+  {id:'n5-ctrpick',level:'n5',name:'Pick the counter',items:[]},
   {id:'n5-howmany',level:'n5',name:'How many? なん〜',items:[w('いくつ','ikutsu','how many (things)?'),w('なんにん','nannin','how many people?'),w('おいくつ','oikutsu','how old? (polite)'),w('なんまい','nanmai','how many flat things?'),w('なんぼん','nanbon','how many long things?'),w('なんさつ','nansatsu','how many books?'),w('なんかい','nankai','how many times?'),w('なんがい','nangai','what floor?'),w('なんこ','nanko','how many small things?'),w('なんびき','nanbiki','how many small animals?'),w('なんだい','nandai','how many cars, machines?'),w('なんばん','nanban','what number?'),w('なんぜん','nanzen','how many pairs (of chopsticks)?')]},
   {id:'c4-age',level:'n5',name:'Age 〜さい',items:[w('いっさい','issai','1 year old'),w('はっさい','hassai','8 years old'),w('じゅっさい','jussai','10 years old'),w('はたち','hatachi','20 years old'),w('なんさい','nansai','how old?')]},
   {id:'c4-sent',level:'n5',name:'Counter sentences',items:[w('りんごをみっつください','ringo o mittsu kudasai','three apples, please'),w('おにぎりをふたつください','onigiri o futatsu kudasai','two rice balls, please'),w('ねこがにひきいます','neko ga nihiki imasu','there are two cats'),w('わたしはにじゅうごさいです','watashi wa nijuugo sai desu','I am 25 years old'),w('きっぷはいくらですか','kippu wa ikura desu ka','how much is the ticket?'),w('このかばんはいくらですか','kono kaban wa ikura desu ka','how much is this bag?'),w('かみをにまいください','kami o nimai kudasai','two sheets of paper, please'),w('ペンがさんぼんあります','pen ga sanbon arimasu','there are three pens'),w('ほんをいっさつかいました','hon o issatsu kaimashita','I bought one book'),w('あめをごこたべました','ame o goko tabemashita','I ate five candies'),w('トイレはなんがいですか','toire wa nangai desu ka','what floor is the restroom on?'),w('わたしはいちばんです','watashi wa ichiban desu','I’m number one!'),w('はしをにぜんください','hashi o nizen kudasai','two pairs of chopsticks, please')]},
@@ -859,10 +877,12 @@ const CK_DESC={
   'n5-clk1':'A new random clock every question, on the hour or half past (はん). Watch the special hours: よじ, しちじ and くじ.',
   'n5-clk2':'A new random clock every question, any minute. Check the last digit: 1, 3, 4, 6, 8 or 0 → ぷん; 2, 5, 7 or 9 → ふん.',
   'n5-clk3':'Random times with ごぜん (a.m.) or ごご (p.m.). Remember: they go FIRST, before the hour.',
+  'n5-ctrpick':'See a thing, pick its counter: 本 for long things, 枚 for flat, 冊 for books, 人 for people, 匹 for animals, 台 for machines, こ or つ for small things, 膳 for chopsticks. The explanation after each answer tells you why.',
+  'n5-build':'Put the word tiles in the right order. Japanese order: topic は … object を … number + counter … verb or です at the end.',
   'n5-part':'New sentences every game, built from your class words. Pick the particle that fits: は (topic), も (also), の (of / at), か (question). The English underneath tells you what the sentence means.',
   'n5-datecl':'A random day of the month every question. The special ones (1st–10th, 14th, 20th, 24th) come up more often.',
 };
-function ckGen(id,n){if(id==='n5-part')return ptGen(n);if(id==='n5-datecl')return dtGen(n);const seen=new Set(),out=[];let guard=0;while(out.length<n&&guard++<500){const t=CK_GEN[id]();const it=ckItem(id,t.h,t.m,t.ap);if(seen.has(it.en))continue;seen.add(it.en);out.push(it)}return out}
+function ckGen(id,n){if(id==='n5-ctrpick')return cpGen(n);if(id==='n5-build')return sbGen(n);if(id==='n5-part')return ptGen(n);if(id==='n5-datecl')return dtGen(n);const seen=new Set(),out=[];let guard=0;while(out.length<n&&guard++<500){const t=CK_GEN[id]();const it=ckItem(id,t.h,t.m,t.ap);if(seen.has(it.en))continue;seen.add(it.en);out.push(it)}return out}
 // a clock answer counts toward the rule words it uses (よじ, はっぷん, ごご…), so the library shows which rule needs work
 function ckTargets(it){const {h,m,ap}=it.clock;const js=[CK_H[h][0]];if(ap)js.push(ap==='am'?'ごぜん':'ごご');
   if(m===30)js.push('はん');else if(m){const u=m%10;js.push(u?CK_U[u][0]:'じゅっぷん')}
@@ -964,14 +984,76 @@ function partQuestion(it){
 }
 function ptTargets(it){const want=it.jp==='か'?'ですか':it.jp;const d=DECKS.find(x=>['n5-sent','n5-useful'].includes(x.id)&&x.items.some(i=>i.jp===want));return d?[d.items.find(i=>i.jp===want)]:[]}
 const partFact=it=>`${it.part.full}  ${it.part.why}`;
-DECKS.forEach(d=>{if(CK_GEN[d.id]||d.id==='n5-datecl'||d.id==='n5-part'){d.gen=true;d.items=ckGen(d.id,12)}});
+/* ---------- PICK THE COUNTER ---------- */
+const shuf=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r};
+const CTR={hon:['本','ほん','hon','long, thin things'],mai:['枚','まい','mai','flat things'],satsu:['冊','さつ','satsu','books and bound things'],nin:['人','にん','nin','people'],
+  hiki:['匹','ひき','hiki','small animals'],dai:['台','だい','dai','cars and machines'],ko:['個','こ','ko','small solid things'],tsu:['つ','つ','tsu','general things (1–10)'],zen:['膳','ぜん','zen','pairs of chopsticks']};
+const CP_OBJ=[['ペン','pens',['hon']],['かさ','umbrellas',['hon']],['ボトル','bottles',['hon']],['ケーブル','cables',['hon']],['バナナ','bananas',['hon']],['えんぴつ','pencils',['hon']],['ワイン','bottles of wine',['hon']],
+  ['かみ','sheets of paper',['mai']],['きっぷ','tickets',['mai']],['シャツ','shirts',['mai']],['さら','plates',['mai']],['CD','CDs',['mai']],
+  ['ほん','books',['satsu']],['ノート','notebooks',['satsu']],['ざっし','magazines',['satsu']],['じしょ','dictionaries',['satsu']],
+  ['ひと','people',['nin']],['ともだち','friends',['nin']],['がくせい','students',['nin']],
+  ['ねこ','cats',['hiki']],['いぬ','dogs',['hiki']],['さかな','fish',['hiki']],['むし','insects',['hiki']],
+  ['くるま','cars',['dai']],['じてんしゃ','bicycles',['dai']],['パソコン','computers',['dai']],['テレビ','TVs',['dai']],
+  ['たまご','eggs',['ko','tsu']],['りんご','apples',['ko','tsu']],['あめ','candies',['ko','tsu']],['おにぎり','rice balls',['tsu','ko']],['けしゴム','erasers',['ko','tsu']],
+  ['しつもん','questions',['tsu']],['かばん','bags',['tsu','ko']],['はし','pairs of chopsticks',['zen']]];
+const ctrLabel=k=>k==='tsu'?'つ ひとつ…':`${CTR[k][0]} ${CTR[k][1]}`;
+function cpItem(o){const c=CTR[o[2][0]];return {jp:c[1],ro:c[2],en:`counter for ${o[1]}`,type:'word',deck:'n5-ctrpick',gen:true,cp:{obj:o[0],en:o[1],ok:o[2]},alt:o[2].slice(1).map(k=>({jp:CTR[k][1],ro:CTR[k][2]}))}}
+function cpGen(n){return shuf(CP_OBJ).slice(0,n).map(cpItem)}
+function cpQuestion(it){
+  if(state.answer==='type')return {it,type:true,expect:'romaji',dir:'rev',ask:'Which counter? Type it in romaji',q:it.cp.obj,hint:`counting ${it.cp.en}`,qClass:'',options:[]};
+  const right=it.cp.ok[0],bad=shuf(Object.keys(CTR).filter(k=>!it.cp.ok.includes(k))).slice(0,3);
+  return {it,dir:'rev',ask:'Which counter do you use?',q:it.cp.obj,hint:`counting ${it.cp.en}`,qClass:'',options:shuf([right,...bad]).map(k=>({text:ctrLabel(k),correct:k===right}))};
+}
+function cpFact(it){const ok=it.cp.ok,c=CTR[ok[0]];
+  let t=`${it.cp.obj} → ${ctrLabel(ok[0])}, the counter for ${c[3]}.`;
+  if(ok.length>1)t+=` ${CTR[ok[1]][1]} also works: small solid things take つ or こ, and こ goes past 10.`;
+  if(ok[0]==='nin')t+=' People always use にん (ひとり, ふたり), never つ.';
+  if(ok[0]==='hiki')t+=' Animals always use ひき, never つ.';
+  if(ok[0]==='tsu'&&ok.length===1)t+=' Abstract things like questions only take つ.';
+  return t}
+function cpTargets(it){const want='〜'+CTR[it.cp.ok[0]][1];const d=DECKS.find(x=>x.id==='c4-cnt');const i=d&&d.items.find(x=>x.jp===want);return i?[i]:[]}
+/* ---------- SENTENCE BUILDER ---------- */
+const SB_BANK=[['わたし|は|がくせい|です','I am a student.'],['わたし|は|がくせい|じゃありません','I am not a student.'],['あのひと|は|だれ|ですか','Who is that person?'],
+  ['あのひと|は|にほんじん|です','That person is Japanese.'],['これ|は|わたし|の|ほん|です','This is my book.'],['ペン|を|ごほん|ください','Five pens, please.'],
+  ['りんご|を|みっつ|ください','Three apples, please.'],['はし|を|にぜん|ください','Two pairs of chopsticks, please.'],['ワイン|を|さんぼん|かいます','I’ll buy three bottles of wine.'],
+  ['みず|を|じゅっぽん|かいました','I bought ten bottles of water.'],['CD|を|じゅうまい|かいました','I bought ten CDs.'],['ねこ|が|にひき|います','There are two cats.'],
+  ['ケーブル|が|さんぼん|あります','There are three cables.'],['あめ|を|なんこ|たべましたか','How many candies did you eat?'],['みず|を|なんぼん|かいましたか','How many bottles of water did you buy?'],
+  ['トイレ|は|なんがい|ですか','What floor is the restroom on?'],['きっぷ|は|いくら|ですか','How much is the ticket?'],['じもと|は|ラグナ|の|カランバ|です','My hometown is Calamba, Laguna.'],
+  ['わたし|は|フィリピンじん|です','I am Filipino.'],['こちら|は|やまださん|です','This is Ms. Yamada.'],['きょう|は|なんようび|ですか','What day is it today?']];
+function sbMake(){
+  const r=Math.random();let toks,en;
+  if(r<.55){[toks,en]=pick(SB_BANK);toks=toks.split('|')}
+  else{const a=pick(PT_PEOPLE),b=pick(PT_PEOPLE.filter(x=>x!==a)),n=pick(PT_NOUN),o=pick(PT_ORG);
+    const T=[[[a[0],'は',o[0],'の',o[2],'です'],`${a[1]} is ${o[3]} at ${o[1]}.`],[[a[0],'は',n[0],'ですか'],`Is ${a[1]} ${n[1]}?`],
+      [[a[0],'も',n[0],'です'],`${a[1]} is also ${n[1]}.`],[[a[0],'は',n[0],'じゃありません'],`${a[1]} is not ${n[1]}.`],
+      [[a[0],'も',b[0],'も',n[0],'です'],`Both ${a[1]} and ${b[1]} are ${n[1].replace(/^an? /,'')}${/^an? /.test(n[1])?'s':''}.`]];
+    [toks,en]=pick(T)}
+  return {jp:toks.join(''),ro:'',en,type:'word',deck:'n5-build',gen:true,sb:{toks}};
+}
+function sbGen(n){const seen=new Set(),out=[];let g=0;while(out.length<n&&g++<300){const it=sbMake();if(seen.has(it.jp))continue;seen.add(it.jp);out.push(it)}return out}
+function sbQuestion(it){return {it,build:true,dir:'rev',ask:'Build the sentence',q:it.en,hint:'Tap the tiles in order',qClass:'latin long',options:[]}}
+function buildBuilder(box,Q){
+  const toks=Q.it.sb.toks;let order=shuf(toks.map((t,i)=>i));let guard=0;while(order.every((v,i)=>v===i)&&toks.length>1&&guard++<10)order=shuf(order);
+  const chosen=[];
+  box.innerHTML='<div class="sb"><div class="sb-ans" id="sbAns" aria-label="Your sentence"></div><div class="sb-bank" id="sbBank"></div><div class="wtools"><button class="ghost" id="sbClear" type="button">Clear</button><button class="big" id="sbCheck" type="button">Check</button></div></div>';
+  const draw=()=>{const A=$('sbAns'),B=$('sbBank');A.innerHTML='';B.innerHTML='';
+    if(!chosen.length){const p=document.createElement('span');p.className='sb-ph';p.textContent='Tap the words below in the right order';A.appendChild(p)}
+    chosen.forEach((ix,pos)=>{const b=document.createElement('button');b.type='button';b.className='sb-tile on';b.textContent=toks[ix];b.onclick=()=>{if(game.locked)return;chosen.splice(pos,1);draw()};A.appendChild(b)});
+    order.forEach(ix=>{const b=document.createElement('button');b.type='button';b.className='sb-tile';b.textContent=toks[ix];b.disabled=chosen.includes(ix);b.onclick=()=>{if(game.locked)return;chosen.push(ix);draw()};B.appendChild(b)});
+    $('sbCheck').disabled=chosen.length!==toks.length};
+  game.sbCheck=()=>{if(game.locked||chosen.length!==toks.length)return;const ok=chosen.map(i=>toks[i]).join('')===toks.join('');game.sbYour=chosen.map(i=>toks[i]).join(' ');answer(ok?1:0)};
+  $('sbClear').onclick=()=>{if(game.locked)return;chosen.length=0;draw()};$('sbCheck').onclick=()=>game.sbCheck();
+  draw();
+}
+const sbFact=it=>`${it.sb.toks.join(' ')}  Japanese order: topic は … then the object (を) or detail … and the verb or です last.`;
+DECKS.forEach(d=>{if(CK_GEN[d.id]||['n5-datecl','n5-part','n5-ctrpick','n5-build'].includes(d.id)){d.gen=true;d.items=ckGen(d.id,12)}});
 const JP_ITEM={};DECKS.forEach(d=>{if(!d.gen)d.items.forEach(it=>{if(!JP_ITEM[it.jp])JP_ITEM[it.jp]=it})});
 /* ---------- N5 lesson groups (setup picker + Lessons page) ---------- */
-const N5_GROUPS=[['phr','話 Phrases',['n5-sent','n5-part','n5-greet','c3-class','n5-meet']],
+const N5_GROUPS=[['phr','話 Phrases',['n5-sent','n5-part','n5-build','n5-greet','c3-class','n5-meet']],
   ['voc','語 Vocabulary',['n5-pron','n5-jobs','n5-country','n5-school','n5-people','n5-food','n5-places','n5-home','n5-nature','n5-time','n5-useful','n5-pos']],
   ['va','動 Verbs & adjectives',['n5-verb','n5-adj']],
   ['num','数 Numbers & money',['n5-num','c4-num','c4-big','n5-money']],
-  ['cnt','個 Counters',['n5-cnt','c4-cnt','n5-howmany','c4-age','c4-sent','n5-pattern']],
+  ['cnt','個 Counters',['n5-cnt','c4-cnt','n5-ctrpick','n5-howmany','c4-age','c4-sent','n5-pattern']],
   ['time','時 Time',['n5-hours','n5-mins','n5-clock','n5-clk1','n5-clk2','n5-clk3']],
   ['cal','日 Calendar',['n5-rel','n5-week','n5-date','n5-datecl']]];
 const SG_OPEN=new Set(),SG_SEEN=new Set();
@@ -1241,6 +1323,8 @@ function unitRo(u){if(u==='っ'||u==='ッ')return 'pause';if(u==='ー')return 'l
 function charFact(it){
   if(it.clock)return clockFact(it);
   if(it.part)return partFact(it);
+  if(it.cp)return cpFact(it);
+  if(it.sb)return sbFact(it);
   if(it.date)return dateFact(it);
   const jp=it.jp;
   if(it.type==='kana'){
@@ -1300,6 +1384,7 @@ function segment(el,opts,key){
   });
 }
 function renderSetup(){
+  renderReview();
   const lv=$('levels');lv.innerHTML='';
   LEVELS.forEach(L=>{
     const b=document.createElement('button');b.type='button';b.className='level';
@@ -1420,6 +1505,8 @@ function buildSpeak(box,Q){
 /* ---------- GAME ---------- */
 function makeQuestion(it,pool,plain){
   if(it.part)return partQuestion(it);
+  if(it.cp)return cpQuestion(it);
+  if(it.sb)return sbQuestion(it);
   if(!plain&&state.answer==='speak')return speakQuestion(it);
   if(!plain&&state.answer==='listen'&&canSpeak())return listenQuestion(it,pool);
   if(it.clock)return clockQuestion(it);
@@ -1473,8 +1560,9 @@ function renderQ(){
   const ck=$('p-clock');if(Q.listen){ck.hidden=true;ck.innerHTML=''}else if(Q.it.clock){ck.innerHTML=clockSVG(Q.it.clock);ck.hidden=false}else if(Q.it.date){ck.innerHTML=calSVG(Q.it.date.d);ck.hidden=false}else{ck.hidden=true;ck.innerHTML=''}
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
   $('hearBtn').hidden=!canSpeak()||(!Q.write&&(Q.dir!=='fwd'||Q.it.type==='kana'));  // don't give away kana readings before answering
-  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':Q.speak?' spk-wrap':'')+(Q.it.clock||Q.it.date?' ck':'');
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':Q.speak?' spk-wrap':Q.build?' sb-wrap':'')+(Q.it.clock||Q.it.date?' ck':'');
   if(Q.type){buildTypeBox(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Type your answer, then press Enter or Check.</small>';$('nextBtn').hidden=true;startTimer();return}
+  if(Q.build){buildBuilder(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap the words in order, then Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.speak){buildSpeak(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap the mic, say it in Japanese, and the app checks it.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   const shapes=['▲','◆','●','■'];
@@ -1494,7 +1582,7 @@ function startTimer(){
   cancelAnimationFrame(game.raf);
   const bar=$('timerBar'),fill=$('timerFill');
   if(!state.time){bar.hidden=true;return}
-  const Qw=game.qs[game.i].write||game.qs[game.i].speak,Qt=game.qs[game.i].type||game.qs[game.i].listen;
+  const Qw=game.qs[game.i].write||game.qs[game.i].speak||game.qs[game.i].build,Qt=game.qs[game.i].type||game.qs[game.i].listen;
   bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):Qt?Math.max(state.time*1.5,10):state.time)*1000;
   const tick=now=>{
     const left=Math.max(0,1-(now-t0)/dur);game.left=left;
@@ -1507,13 +1595,14 @@ function startTimer(){
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
-  const Q=g.qs[g.i];const ci=(Q.write||Q.type||Q.speak)?1:Q.options.findIndex(o=>o.correct);
+  const Q=g.qs[g.i];const ci=(Q.write||Q.type||Q.speak||Q.build)?1:Q.options.findIndex(o=>o.correct);
   if(Q.type){typeLock(idx)}
+  else if(Q.build){$('answers').querySelectorAll('button').forEach(b=>b.disabled=true);$('sbAns').classList.add(idx===ci?'right':'wrong')}
   else if(Q.speak){spStop();const m=$('spMic');if(m){m.disabled=true;m.classList.remove('on')}const gr=$('spGrade');if(gr)gr.hidden=true}
   else if(!Q.write){const btns=[...$('answers').children];
   btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});}
   else{$('wGrade').hidden=true}
-  const it=Q.it;const detail=it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
+  const it=Q.it;const detail=it.sb?`${it.sb.toks.join(' ')} = ${it.en}`:it.cp?`${it.cp.obj} → ${ctrLabel(it.cp.ok[0])} (${it.ro})`:it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
   const msg=$('fb-msg');
   if(idx===ci){
     g.streak++;g.best=Math.max(g.best,g.streak);g.right++;
@@ -1533,7 +1622,7 @@ function answer(idx){
     g.marks[g.i]='ok';record(it,true);logAnswer(it,true);
   }else{
     g.streak=0;g.misses.push(it);g.marks[g.i]='bad';record(it,false);logAnswer(it,false);g.slips.add(Math.min(g.rung,STATIONS.length-1));renderClimb();const rg=$('rungs');rg.classList.remove('shake');void rg.offsetWidth;rg.classList.add('shake');
-    msg.className='msg no';msg.innerHTML=(idx<0||(Q.write&&g.timedOut)?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=(Q.type&&g.typed)?`You typed “${g.typed}” · answer: ${detail}`:detail;g.typed='';
+    msg.className='msg no';msg.innerHTML=(idx<0||(Q.write&&g.timedOut)?'Time’s up':'Not quite')+'<small></small>';msg.querySelector('small').textContent=(Q.type&&g.typed)?`You typed “${g.typed}” · answer: ${detail}`:(Q.build&&g.sbYour)?`You built “${g.sbYour}” · answer: ${Q.it.sb.toks.join(' ')}`:detail;g.sbYour='';g.typed='';
     setStreak(0);
   }
   renderClimb();
@@ -1662,7 +1751,8 @@ function finish(){
   $('r-acc').textContent=acc+'%';$('r-right').textContent=`${g.right}/${total}`;$('r-streak').textContent=g.best;
   $('r-kanji').textContent=acc===100?'満点':acc>=80?'合格':acc>=50?'もう少し':'がんばって';
   const key='best:'+g.lessonKey;const prev=store.get(key);
-  if(g.quick)$('r-best').textContent=`Quick test · ${g.quick.name} · ${{tap:'Tap',type:'Type',write:'Write'}[g.answer]||'Tap'}`;
+  if(g.review)$('r-best').textContent=`Review · ${srsDue().length} still due`;
+  else if(g.quick)$('r-best').textContent=`Quick test · ${g.quick.name} · ${{tap:'Tap',type:'Type',write:'Write'}[g.answer]||'Tap'}`;
   else if(!g.replay&&(!prev||g.score>prev)){store.set(key,g.score);$('r-best').textContent=prev?`New best for these lessons (was ${prev.toLocaleString()})`:'First score saved for these lessons'}
   else $('r-best').textContent=prev?`Best for these lessons: ${prev.toLocaleString()}`:'';
   const lad=$('r-ladder');lad.innerHTML='';
@@ -1706,7 +1796,7 @@ function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.r
 $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
 $('quitBtn').onclick=()=>{spStop();if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
-$('hearBtn').onclick=()=>{if(!game)return;const it=game.qs[game.i].it;speak(it.part?it.part.full:it.jp)};
+$('hearBtn').onclick=()=>{if(!game)return;const it=game.qs[game.i].it;speak(it.part?it.part.full:it.cp?it.cp.obj:it.jp)};
 $('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick,game.answer):startGame();
 $('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
 /* ---------- WORD LIBRARY ---------- */
@@ -1718,8 +1808,21 @@ let STATS=store.get('stats')||{};
   Object.keys(STATS).forEach(k=>{if(ok.has(k))return;const i=k.indexOf('|');const jp=k.slice(i+1);const nd=home[jp];if(!nd)return;
     const nk=nd+'|'+jp,a=STATS[k],b=STATS[nk]||[0,0,0];STATS[nk]=[a[0]+b[0],a[1]+b[1],Math.max(a[2]||0,b[2]||0)];delete STATS[k];ch=true});
   if(ch)store.set('stats',STATS)})();
-function record(it,ok){if(it.gen){(it.clock?ckTargets(it):it.part?ptTargets(it):dtTargets(it)).forEach(t=>record(t,ok));return}const k=keyOf(it);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
+function record(it,ok){if(it.gen){(it.clock?ckTargets(it):it.part?ptTargets(it):it.cp?cpTargets(it):it.sb?[]:dtTargets(it)).forEach(t=>record(t,ok));return}const k=keyOf(it);srsUpdate(k,ok);const r=STATS[k]||[0,0,0];r[0]++;if(ok)r[1]++;r[2]=Date.now();STATS[k]=r;store.set('stats',STATS)}
 function statusOf(r){if(!r||!r[0])return 'new';const a=r[1]/r[0];if(r[0]>=3&&a>=.8)return 'master';if(a<.6)return 'weak';return 'learn'}
+/* ---------- SPACED REPETITION (Leitner boxes) ---------- */
+const SRS_DAYS=[0,1,2,4,7,14,30];
+let SRS=store.get('srs');
+(function seedSrs(){if(SRS)return;SRS={};const now=Date.now();
+  Object.entries(STATS).forEach(([k,r])=>{if(!r||!r[0])return;const st=statusOf(r);const box=st==='master'?3:st==='learn'?2:1;SRS[k]=[box,(r[2]||now)+SRS_DAYS[box]*864e5]});store.set('srs',SRS)})();
+function srsUpdate(k,ok){const cur=SRS[k]||[0,0];const box=ok?Math.min(cur[0]+1,SRS_DAYS.length-1):1;SRS[k]=[box,Date.now()+SRS_DAYS[box]*864e5-36e5];store.set('srs',SRS)}
+function srsDue(){const now=Date.now(),by={};DECKS.forEach(d=>{if(!d.gen)d.items.forEach(it=>by[keyOf(it)]=it)});
+  return Object.entries(SRS).filter(([k,v])=>v[1]<=now&&by[k]).sort((a,b)=>a[1][0]-b[1][0]||a[1][1]-b[1][1]).map(([k])=>by[k])}
+function startReview(){const due=srsDue().slice(0,20);if(!due.length)return;startGame(due);game.replay=true;game.review=true}
+function renderReview(){const c=$('reviewCard');if(!c)return;const n=srsDue().length;c.hidden=!Object.keys(SRS).length;
+  $('rvText').textContent=n?`${n} word${n>1?'s':''} due for review today`:'Nothing due. Come back tomorrow, or practise something new.';
+  $('rvBtn').hidden=!n;$('rvBtn').textContent=n>20?'Review 20 now':'Review now';
+  const b=$('plReview');if(b){b.hidden=!n;b.textContent=`🔁 Review due (${n})`}}
 const TAG={new:['New','t-new'],weak:['Need work','t-weak'],learn:['Learning','t-learn'],master:['Mastered','t-master']};
 const lib={type:'all',status:'all',sort:'weak',q:'',unseen:false};
 function libSeg(el,opts,key){el.innerHTML='';opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(lib[key]===v));b.onclick=()=>{lib[key]=v;renderLibrary()};el.appendChild(b)})}
@@ -1728,6 +1831,7 @@ function libRows(){
   return all.map(it=>{const r=STATS[keyOf(it)];return {it,r,seen:r?r[0]:0,acc:r&&r[0]?r[1]/r[0]:null,st:statusOf(r)}});
 }
 function renderLibrary(){
+  renderReview();
   const rows=libRows();const seen=rows.filter(x=>x.seen);
   const tot=seen.reduce((a,x)=>a+x.r[0],0),ok=seen.reduce((a,x)=>a+x.r[1],0);
   $('lt-seen').textContent=seen.length;$('lt-master').textContent=seen.filter(x=>x.st==='master').length;
@@ -1791,7 +1895,7 @@ function renderLessons(){
       const seen=d.items.filter(it=>STATS[keyOf(it)]).length,mast=d.items.filter(it=>statusOf(STATS[keyOf(it)])==='master').length;
       const det=document.createElement('details');det.className='card lesson';if(ls.open.has(d.id)||q)det.open=true;
       det.ontoggle=()=>{det.open?ls.open.add(d.id):ls.open.delete(d.id)};
-      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?(d.id==='n5-datecl'?'New random dates every game':d.id==='n5-part'?'New sentences every game':'New random times every game'):`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
+      det.innerHTML=`<summary><span class="sum-txt"><b class="ls-name"></b><span>${d.gen?(d.id==='n5-datecl'?'New random dates every game':d.id==='n5-part'||d.id==='n5-build'?'New sentences every game':d.id==='n5-ctrpick'?'New items every game':'New random times every game'):`${d.items.length} ${d.items[0].type==='kana'?'kana':'words'} · ${seen?`${seen} practiced · ${mast} mastered`:'not practiced yet'}`}</span></span><span class="ls-right"><button class="ls-quick" type="button" aria-label="Quick 5-question test">Quick test</button><span class="chev" aria-hidden="true">▾</span></span></summary>
         <div class="ls-body"></div>
         <div class="ls-fact" hidden></div>
         <div class="ls-actions">${d.gen?'':'<button class="ghost pl-add" type="button"></button>'}<button class="big" type="button">Practice this lesson</button></div>`;
@@ -1806,7 +1910,7 @@ function renderLessons(){
         const p=document.createElement('div');p.className='ck-note';p.innerHTML='<p></p><ul class="lwords"></ul>';
         p.querySelector('p').textContent=CK_DESC[d.id]+' Examples:';
         const ul=p.querySelector('ul');
-        ckGen(d.id,4).forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML='<i class="dot-n"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>';b.querySelector('.jp').textContent=it.part?it.part.full:it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
+        ckGen(d.id,4).forEach(it=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';b.innerHTML='<i class="dot-n"></i><span class="jp"></span><span class="ro"></span><span class="en"></span>';b.querySelector('.jp').textContent=it.part?it.part.full:it.cp?`${it.cp.obj} → ${ctrLabel(it.cp.ok[0])}`:it.sb?it.sb.toks.join(' '):it.jp;b.querySelector('.ro').textContent=it.ro;b.querySelector('.en').textContent=it.en;b.onclick=()=>showFact(it,li);li.appendChild(b);ul.appendChild(li)});
         body.appendChild(p);
       }else if(d.items[0].type==='kana'){
         const g=document.createElement('div');g.className='lgrid';
@@ -1836,11 +1940,11 @@ function quickPick(d){
   const writable=d.items.filter(canWrite).length;
   const last=store.get('quickMode')||'tap';
   QUICK_MODES.forEach(([m,ic,name,desc])=>{
-    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak())||(d.id==='n5-part'&&['write','speak','listen'].includes(m));
+    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak())||(['n5-part','n5-ctrpick'].includes(d.id)&&['write','speak','listen'].includes(m))||(d.id==='n5-build'&&m!=='tap');
     const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
     b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
     b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
-    b.querySelector('small').textContent=d.id==='n5-part'&&off?'Not for particles: use Tap or Type':m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.querySelector('small').textContent=d.id==='n5-build'&&off?'The builder uses word tiles: choose Tap':['n5-part','n5-ctrpick'].includes(d.id)&&off?'Not for this lesson: use Tap or Type':m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
     b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
     box.appendChild(b);
   });
@@ -1963,6 +2067,7 @@ $('plPlay').onclick=()=>pl.playing?plStop():plStart();
 $('plNext').onclick=()=>{const was=pl.playing;plStop();if(!pl.list.length)pl.list=plItems();pl.i=(pl.i+1)%pl.list.length;plShow(pl.list[pl.i],false);if(was)plStart()};
 $('plPrev').onclick=()=>{const was=pl.playing;plStop();if(!pl.list.length)pl.list=plItems();pl.i=(pl.i-1+pl.list.length)%pl.list.length;plShow(pl.list[pl.i],false);if(was)plStart()};
 $('plClear').onclick=()=>{if(!confirm('Remove everything from your playlist?'))return;plStop();PL=[];plSave();pl.list=[];pl.i=0;renderPlaylist()};
+$('rvBtn').onclick=startReview;$('plReview').onclick=startReview;
 $('plWeak').onclick=()=>{const w=libRows().filter(x=>x.seen&&x.st!=='master').sort((a,b)=>a.acc-b.acc).slice(0,20).map(x=>x.it);w.forEach(plAdd);openPlaylist('library')};
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&pl.playing)plStop()});
 plSave();
@@ -2141,6 +2246,7 @@ document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
   if(Qk&&Qk.type&&!game.locked)return;   // the text box handles its own keys
+  if(Qk&&Qk.build&&!game.locked){if(e.key==='Enter'){e.preventDefault();game.sbCheck&&game.sbCheck()}return}
   if(Qk&&Qk.speak&&!game.locked){const g=$('spGrade');if(g&&!g.hidden){if(e.key==='y')answer(1);else if(e.key==='n')answer(0)}return}
   if(Qk&&Qk.write&&!game.locked){
     if(e.key==='Enter'&&!game.checked){e.preventDefault();padCheck(false)}

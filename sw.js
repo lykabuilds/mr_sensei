@@ -1,6 +1,6 @@
 /* Mr Sensei service worker: makes the game work offline.
    Bump VERSION whenever you change index.html so players get the update. */
-const VERSION = 'mr-sensei-v29';
+const VERSION = 'mr-sensei-v30';
 const CORE = [
   './',
   'index.html',
