@@ -507,6 +507,9 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .pl-add.on{border-color:var(--sakura);color:var(--sakura)}
 .ls-actions{gap:10px;flex-wrap:wrap}
 .pl-list li.now>button:first-child{border-color:var(--sakura)}
+.answers.fl-wrap{display:block}
+.flip{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.fl-back{white-space:pre-line;text-align:center;font-size:1.25rem;font-weight:700;line-height:1.6;padding:18px;border-radius:16px;border:2px solid var(--matcha);background:var(--panel-2);color:var(--fg)}
 .review{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-color:var(--sakura)}
 .review>div{display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px}
 .review b{font-size:1.05rem}
@@ -833,6 +836,7 @@ const DECKS=[
   {id:'c4-big',level:'n5',name:'Numbers 100–1,000,000',items:[w('ひゃく','hyaku','100'),w('にひゃく','nihyaku','200'),w('さんびゃく','sanbyaku','300'),w('よんひゃく','yonhyaku','400'),w('ごひゃく','gohyaku','500'),w('ろっぴゃく','roppyaku','600'),w('ななひゃく','nanahyaku','700'),w('はっぴゃく','happyaku','800'),w('きゅうひゃく','kyuuhyaku','900'),w('せん','sen','1,000'),w('にせん','nisen','2,000'),w('さんぜん','sanzen','3,000'),w('よんせん','yonsen','4,000'),w('はっせん','hassen','8,000'),w('いちまん','ichiman','10,000'),w('にまん','niman','20,000'),w('きゅうまん','kyuuman','90,000'),w('せんにひゃくさんじゅうよん','sen nihyaku sanjuu yon','1,234'),w('にせんにじゅうろく','nisen nijuu roku','2,026'),w('じゅうまん','juuman','100,000'),w('ひゃくまん','hyakuman','1,000,000'),w('じゅうにまんろくせんひゃく','juuniman rokusen hyaku','126,100'),w('ごじゅうろくまんよんせんにひゃく','gojuurokuman yonsen nihyaku','564,200'),w('きゅうじゅうにまんさんぜん','kyuujuuniman sanzen','923,000')]},
   {id:'n5-cnt',level:'n5',name:'Counters 〜つ',items:[w('ひとつ','hitotsu','1 thing'),w('ふたつ','futatsu','2 things'),w('みっつ','mittsu','3 things'),w('よっつ','yottsu','4 things'),w('いつつ','itsutsu','5 things'),w('むっつ','muttsu','6 things'),w('ななつ','nanatsu','7 things'),w('やっつ','yattsu','8 things'),w('ここのつ','kokonotsu','9 things'),w('とお','too','10 things')]},
   {id:'c4-cnt',level:'n5',name:'Counters & sound changes',items:[w('〜まい','mai','counter: flat things'),w('〜ほん','hon','counter: long, thin things'),w('〜さつ','satsu','counter: books, notebooks'),w('〜にん','nin','counter: people'),w('〜こ','ko','counter: small things'),w('〜ひき','hiki','counter: small animals'),w('〜だい','dai','counter: cars, machines'),w('〜ばん','ban','counter: order, number'),w('〜さい','sai','counter: age'),w('さんがい','sangai','3rd floor'),w('さんまい','sanmai','3 flat things'),w('〜かい','kai','counter: times, floors'),w('ひとり','hitori','1 person'),w('ふたり','futari','2 people'),w('よにん','yonin','4 people'),w('にだい','nidai','2 cars, machines'),w('ごまい','gomai','5 flat things'),w('いちばん','ichiban','number one, the best'),w('ごばんめ','gobanme','5th'),w('〜ぜん','zen','counter: pairs of chopsticks'),w('いちぜん','ichizen','1 pair of chopsticks'),w('にぜん','nizen','2 pairs of chopsticks'),w('よんぜん','yonzen','4 pairs of chopsticks'),w('ろくぜん','rokuzen','6 pairs of chopsticks'),w('ななぜん','nanazen','7 pairs of chopsticks'),w('はちぜん','hachizen','8 pairs of chopsticks'),w('きゅうぜん','kyuuzen','9 pairs of chopsticks'),w('じゅうぜん','juuzen','10 pairs of chopsticks'),w('にかい','nikai','2nd floor'),w('ろっかい','rokkai','6th floor'),w('はっかい','hakkai','8th floor'),w('じゅっかい','jukkai','10th floor')]},
+  {id:'n5-chain',level:'n5',name:'Counting 1–10 (all counters)',items:[{jp:'ひとつ・ふたつ・みっつ・よっつ・いつつ・むっつ・ななつ・やっつ・ここのつ・とお',ro:'hitotsu, futatsu, mittsu, yottsu, itsutsu, muttsu, nanatsu, yattsu, kokonotsu, too',en:'count 1–10 with 〜つ (general things (up to 10))',type:'word',chain:{c:'〜つ',wrong:['いちつ・につ・さんつ・よんつ・ごつ・ろくつ・ななつ・はちつ・きゅうつ・じゅうつ', 'ひとつ・ふたつ・みつ・よつ・いつつ・むつ・ななつ・やつ・ここのつ・とおつ'],tip:'Old Japanese numbers. 10 is とお with no つ.'}},{jp:'ひとり・ふたり・さんにん・よにん・ごにん・ろくにん・しちにん・はちにん・きゅうにん・じゅうにん',ro:'hitori, futari, sannin, yonin, gonin, rokunin, shichinin, hachinin, kyuunin, juunin',en:'count 1–10 with 〜にん (people)',type:'word',chain:{c:'〜にん',wrong:['いちにん・ににん・さんにん・よんにん・ごにん・ろくにん・ななにん・はちにん・きゅうにん・じゅうにん', 'ひとり・ふたり・みにん・よんにん・ごにん・ろくにん・しちにん・はちにん・きゅうにん・じゅうにん'],tip:'1 and 2 are special (ひとり, ふたり). 4 is よにん.'}},{jp:'いちまい・にまい・さんまい・よんまい・ごまい・ろくまい・ななまい・はちまい・きゅうまい・じゅうまい',ro:'ichimai, nimai, sanmai, yonmai, gomai, rokumai, nanamai, hachimai, kyuumai, juumai',en:'count 1–10 with 〜まい (flat things)',type:'word',chain:{c:'〜まい',wrong:['いっまい・にまい・さんまい・よんまい・ごまい・ろっまい・ななまい・はっまい・きゅうまい・じゅっまい', 'いちまい・にまい・さんばい・よんまい・ごまい・ろくまい・ななまい・はちまい・きゅうまい・じゅうまい'],tip:'No sound changes at all.'}},{jp:'いっぽん・にほん・さんぼん・よんほん・ごほん・ろっぽん・ななほん・はっぽん・きゅうほん・じゅっぽん',ro:'ippon, nihon, sanbon, yonhon, gohon, roppon, nanahon, happon, kyuuhon, juppon',en:'count 1–10 with 〜ほん (long, thin things)',type:'word',chain:{c:'〜ほん',wrong:['いちほん・にほん・さんほん・よんほん・ごほん・ろくほん・ななほん・はちほん・きゅうほん・じゅうほん', 'いっぽん・にぼん・さんぽん・よんぼん・ごほん・ろっぽん・ななほん・はっぽん・きゅうほん・じゅっぽん'],tip:'ぽん at 1, 6, 8, 10 · ぼん at 3 · ほん for the rest.'}},{jp:'いっさつ・にさつ・さんさつ・よんさつ・ごさつ・ろくさつ・ななさつ・はっさつ・きゅうさつ・じゅっさつ',ro:'issatsu, nisatsu, sansatsu, yonsatsu, gosatsu, rokusatsu, nanasatsu, hassatsu, kyuusatsu, jussatsu',en:'count 1–10 with 〜さつ (books, notebooks)',type:'word',chain:{c:'〜さつ',wrong:['いちさつ・にさつ・さんざつ・よんさつ・ごさつ・ろくさつ・ななさつ・はちさつ・きゅうさつ・じゅうさつ', 'いっさつ・にさつ・さんさつ・よんさつ・ごさつ・ろっさつ・ななさつ・はちさつ・きゅうさつ・じゅうさつ'],tip:'っ at 1, 8, 10. 6 stays ろくさつ.'}},{jp:'いっこ・にこ・さんこ・よんこ・ごこ・ろっこ・ななこ・はっこ・きゅうこ・じゅっこ',ro:'ikko, niko, sanko, yonko, goko, rokko, nanako, hakko, kyuuko, jukko',en:'count 1–10 with 〜こ (small things)',type:'word',chain:{c:'〜こ',wrong:['いちこ・にこ・さんこ・よんこ・ごこ・ろくこ・ななこ・はちこ・きゅうこ・じゅうこ', 'いっこ・にこ・さんご・よんこ・ごこ・ろっこ・ななこ・はっこ・きゅうこ・じゅっこ'],tip:'っ at 1, 6, 8, 10. 3 stays さんこ.'}},{jp:'いっぴき・にひき・さんびき・よんひき・ごひき・ろっぴき・ななひき・はっぴき・きゅうひき・じゅっぴき',ro:'ippiki, nihiki, sanbiki, yonhiki, gohiki, roppiki, nanahiki, happiki, kyuuhiki, juppiki',en:'count 1–10 with 〜ひき (small animals)',type:'word',chain:{c:'〜ひき',wrong:['いちひき・にひき・さんひき・よんひき・ごひき・ろくひき・ななひき・はちひき・きゅうひき・じゅうひき', 'いっぴき・にびき・さんぴき・よんびき・ごひき・ろっぴき・ななひき・はっぴき・きゅうひき・じゅっぴき'],tip:'Same pattern as ほん: ぴき (1, 6, 8, 10), びき (3), ひき (rest).'}},{jp:'いちだい・にだい・さんだい・よんだい・ごだい・ろくだい・ななだい・はちだい・きゅうだい・じゅうだい',ro:'ichidai, nidai, sandai, yondai, godai, rokudai, nanadai, hachidai, kyuudai, juudai',en:'count 1–10 with 〜だい (cars, machines)',type:'word',chain:{c:'〜だい',wrong:['いっだい・にだい・さんだい・よんだい・ごだい・ろっだい・ななだい・はっだい・きゅうだい・じゅっだい', 'いちだい・にだい・さんたい・よんだい・ごだい・ろくだい・ななだい・はちだい・きゅうだい・じゅうだい'],tip:'No sound changes.'}},{jp:'いちばん・にばん・さんばん・よんばん・ごばん・ろくばん・ななばん・はちばん・きゅうばん・じゅうばん',ro:'ichiban, niban, sanban, yonban, goban, rokuban, nanaban, hachiban, kyuuban, juuban',en:'count 1–10 with 〜ばん (order, number (No. 1…))',type:'word',chain:{c:'〜ばん',wrong:['いっばん・にばん・さんばん・よんばん・ごばん・ろっばん・ななばん・はっばん・きゅうばん・じゅっばん', 'いちばん・にばん・さんぱん・よんばん・ごばん・ろくばん・ななばん・はちばん・きゅうばん・じゅうばん'],tip:'No sound changes.'}},{jp:'いっさい・にさい・さんさい・よんさい・ごさい・ろくさい・ななさい・はっさい・きゅうさい・じゅっさい',ro:'issai, nisai, sansai, yonsai, gosai, rokusai, nanasai, hassai, kyuusai, jussai',en:'count 1–10 with 〜さい (age)',type:'word',chain:{c:'〜さい',wrong:['いちさい・にさい・さんさい・よんさい・ごさい・ろくさい・ななさい・はちさい・きゅうさい・じゅうさい', 'いっさい・にさい・さんざい・よんさい・ごさい・ろっさい・ななさい・はっさい・きゅうさい・じゅっさい'],tip:'っ at 1, 8, 10 (like さつ). 20 = はたち.'}},{jp:'いっかい・にかい・さんかい・よんかい・ごかい・ろっかい・ななかい・はっかい・きゅうかい・じゅっかい',ro:'ikkai, nikai, sankai, yonkai, gokai, rokkai, nanakai, hakkai, kyuukai, jukkai',en:'count 1–10 with 〜かい (times, floors)',type:'word',chain:{c:'〜かい',wrong:['いちかい・にかい・さんかい・よんかい・ごかい・ろくかい・ななかい・はちかい・きゅうかい・じゅうかい', 'いっかい・にがい・さんがい・よんがい・ごがい・ろっかい・ななかい・はっかい・きゅうかい・じゅっかい'],tip:'っ at 1, 6, 8, 10. For floors, 3 is さんがい.'}},{jp:'いちぜん・にぜん・さんぜん・よんぜん・ごぜん・ろくぜん・ななぜん・はちぜん・きゅうぜん・じゅうぜん',ro:'ichizen, nizen, sanzen, yonzen, gozen, rokuzen, nanazen, hachizen, kyuuzen, juuzen',en:'count 1–10 with 〜ぜん (pairs of chopsticks)',type:'word',chain:{c:'〜ぜん',wrong:['いっぜん・にぜん・さんぜん・よんぜん・ごぜん・ろっぜん・ななぜん・はっぜん・きゅうぜん・じゅっぜん', 'いちぜん・にぜん・さんせん・よんせん・ごせん・ろくせん・ななせん・はちせん・きゅうせん・じゅうせん'],tip:'No sound changes.'}}]},
   {id:'n5-ctrpick',level:'n5',name:'Pick the counter',items:[]},
   {id:'n5-howmany',level:'n5',name:'How many? なん〜',items:[w('いくつ','ikutsu','how many (things)?'),w('なんにん','nannin','how many people?'),w('おいくつ','oikutsu','how old? (polite)'),w('なんまい','nanmai','how many flat things?'),w('なんぼん','nanbon','how many long things?'),w('なんさつ','nansatsu','how many books?'),w('なんかい','nankai','how many times?'),w('なんがい','nangai','what floor?'),w('なんこ','nanko','how many small things?'),w('なんびき','nanbiki','how many small animals?'),w('なんだい','nandai','how many cars, machines?'),w('なんばん','nanban','what number?'),w('なんぜん','nanzen','how many pairs (of chopsticks)?')]},
   {id:'c4-age',level:'n5',name:'Age 〜さい',items:[w('いっさい','issai','1 year old'),w('はっさい','hassai','8 years old'),w('じゅっさい','jussai','10 years old'),w('はたち','hatachi','20 years old'),w('なんさい','nansai','how old?')]},
@@ -885,6 +889,7 @@ const CK_DESC={
   'n5-build':'Put the word tiles in the right order. Japanese order: topic は … object を … number + counter … verb or です at the end.',
   'n5-koko':'Same こ・そ・あ・ど, new ending: 〜れ = a thing, 〜こ = a place. ここ (here), そこ (there, near you), あそこ (over there, not あこ!), どこ (where?). どちら is the polite where.',
   'n5-vform':'One verb, four endings: ます (do / will do) → ません (don’t) → ました (did) → ませんでした (didn’t). Answer a verb question by repeating the verb: はい、べんきょうしました。 Not そうです!',
+  'n5-chain':'Recite each counter from 1 to 10. Best in 🃏 Flashcards mode: write the chain on paper, flip, check. Sound changes usually hit 1, 3, 6, 8 and 10.',
   'n5-kosoado':'Read across: こ = near me, そ = near you, あ = far from both, ど = question. 〜れ = a thing, 〜の + noun, 〜こ = a place, 〜ちら = direction / polite place.',
   'n5-kosoa':'The first sound tells you WHERE: こ = near me, そ = near you, あ = far from both. これ・それ・あれ stand alone; この・その・あの need a noun after them (この かさ). わたしの = mine.',
   'n5-part':'New sentences every game, built from your class words. Pick the particle that fits: は (topic), も (also), の (of / at), か (question). The English underneath tells you what the sentence means.',
@@ -1061,7 +1066,7 @@ const N5_GROUPS=[['phr','話 Phrases',['n5-sent','n5-part','n5-build','n5-greet'
   ['voc','語 Vocabulary',['n5-pron','n5-kosoado','n5-jobs','n5-country','n5-school','n5-people','n5-food','n5-places','n5-home','n5-nature','n5-time','n5-useful','n5-pos']],
   ['va','動 Verbs & adjectives',['n5-verb','n5-vform','n5-adj']],
   ['num','数 Numbers & money',['n5-num','c4-num','c4-big','n5-money']],
-  ['cnt','個 Counters',['n5-cnt','c4-cnt','n5-ctrpick','n5-howmany','c4-age','c4-sent','n5-pattern']],
+  ['cnt','個 Counters',['n5-cnt','c4-cnt','n5-chain','n5-ctrpick','n5-howmany','c4-age','c4-sent','n5-pattern']],
   ['time','時 Time',['n5-hours','n5-mins','n5-clock','n5-clk1','n5-clk2','n5-clk3']],
   ['cal','日 Calendar',['n5-rel','n5-week','n5-date','n5-datecl']]];
 const SG_OPEN=new Set(),SG_SEEN=new Set();
@@ -1447,8 +1452,8 @@ function renderSetup(){
   segment($('o-count'),[[10,'10'],[20,'20'],[0,'All']],'count');
   segment($('o-time'),[[20,'20s'],[10,'10s'],[5,'5s'],[0,'Off']],'time');
   segment($('o-hint'),[[true,'Show'],[false,'Hide']],'hints');
-  segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍'],['speak','Speak 🎤'],['listen','Listen 👂']],'answer');
-  $('ansNote').textContent=state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana: see the romaji, write the character. Words: see the English, write the word (up to 6 kana; longer phrases stay multiple choice). You check your own writing. Writing games are not ranked on the leaderboard.':state.answer==='speak'?(canMic()?'See the word, tap the mic and say it. The app checks what it heard; if it can’t tell (kanji or numbers), you compare with Hear it and mark yourself. Speaking games are not ranked.':'Your browser can’t listen to the mic here (try Chrome or the installed app). You can still say it aloud, compare with Hear it and mark yourself.'):state.answer==='listen'?(canSpeak()?'No text, just sound: hear the Japanese, then pick the meaning. Tap the speaker to replay.':'This device has no voice for reading Japanese aloud, so questions will show the text instead.'):'';
+  segment($('o-ans'),[['tap','Tap'],['type','Type ⌨'],['write','Write ✍'],['speak','Speak 🎤'],['listen','Listen 👂'],['flip','Flashcards 🃏']],'answer');
+  $('ansNote').textContent=state.answer==='flip'?'Flashcards: see the front, say or write your answer, tap Show answer, then mark yourself ✓ or ✗. Your marks count toward stats and the review schedule.':state.answer==='type'?'Kana: see the character, type the romaji. Words: see the English, type the Japanese in romaji or kana. Spellings like shi/si and tsu/tu both count.':state.answer==='write'?'Kana: see the romaji, write the character. Words: see the English, write the word (up to 6 kana; longer phrases stay multiple choice). You check your own writing. Writing games are not ranked on the leaderboard.':state.answer==='speak'?(canMic()?'See the word, tap the mic and say it. The app checks what it heard; if it can’t tell (kanji or numbers), you compare with Hear it and mark yourself. Speaking games are not ranked.':'Your browser can’t listen to the mic here (try Chrome or the installed app). You can still say it aloud, compare with Hear it and mark yourself.'):state.answer==='listen'?(canSpeak()?'No text, just sound: hear the Japanese, then pick the meaning. Tap the speaker to replay.':'This device has no voice for reading Japanese aloud, so questions will show the text instead.'):'';
   const pool=poolItems();
   const n=state.count?Math.min(state.count,pool.length):pool.length;
   $('startBtn').disabled=!pool.length;
@@ -1511,7 +1516,26 @@ function buildSpeak(box,Q){
   };
 }
 /* ---------- GAME ---------- */
+/* ---------- FLASHCARDS (flip & self-mark) + counting chains ---------- */
+function chainQuestion(it){const c=it.chain;return {it,dir:'rev',ask:`Count 1–10 with ${c.c}`,q:c.c,hint:it.en.replace(/^count 1–10 with \S+ \((.*)\)$/,'$1'),qClass:'',options:shuffle([it.jp,...c.wrong]).map(t=>({text:t,correct:t===it.jp}))}}
+function flipQuestion(it){
+  let ask='Say it in Japanese',q=it.en,hint='Answer out loud or on paper, then flip',back=`${it.jp}${it.ro?'  ·  '+it.ro:''}`,qc='latin'+(it.en&&it.en.length>6?' long':'');
+  if(it.type==='kana'){ask='Read it';q=it.jp;back=it.ro;qc=''}
+  else if(it.chain){ask=`Count 1–10 with ${it.chain.c}`;q=it.chain.c;hint=it.en.replace(/^count 1–10 with \S+ \((.*)\)$/,'$1');back=`${it.jp}\n${it.ro}\n${it.chain.tip}`;qc=''}
+  else if(it.part){ask='Which particle fits?';q=it.part.q;hint=it.en;back=`${it.part.full}\n${it.part.why}`;qc='long'}
+  else if(it.cp){ask='Which counter?';q=it.cp.obj;hint=`counting ${it.cp.en}`;back=cpFact(it);qc=''}
+  else if(it.sb){ask='Say it in Japanese';back=it.sb.toks.join(' ')}
+  else if(it.clock||it.date){ask=it.clock?'What time is it?':'What date is it?';q='';hint='Say it in Japanese, then flip'}
+  return {it,flip:true,back,dir:'rev',ask,q,hint,qClass:qc,options:[]};
+}
+function buildFlip(box,Q){
+  box.innerHTML='<div class="flip"><div class="fl-back" id="flBack" hidden></div><button class="big" id="flShow" type="button">🃏 Show answer</button><div class="wgrade" id="flGrade" hidden><p>How did you do?</p><div class="wgrade-btns"><button class="gbtn ok" id="flYes" type="button">✓ Got it</button><button class="gbtn no" id="flNo" type="button">✗ Missed</button></div></div></div>';
+  game.flShow=()=>{if(game.locked||!$('flGrade').hidden)return;const b=$('flBack');b.textContent=Q.back;b.hidden=false;$('flShow').hidden=true;$('flGrade').hidden=false;$('hearBtn').hidden=!canSpeak();$('flYes').focus()};
+  $('flShow').onclick=game.flShow;$('flYes').onclick=()=>answer(1);$('flNo').onclick=()=>answer(0);
+}
 function makeQuestion(it,pool,plain){
+  if(!plain&&state.answer==='flip')return flipQuestion(it);
+  if(it.chain)return chainQuestion(it);
   if(it.part)return partQuestion(it);
   if(it.cp)return cpQuestion(it);
   if(it.sb)return sbQuestion(it);
@@ -1568,8 +1592,9 @@ function renderQ(){
   const ck=$('p-clock');if(Q.listen){ck.hidden=true;ck.innerHTML=''}else if(Q.it.clock){ck.innerHTML=clockSVG(Q.it.clock);ck.hidden=false}else if(Q.it.date){ck.innerHTML=calSVG(Q.it.date.d);ck.hidden=false}else{ck.hidden=true;ck.innerHTML=''}
   $('promptBox').classList.remove('pop');void $('promptBox').offsetWidth;$('promptBox').classList.add('pop');
   $('hearBtn').hidden=!canSpeak()||(!Q.write&&(Q.dir!=='fwd'||Q.it.type==='kana'));  // don't give away kana readings before answering
-  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':Q.speak?' spk-wrap':Q.build?' sb-wrap':'')+(Q.it.clock||Q.it.date?' ck':'');
+  const box=$('answers');box.innerHTML='';box.className='answers'+(Q.write?' write':Q.type?' type':Q.speak?' spk-wrap':Q.build?' sb-wrap':Q.flip?' fl-wrap':'')+(Q.it.clock||Q.it.date?' ck':'');
   if(Q.type){buildTypeBox(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Type your answer, then press Enter or Check.</small>';$('nextBtn').hidden=true;startTimer();return}
+  if(Q.flip){buildFlip(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Say or write your answer first, then tap Show answer (or press Space).</small>';$('nextBtn').hidden=true;cancelAnimationFrame(game.raf);$('timerBar').hidden=true;return}
   if(Q.build){buildBuilder(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap the words in order, then Check.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.speak){buildSpeak(box,Q);$('hearBtn').hidden=true;$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Tap the mic, say it in Japanese, and the app checks it.</small>';$('nextBtn').hidden=true;startTimer();return}
   if(Q.write){buildPad(box,Q);$('fb-msg').className='msg';$('fb-msg').innerHTML='<small>Write it in the box, then tap Check.</small>';$('nextBtn').hidden=true;startTimer();return}
@@ -1603,14 +1628,15 @@ function startTimer(){
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
-  const Q=g.qs[g.i];const ci=(Q.write||Q.type||Q.speak||Q.build)?1:Q.options.findIndex(o=>o.correct);
+  const Q=g.qs[g.i];const ci=(Q.write||Q.type||Q.speak||Q.build||Q.flip)?1:Q.options.findIndex(o=>o.correct);
   if(Q.type){typeLock(idx)}
+  else if(Q.flip){$('answers').querySelectorAll('button').forEach(b=>b.disabled=true)}
   else if(Q.build){$('answers').querySelectorAll('button').forEach(b=>b.disabled=true);$('sbAns').classList.add(idx===ci?'right':'wrong')}
   else if(Q.speak){spStop();const m=$('spMic');if(m){m.disabled=true;m.classList.remove('on')}const gr=$('spGrade');if(gr)gr.hidden=true}
   else if(!Q.write){const btns=[...$('answers').children];
   btns.forEach((b,i)=>{if(i===ci)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});}
   else{$('wGrade').hidden=true}
-  const it=Q.it;const detail=it.sb?`${it.sb.toks.join(' ')} = ${it.en}`:it.cp?`${it.cp.obj} → ${ctrLabel(it.cp.ok[0])} (${it.ro})`:it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
+  const it=Q.it;const detail=it.chain?`${it.chain.c}: ${it.jp}`:it.sb?`${it.sb.toks.join(' ')} = ${it.en}`:it.cp?`${it.cp.obj} → ${ctrLabel(it.cp.ok[0])} (${it.ro})`:it.type==='kana'?`${it.jp} = ${it.ro}`:`${it.jp} (${it.ro}) = ${it.en}`;
   const msg=$('fb-msg');
   if(idx===ci){
     g.streak++;g.best=Math.max(g.best,g.streak);g.right++;
@@ -1945,18 +1971,18 @@ function renderLessons(){
 }
 /* Quick test: 5 questions from one lesson, weakest and unpractised words first */
 const QUICK_N=5;
-const QUICK_MODES=[['tap','👆','Tap','Pick from 4 choices'],['type','⌨','Type','Type the romaji or the Japanese'],['write','✍','Write','Write the kana on a drawing pad'],['speak','🎤','Speak','Say it out loud, the app checks your pronunciation'],['listen','👂','Listen','Hear it, then pick what it means']];
+const QUICK_MODES=[['flip','🃏','Flashcards','See the front, answer on paper or out loud, flip, mark yourself'],['tap','👆','Tap','Pick from 4 choices'],['type','⌨','Type','Type the romaji or the Japanese'],['write','✍','Write','Write the kana on a drawing pad'],['speak','🎤','Speak','Say it out loud, the app checks your pronunciation'],['listen','👂','Listen','Hear it, then pick what it means']];
 function quickPick(d){
   const qs=$('qSheet'),box=$('qModes');box.innerHTML='';
   $('qTitle').textContent=`Quick test · ${d.name}`;
   const writable=d.items.filter(canWrite).length;
   const last=store.get('quickMode')||'tap';
   QUICK_MODES.forEach(([m,ic,name,desc])=>{
-    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak())||(['n5-part','n5-ctrpick'].includes(d.id)&&['write','speak','listen'].includes(m))||(d.id==='n5-build'&&m!=='tap');
+    const off=(m==='write'&&!writable)||(m==='listen'&&!canSpeak())||(['n5-part','n5-ctrpick'].includes(d.id)&&['write','speak','listen'].includes(m))||(d.id==='n5-build'&&!['tap','flip'].includes(m))||(d.id==='n5-chain'&&!['tap','flip'].includes(m));
     const b=document.createElement('button');b.type='button';b.className='qmode'+(m===last&&!off?' last':'');b.disabled=off;
     b.innerHTML='<span class="ic"></span><span><b></b><small></small></span>';
     b.querySelector('.ic').textContent=ic;b.querySelector('b').textContent=name;
-    b.querySelector('small').textContent=d.id==='n5-build'&&off?'The builder uses word tiles: choose Tap':['n5-part','n5-ctrpick'].includes(d.id)&&off?'Not for this lesson: use Tap or Type':m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
+    b.querySelector('small').textContent=d.id==='n5-chain'&&off?'Use Flashcards or Tap for counting chains':d.id==='n5-build'&&off?'The builder uses word tiles: choose Tap':['n5-part','n5-ctrpick'].includes(d.id)&&off?'Not for this lesson: use Tap or Type':m==='listen'&&off?'Not available: this device has no Japanese voice':m==='speak'&&!canMic()?desc+' (this browser can’t listen; you’ll mark yourself)':off?(d.gen?'Not available here: these are too long to write':'Not available here: these phrases are too long to write'):m==='write'&&writable<d.items.length?desc+' (long phrases stay multiple choice)':desc;
     b.onclick=()=>{qs.hidden=true;store.set('quickMode',m);quickTest(d,m)};
     box.appendChild(b);
   });
@@ -2177,7 +2203,7 @@ function saveGame(g){
   if(g.saved||!g.log||!g.log.length)return;g.saved=true;
   const rec={gid:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),
     score:g.score,rung:g.rung,correct:g.right,total:g.log.length,planned:g.qs.length,
-    lessons:[...state.lessons],dir:['write','type','speak','listen'].includes(g.answer||state.answer)?(g.answer||state.answer):state.dir,timer:state.time,replay:!!g.replay};
+    lessons:[...state.lessons],dir:['write','type','speak','listen','flip'].includes(g.answer||state.answer)?(g.answer||state.answer):state.dir,timer:state.time,replay:!!g.replay};
   const hist=store.get('history')||[];hist.push(rec);store.set('history',hist.slice(-100));
   if(!TRACKING_URL)return;
   const out=store.get('outbox')||[];
@@ -2258,6 +2284,7 @@ document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
   const Qk=game.qs[game.i];
   if(Qk&&Qk.type&&!game.locked)return;   // the text box handles its own keys
+  if(Qk&&Qk.flip&&!game.locked){if(e.key===' '||e.key==='Enter'){e.preventDefault();game.flShow&&game.flShow()}else if(!$('flGrade').hidden&&(e.key==='1'||e.key==='2')){e.preventDefault();answer(e.key==='1'?1:0)}return}
   if(Qk&&Qk.build&&!game.locked){if(e.key==='Enter'){e.preventDefault();game.sbCheck&&game.sbCheck()}return}
   if(Qk&&Qk.speak&&!game.locked){const g=$('spGrade');if(g&&!g.hidden){if(e.key==='y')answer(1);else if(e.key==='n')answer(0)}return}
   if(Qk&&Qk.write&&!game.locked){

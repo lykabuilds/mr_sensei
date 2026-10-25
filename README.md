@@ -33,6 +33,8 @@ The game is also where I try out a learning workflow: **class materials → stru
 | **Pick the counter** | See an object (ペン, ねこ, たまご, はし…) and choose its counter: 本, 枚, 冊, 人, 匹, 台, 個, つ or 膳. Each answer explains why, and things that take both こ and つ never show the other as a wrong option |
 | **Sentence builder** | Shuffled word tiles: tap them into the right Japanese order (topic は … object を … number + counter … verb or です). Mixes class sentences with fresh generated ones |
 | **Smart review** | Spaced repetition: every word you answer goes into a box. Miss it and it comes back tomorrow; get it right and it waits 1, 2, 4, 7, 14 then 30 days. A "Today's review" card on the home screen (and in the Library) runs up to 20 due words |
+| **Flashcards** | 🃏 A sixth answer mode (in Settings and Quick test): see the front, say or write your answer, flip, then mark ✓ Got it or ✗ Missed. Marks count toward stats and Smart review |
+| **Counting 1–10** | Recite each of the 12 counters from 1 to 10 (ひとつ…, ひとり…, いっぽん…), with the sound-change tip on the back |
 | **Date challenge** | A random day of the month every question (ついたち, よっか, はつか…), with the special days coming up more often and trap answers like よっか vs ようか |
 | **Grouped lessons** | N5 lessons are grouped into collapsible sections: 話 Phrases, 語 Vocabulary, 動 Verbs & adjectives, 数 Numbers & money, 個 Counters, 時 Time and 日 Calendar, each with its own select-all |
 | **Speak 🎤 and Listen 👂** | Speak: see a word and say it; the browser's speech recognition checks your pronunciation (if it writes the word in kanji, you compare with Hear it and mark yourself). Listen: no text, just audio, then pick the meaning. Both work in Quick test too |
