@@ -12,58 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mr Sensei">
-<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}/* ===== Responsive layer: phones, tablets, wide and short screens ===== */
-html{-webkit-text-size-adjust:100%}
-img,svg{max-width:100%}
-/* very small phones */
-@media (max-width:380px){
-  .brand{gap:6px}
-  .brand h1{min-width:0}
-  .me{flex-shrink:0}
-  .wrap{padding-inline:12px;gap:14px}
-  .brand h1{font-size:1.25rem}
-  .brand .jp-sub{display:none}
-  .topnav{gap:2px}
-  .navbtn{padding:4px 5px}
-  .navbtn b{font-size:.85rem}
-  .navbtn span{font-size:.55rem;letter-spacing:.02em}
-  .answers{gap:8px}
-  .ans{padding:12px 10px;min-height:68px;gap:8px}
-  .prompt{padding:20px 12px 24px}
-}
-@media (max-width:360px){
-  .navbtn span{display:none}
-  .brand h1{font-size:1.1rem}
-  .wrap{padding-inline:10px}
-  .navbtn b{font-size:.95rem}
-}
-/* tablets and laptops: give menus more room, keep the game focused */
-@media (min-width:1000px){
-  .wrap{max-width:1040px}
-  .wrap:has(> #play:not([hidden])),.wrap:has(> #results:not([hidden])){max-width:852px}
-  .topic-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
-}
-@media (min-width:1600px){
-  .wrap{max-width:1200px}
-  body{font-size:17px}
-}
-/* short windows (laptop with browser bars, split screen, landscape phone): fit the game without scrolling */
-@media (max-height:820px){
-  #play{gap:10px!important}
-  .prompt{padding:16px 16px 22px;gap:2px}
-  .prompt .q{font-size:clamp(2.4rem,min(12vw,13vh),5rem)}
-  .prompt .q.long{font-size:clamp(1.4rem,min(6vw,7vh),2.6rem)}
-  .ans{min-height:64px;padding:12px 14px}
-  .climb{gap:3px}
-}
-@media (max-height:560px){
-  .wrap{padding-block:8px 24px;gap:10px}
-  .brand h1{font-size:1.2rem}
-  #play .climb{display:none}
-  .prompt .q{font-size:clamp(2rem,14vh,3.6rem)}
-  .ans{min-height:52px;padding:8px 12px;font-size:1rem}
-}
-</style>
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>Mr Sensei</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -586,6 +535,57 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .ios-tip{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;font-size:.88rem;border-color:var(--sakura)}
 @keyframes pop{0%{transform:scale(.92);opacity:.4}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .22s ease-out}
+/* ===== Responsive layer: phones, tablets, wide and short screens ===== */
+html{-webkit-text-size-adjust:100%}
+img,svg{max-width:100%}
+/* very small phones */
+@media (max-width:380px){
+  .brand{gap:6px}
+  .brand h1{min-width:0}
+  .me{flex-shrink:0}
+  .wrap{padding-inline:12px;gap:14px}
+  .brand h1{font-size:1.25rem}
+  .brand .jp-sub{display:none}
+  .topnav{gap:2px}
+  .navbtn{padding:4px 5px}
+  .navbtn b{font-size:.85rem}
+  .navbtn span{font-size:.55rem;letter-spacing:.02em}
+  .answers{gap:8px}
+  .ans{padding:12px 10px;min-height:68px;gap:8px}
+  .prompt{padding:20px 12px 24px}
+}
+@media (max-width:360px){
+  .navbtn span{display:none}
+  .brand h1{font-size:1.1rem}
+  .wrap{padding-inline:10px}
+  .navbtn b{font-size:.95rem}
+}
+/* tablets and laptops: give menus more room, keep the game focused */
+@media (min-width:1000px){
+  .wrap{max-width:1040px}
+  .wrap:has(> #play:not([hidden])),.wrap:has(> #results:not([hidden])){max-width:852px}
+  .topic-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+}
+@media (min-width:1600px){
+  .wrap{max-width:1200px}
+  body{font-size:17px}
+}
+/* short windows (laptop with browser bars, split screen, landscape phone): fit the game without scrolling */
+@media (max-height:820px){
+  #play{gap:10px!important}
+  .prompt{padding:16px 16px 22px;gap:2px}
+  .prompt .q{font-size:clamp(2.4rem,min(12vw,13vh),5rem)}
+  .prompt .q.long{font-size:clamp(1.4rem,min(6vw,7vh),2.6rem)}
+  .ans{min-height:64px;padding:12px 14px}
+  .climb{gap:3px}
+}
+@media (max-height:560px){
+  .wrap{padding-block:8px 24px;gap:10px}
+  .brand h1{font-size:1.2rem}
+  #play .climb{display:none}
+  .prompt .q{font-size:clamp(2rem,14vh,3.6rem)}
+  .ans{min-height:52px;padding:8px 12px;font-size:1rem}
+}
 </style>
 </head>
 <body>
