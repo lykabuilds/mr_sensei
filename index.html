@@ -1414,6 +1414,17 @@ const WORD_FACT={
 
 const SMALL_RE=/[ゃゅょャュョぁぃぅぇぉァィゥェォ]/;
 function splitKana(s){const out=[];for(const ch of s){if(SMALL_RE.test(ch)&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
+function particleSlots(units,ro){
+  const out=[];if(!ro||!/\s/.test(ro))return out;
+  const words=ro.toLowerCase().replace(/[āâ]/g,'aa').replace(/[īî]/g,'ii').replace(/[ūû]/g,'uu').replace(/[ēê]/g,'ee').replace(/[ōô]/g,'ou').replace(/[^a-z\s-]/g,'').split(/[\s-]+/).filter(Boolean);
+  let i=0;
+  for(const w of words){
+    if(i>=units.length)break;
+    if((w==='wa'&&units[i]==='は')||(w==='e'&&units[i]==='へ')){out[i]=w+', particle';i++;continue}
+    let n=0;while(i<units.length&&n<w.length){const r=unitRo(units[i]);n+=(r==='pause'||r==='long')?1:r.length;i++}
+  }
+  return out;
+}
 function unitRo(u){if(u==='っ'||u==='ッ')return 'pause';if(u==='ー')return 'long';return kanaToRomaji(u)||u}
 function charFact(it){
   if(it.clock)return clockFact(it);
@@ -1432,8 +1443,10 @@ function charFact(it){
     return [K_NOTE[jp],origin].filter(Boolean).join(' ');
   }
   if(WORD_FACT[jp])return WORD_FACT[jp];
-  const units=splitKana(jp);
-  let t=`${jp} has ${units.length} sounds: ${units.map(u=>`${u} (${unitRo(u)})`).join(' · ')}.`;
+  const units=splitKana(jp),parts=particleSlots(units,it.ro);
+  let t=`${jp} has ${units.length} sounds: ${units.map((u,i)=>`${u} (${parts[i]||unitRo(u)})`).join(' · ')}.`;
+  const pk=[...new Set(units.filter((u,i)=>parts[i]))];
+  if(pk.length)t+=' '+pk.map(u=>`${u} here is the particle, so it's read "${u==='は'?'wa':'e'}", not "${u==='は'?'ha':'he'}".`).join(' ');
   if(jp.includes('っ'))t+=' The small っ makes a tiny pause that doubles the next consonant.';
   else if(/[ゃゅょ]/.test(jp))t+=' The small ゃ/ゅ/ょ blends with the kana before it into one sound.';
   else if(/おう|うう|えい|いい|ああ|おお/.test(jp))t+=' Watch the long vowel: hold it for two beats.';
