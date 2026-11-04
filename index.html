@@ -356,6 +356,12 @@ img.av{object-fit:cover;background:var(--panel-2);box-shadow:none;border:2px sol
 .startbar .big{padding:12px 30px}
 
 .hud{flex-wrap:nowrap;gap:10px}
+.pause-sheet{position:fixed;inset:0;z-index:60;background:rgba(18,19,41,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;place-items:center;padding:16px}
+.pause-sheet[hidden]{display:none}
+.pause-card{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.pause-jp{font-size:2.4rem;font-weight:800;color:var(--sakura)}
+.pause-en{color:var(--muted)}
+.pause-card small{color:var(--muted)}
 .quit{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font-size:.9rem;display:grid;place-items:center;flex:none}
 .hq{font-family:var(--f-mono);color:var(--muted);font-size:.9rem}
 .streak{font-family:var(--f-mono);font-size:.8rem;color:var(--yamabuki);background:color-mix(in srgb,var(--yamabuki) 15%,transparent);padding:3px 9px;border-radius:999px}
@@ -636,6 +642,7 @@ img,svg{max-width:100%}
   <section id="play" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="hud">
       <button class="quit" id="quitBtn" aria-label="End game" title="End game">✕</button>
+      <button class="quit" id="pauseBtn" aria-label="Pause" title="Pause (P)">⏸</button>
       <span class="hq" id="h-q">1 / 10</span>
       <span class="streak" id="h-streak" hidden>連続 0</span>
       <span class="hscore" id="h-score">0 pts</span>
@@ -643,6 +650,9 @@ img,svg{max-width:100%}
     <div class="climb" aria-live="polite">
       <div class="climb-top"><b id="c-st">Trailhead</b><span id="c-next"></span></div>
       <div class="rungs" id="rungs"></div>
+    </div>
+    <div class="pause-sheet" id="pauseSheet" hidden>
+      <div class="pause-card"><div class="pause-jp">一時停止</div><div class="pause-en">Paused · the timer is stopped</div><button class="big" id="resumeBtn">Resume ▶</button><small>Press P or Esc to resume</small></div>
     </div>
     <div class="prompt" id="promptBox">
       <button class="hear" id="hearBtn" hidden>Hear it</button>
@@ -1711,15 +1721,23 @@ function startTimer(){
   const bar=$('timerBar'),fill=$('timerFill');
   if(!state.time){bar.hidden=true;return}
   const Qw=game.qs[game.i].write||game.qs[game.i].speak||game.qs[game.i].build,Qt=game.qs[game.i].type||game.qs[game.i].listen;
-  bar.hidden=false;const t0=performance.now(),dur=(Qw?Math.max(state.time*2,15):Qt?Math.max(state.time*1.5,10):state.time)*1000;
+  bar.hidden=false;game.t0=performance.now();const dur=(Qw?Math.max(state.time*2,15):Qt?Math.max(state.time*1.5,10):state.time)*1000;
   const tick=now=>{
-    const left=Math.max(0,1-(now-t0)/dur);game.left=left;
+    if(game.paused)return;
+    const left=Math.max(0,1-(now-game.t0)/dur);game.left=left;
     fill.style.transform=`scaleX(${left})`;
     fill.style.background=left<.3?'var(--bad)':'var(--sakura)';
     if(left<=0){if(game.qs[game.i].write)padCheck(true);else answer(-1);return}
     game.raf=requestAnimationFrame(tick);
   };
-  game.left=1;game.raf=requestAnimationFrame(tick);
+  game.tick=tick;game.left=1;game.raf=requestAnimationFrame(tick);
+}
+function setPaused(on){
+  const g=game;if(!g||$('play').hidden||!!g.paused===on)return;
+  if(on){g.paused=true;g.pausedAt=performance.now();cancelAnimationFrame(g.raf);if(typeof spStop==='function')spStop();if(document.activeElement)document.activeElement.blur()}
+  else{g.paused=false;if(g.t0!=null)g.t0+=performance.now()-g.pausedAt;if(!g.locked&&g.tick&&state.time&&!$('timerBar').hidden)g.raf=requestAnimationFrame(g.tick)}
+  $('pauseSheet').hidden=!on;$('pauseBtn').textContent=on?'▶':'⏸';$('pauseBtn').setAttribute('aria-label',on?'Resume':'Pause');
+  if(!on){const inp=$('answers').querySelector('input');if(inp&&!g.locked)inp.focus()}
 }
 function answer(idx){
   const g=game;if(!g||g.locked)return;g.locked=true;cancelAnimationFrame(g.raf);
@@ -1924,7 +1942,9 @@ function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.r
 /* ---------- WIRING ---------- */
 $('startBtn').onclick=()=>startGame();
 $('nextBtn').onclick=next;
-$('quitBtn').onclick=()=>{spStop();if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
+$('pauseBtn').onclick=()=>setPaused(!(game&&game.paused));
+$('resumeBtn').onclick=()=>setPaused(false);
+$('quitBtn').onclick=()=>{if(game&&game.paused)setPaused(false);spStop();if(game){const answered=game.locked?game.i+1:game.i;game.locked=true;cancelAnimationFrame(game.raf);clearTimeout(game.adv);game.qs=game.qs.slice(0,answered);finish()}};
 $('hearBtn').onclick=()=>{if(!game)return;const it=game.qs[game.i].it;speak(it.part?it.part.full:it.cp?it.cp.obj:it.jp)};
 $('againBtn').onclick=()=>game&&game.quick?quickTest(game.quick,game.answer):startGame();
 $('changeBtn').onclick=()=>{if(game&&game.quick){show('lessonsPage');renderLessons()}else{show('setup');renderSetup()}};
@@ -2377,7 +2397,9 @@ function fallbackCopy(text,done){const ta=document.createElement('textarea');ta.
 $('retryMissBtn').onclick=()=>{const m=[...new Set(game.misses)],q=game.quick,a=game.answer,keep=state.answer;if(a)state.answer=a;startGame(m);state.answer=keep;game.replay=true;if(q){game.quick=q;game.answer=a}};
 document.addEventListener('keydown',e=>{
   if($('play').hidden||!game)return;
+  if(game.paused){if(e.key==='p'||e.key==='P'||e.key==='Escape'||e.key==='Enter'||e.key===' '){e.preventDefault();setPaused(false)}else e.preventDefault();e.stopImmediatePropagation();return}
   const Qk=game.qs[game.i];
+  if((e.key==='p'||e.key==='P')&&!(Qk&&Qk.type&&!game.locked)&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){e.preventDefault();setPaused(true);return}
   if(Qk&&Qk.type&&!game.locked)return;   // the text box handles its own keys
   if(Qk&&Qk.flip&&!game.locked){if(e.key===' '||e.key==='Enter'){e.preventDefault();game.flShow&&game.flShow()}else if(!$('flGrade').hidden&&(e.key==='1'||e.key==='2')){e.preventDefault();answer(e.key==='1'?1:0)}return}
   if(Qk&&Qk.build&&!game.locked){if(e.key==='Enter'){e.preventDefault();game.sbCheck&&game.sbCheck()}return}
